@@ -1,6 +1,14 @@
 import '../models/media.dart';
 
 class TrackerManager {
+  static final TrackerManager _instance = TrackerManager._internal();
+
+  factory TrackerManager() {
+    return _instance;
+  }
+
+  TrackerManager._internal();
+
   final List<Media> _watchList = [];
   final List<Media> _watchHistory = [];
 
