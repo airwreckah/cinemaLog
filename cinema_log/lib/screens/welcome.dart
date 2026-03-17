@@ -26,7 +26,7 @@ class _WelcomeScreenState extends State<Welcome>{
               child: const Text('Sign up'),
               ),
             ElevatedButton(onPressed: null, child: const Text('Log in')),
-            Container(
+            SizedBox(
               height: 25,
              // color: Color(0xFF030712),
               child: const Center(child: Text( 'Popular', textAlign: TextAlign.justify)),
