@@ -12,4 +12,13 @@ class Media {
         required this.year,
         this.watched = false,
     });
+
+    @override
+    bool operator ==(Object other) {
+      if (identical(this, other)) return true;
+      return other is Media && other.id == id;
+    }
+
+    @override
+    int get hashCode => id.hashCode;
 }
