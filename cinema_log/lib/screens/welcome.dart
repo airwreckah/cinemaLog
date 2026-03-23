@@ -13,8 +13,6 @@ class Welcome extends StatefulWidget{
 }
 
 class _WelcomeScreenState extends State<Welcome>{
-  //controller for text
-  final TextEditingController _controller = TextEditingController();
     
   @override 
   Widget build(BuildContext context){
