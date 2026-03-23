@@ -11,9 +11,55 @@ class Sign_Up extends StatefulWidget{
 }
 
 class _SignUpScreenState extends State<Sign_Up>{
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordConfController = TextEditingController();
+  String? _nameErrorText;
+  String? _emailErrorText;
+  String? _ageErrorText;
+  String? _passwordErrorText;
+  
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override 
+  void didChangeDependencies(){
+    _nameErrorText = null;
+    _emailErrorText = null;
+    _ageErrorText = null;
+    _passwordErrorText = null;
+    super.didChangeDependencies();
+  }
+
+  void _nameValidate() {
+    if (_nameController.value.text.isEmpty) {
+      _nameErrorText = 'Can\'t be empty';
+    } else {
+      _nameErrorText = null;
+    }
+  }
+
+  void _ageValidate() {
+    if (_nameController.value.text.isEmpty) {
+      _nameErrorText = 'Can\'t be empty';
+    } else {
+      _nameErrorText = null;
+    }
+  }
+
+  void _passwordValidate() {
+    if (_passwordController.value.text.isEmpty) {
+      _passwordErrorText = 'Can\'t be empty';
+    } else if (_passwordController.value.text.length < 4) {
+      _passwordErrorText = 'Too short';
+    } else {
+      _passwordErrorText = null;
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
@@ -48,7 +94,7 @@ class _SignUpScreenState extends State<Sign_Up>{
             child: SizedBox(
               width: 280,
               child: Text(
-                'Please sign in or create an account to start tracking what you watch',
+                'Please create an account to start tracking what you watch',
                 style: TextStyle(
                   color: const Color(0xFF99A1AF),
                   fontSize: 16,
@@ -59,22 +105,30 @@ class _SignUpScreenState extends State<Sign_Up>{
               ),
             ),
           ),
-          SizedBox(height:25),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                SizedBox(height:25),
           SizedBox(
             height:75,
             width: 350,
             child: TextFormField(
-            style: TextStyle(
-              fontSize:16,
-              height: 2.0,
-            ),
-            decoration: InputDecoration(
-              labelText: 'Full Name',
-              contentPadding: EdgeInsets.all(15), // Example of a moving label
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
+              style: TextStyle(
+                fontSize:16,
+                height: 2.0,
               ),
-            ),
+              decoration: InputDecoration(
+                labelText: 'Full Name',
+                contentPadding: EdgeInsets.all(15), // Example of a moving label
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              controller: _nameController,
+              onSaved: (String? value){
+                
+              }
             ),
           ),
           SizedBox(
@@ -92,6 +146,7 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
               ), // Example of a moving label
             ),
+            controller: _emailController,
             ),
           ),
           SizedBox(
@@ -109,6 +164,7 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
                 ), // Example of a moving label
               ),
+              controller: _ageController,
               ),
           ),
           SizedBox(
@@ -126,6 +182,7 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
               ), // Example of a moving label
             ),
+            controller: _passwordController,
             ),
           ),
           SizedBox(
@@ -143,6 +200,7 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
               ), // Example of a moving label
             ),
+            controller: _passwordConfController
             ),
           ),
           Container(
@@ -155,7 +213,7 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
             ),
           ),
-          child: SizedBox(
+          child: ElevatedButton(
             child: Text(
             'Create Account',
             textAlign: TextAlign.center,
@@ -164,7 +222,15 @@ class _SignUpScreenState extends State<Sign_Up>{
               fontSize: 16
               ),
             ),
+            onPressed: (){
+              if(_formKey.currentState!.validate()){
+
+              }
+            }
           ),
+          ),
+        ],
+      ),
           ),
         ],
       ),

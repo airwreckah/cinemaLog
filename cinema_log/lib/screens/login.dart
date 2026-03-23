@@ -30,6 +30,94 @@ class _LoginScreenState extends State<Login>{
           colors : [Color(0xFF615FFF), Color(0xFFAD46FF)],//header title
         ),
       ),
+      body: Column(
+        children: <Widget>[
+          Center( 
+            child: Text(
+              'Watch With Us ',
+              style: TextStyle(
+              color: Colors.white,
+              fontSize: 36,
+              fontFamily: 'Arimo',
+              fontWeight: FontWeight.w700,
+              height: 1.11,
+              letterSpacing: -1.80,
+              ),
+            ),
+          ),
+          Center(
+            child: SizedBox(
+              width: 280,
+              child: Text(
+                'Please sign in to start tracking what you watch',
+                style: TextStyle(
+                  color: const Color(0xFF99A1AF),
+                  fontSize: 16,
+                  fontFamily: 'Arimo',
+                  fontWeight: FontWeight.w400,
+                  height: 1.50,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height:25),
+          SizedBox(
+            height:75,
+            width: 350,
+            child: TextFormField(
+            style: TextStyle(
+              fontSize:16,
+              height: 2.0,
+            ),
+            decoration: InputDecoration(
+              labelText: 'Email Address',
+              contentPadding: EdgeInsets.all(15), // Example of a moving label
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            ),
+          ),
+          SizedBox(
+            height:75,
+            width: 350,
+            child:TextFormField(
+              style: TextStyle(
+              fontSize:16,
+              height: 2.0,
+              ),
+            decoration: InputDecoration(
+              labelText: 'Password',
+              contentPadding: EdgeInsets.all(15), // Example of a moving label
+              border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30),
+              ), // Example of a moving label
+            ),
+            ),
+          ),
+           Container(
+          width: 350,
+          height: 60,
+          padding: const EdgeInsets.all(16.0),
+          decoration: ShapeDecoration(
+            color: const Color(0xFF4F39F6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
+          child: SizedBox(
+            child: Text(
+            'Sign In',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16
+              ),
+            ),
+          ),
+          ),
+        ],
+      ),
        bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
