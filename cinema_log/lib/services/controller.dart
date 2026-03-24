@@ -1,5 +1,5 @@
 import '../models/media.dart';
-import 'auth_service.dart';
+import 'authService.dart';
 import 'tracker_manager.dart';
 
 class Controller {
