@@ -6,6 +6,7 @@ import 'package:cinema_log/screens/welcome.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cinema_log/firebase_options.dart';
+import 'package:cinema_log/services/controller.dart';
 //import 'package:auto_route/auto_route.dart';
 //import 'app_router.gr.dart';
 
@@ -14,6 +15,8 @@ void main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  Controller appController = Controller();
+  await appController.getPopularMedia();
   runApp(CinemaLog());
 } 
 

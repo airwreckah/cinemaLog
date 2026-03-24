@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cinema_log/screens/sign_up.dart';
+import 'package:cinema_log/services/controller.dart';
+import 'package:cinema_log/main.dart';
 
 class Welcome extends StatefulWidget{
-  const Welcome({super.key});
+   Welcome({super.key});
+  
+  static late List popMedia;
+
 
   @override
   _WelcomeScreenState createState() => _WelcomeScreenState();
@@ -103,15 +108,17 @@ class _WelcomeScreenState extends State<Welcome>{
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
               height: 200,
               child: ScrollConfiguration(behavior: const MaterialScrollBehavior().copyWith(dragDevices: {...PointerDeviceKind.values}), 
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children:[
-                  for(final color in Colors.primaries)
-                    Container(width: 160, color:color),
-                        ],
-                      )
-                    ),
-                  ),
+              child: ListView.builder(
+                itemCount: Welcome.popMedia.length,
+                itemBuilder: (context, index){
+                  return Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Image.network(Controller.mainImgURL + Welcome.popMedia[index]['poster_path'] + Controller.apiKey)
+                  );
+                },
+              ),
+              ),
+            ),
             Container(
               height: 28.01,
               padding: const EdgeInsets.symmetric(horizontal: 23.99),

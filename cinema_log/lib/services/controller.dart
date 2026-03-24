@@ -1,6 +1,11 @@
+import 'package:cinema_log/screens/welcome.dart';
+
 import '../models/media.dart';
 import 'authService.dart';
 import 'tracker_manager.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 class Controller {
   final AuthService _authService = AuthService();
@@ -81,4 +86,24 @@ class Controller {
   void resetAll() {
     _trackerManager.resetAll();
   }
+
+  //API CONSTANTS
+  static String apiKey = '?api_key=e7d7f274b57eea7f8d7c9a51361d201d';
+  static String mainURL = 'https://api.themoviedb.org/3/';
+  static String mainImgURL = "https://image.tmdb.org/t/p/w92/";
+  static String searchEndPnt = 'search/';
+  static String popularEndPnt = 'trending/movie/day';
+
+  Future<void> getPopularMedia() async{
+    final url = Uri.parse(mainURL + popularEndPnt + apiKey);
+    final response = await http.get(url);
+    if (response.statusCode == 200){
+      final data = json.decode(response.body);
+      Welcome.popMedia =  data.values.toList()[1];
+      print(Welcome.popMedia);
+    } else{
+      throw Exception('Failed to load popular movies.');
+    }
+  }
+
 }

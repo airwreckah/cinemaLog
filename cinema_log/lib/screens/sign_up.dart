@@ -126,9 +126,6 @@ class _SignUpScreenState extends State<Sign_Up>{
                 ),
               ),
               controller: _nameController,
-              onSaved: (String? value){
-                
-              }
             ),
           ),
           SizedBox(
