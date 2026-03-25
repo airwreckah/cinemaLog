@@ -109,12 +109,18 @@ class _WelcomeScreenState extends State<Welcome>{
               height: 200,
               child: ScrollConfiguration(behavior: const MaterialScrollBehavior().copyWith(dragDevices: {...PointerDeviceKind.values}), 
               child: ListView.builder(
+                scrollDirection: Axis.horizontal,
                 itemCount: Welcome.popMedia.length,
                 itemBuilder: (context, index){
-                  return Padding(
+                  return Container(
+                    width: 160,
                     padding: const EdgeInsets.all(5),
-                    child: Image.network(Controller.mainImgURL + Welcome.popMedia[index]['poster_path'] + Controller.apiKey)
-                  );
+                    decoration: BoxDecoration(
+                      image : DecorationImage(
+                        image: NetworkImage(Controller.mainImgURL + Welcome.popMedia[index]['poster_path'] + Controller.apiKey)
+                      )
+                      )
+                    );
                 },
               ),
               ),

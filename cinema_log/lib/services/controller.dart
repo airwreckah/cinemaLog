@@ -90,7 +90,7 @@ class Controller {
   //API CONSTANTS
   static String apiKey = '?api_key=e7d7f274b57eea7f8d7c9a51361d201d';
   static String mainURL = 'https://api.themoviedb.org/3/';
-  static String mainImgURL = "https://image.tmdb.org/t/p/w92/";
+  static String mainImgURL = "https://image.tmdb.org/t/p/w185/";
   static String searchEndPnt = 'search/';
   static String popularEndPnt = 'trending/movie/day';
 
