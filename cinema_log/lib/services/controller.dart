@@ -1,6 +1,7 @@
 import 'package:cinema_log/screens/welcome.dart';
 
 import '../models/media.dart';
+import '../models/statistics.dart';
 import 'authService.dart';
 import 'tracker_manager.dart';
 import 'package:http/http.dart' as http;
@@ -103,5 +104,17 @@ class Controller {
     } else {
       throw Exception('Failed to load popular movies.');
     }
+  }
+
+  Statistics calculateStatistics({
+    required StatisticsFilterType filterType,
+    int? month,
+    int? year,
+  }) {
+    return _trackerManager.calculateSatatistics(
+      filter: filterType,
+      month: month,
+      year: year,
+    );
   }
 }

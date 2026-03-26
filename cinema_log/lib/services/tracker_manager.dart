@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import '../models/media.dart';
+import '../models/statistics.dart';
+
+enum StatisticsFilterType { month, year, lifetime }
 
 class TrackerManager {
   static final TrackerManager _instance = TrackerManager._internal();
@@ -132,5 +135,135 @@ class TrackerManager {
   void resetAll() {
     _watchList.clear();
     _watchHistory.clear();
+  }
+
+  Statistics calculateStatistics({
+    required StatisticsFilterType filter,
+    int? month,
+    int? year,
+  }) {
+    final filteredHistory = _getFilteredHistory(
+      filter: filter,
+      month: month,
+      year: year,
+    );
+
+    int totalMoviesWatched = 0;
+    int totalTvShowsWatched = 0;
+
+    final Map<String, int> moviesWatchedPerMonth = {};
+    final Map<String, int> genreCounts = {};
+
+    for (final media in filteredHistory) {
+      final mediaType = media.type.toLowerCase().trim();
+
+      if (mediaType == 'movie') {
+        totalMoviesWatched++;
+
+        if (media.watchDate != null) {
+          final monthKey = _formatMonthKey(media.watchDate!);
+          moviesWatchedPerMonth[monthKey] =
+              (moviesWatchedPerMonth[monthKey] ?? 0) + 1;
+        }
+      } else if (mediaType == 'tv show') {
+        totalTvShowsWatched++;
+      }
+
+      final genreKey = media.genre.trim();
+      if (genreKey.isNotEmpty) {
+        genreCounts[genreKey] = (genreCounts[genreKey] ?? 0) + 1;
+      }
+    }
+
+    final totalItemsWatched = filteredHistory.length;
+    final mostViewedGenre = _getMostFrequentKey(genreCounts);
+    final averageWatchedPerMonth = _calculateAverageWatchedPerMonth(
+      moviesWatchedPerMonth,
+    );
+
+    return Statistics(
+      totalMoviesWatched: totalMoviesWatched,
+      totalTvShowsWatched: totalTvShowsWatched,
+      totalItemsWatched: totalItemsWatched,
+      moviesWatchedPerMonth: moviesWatchedPerMonth,
+      genreCounts: genreCounts,
+      mostViewedGenre: mostViewedGenre,
+      averageWatchedPerMonth: averageWatchedPerMonth,
+    );
+  }
+
+  List<Media> _getFilteredHistory({
+    required StatisticsFilterType filter,
+    int? month,
+    int? year,
+  }) {
+    final now = DateTime.now();
+
+    return _watchHistory.where((media) {
+      if (media.watchDate == null) {
+        return false;
+      }
+
+      final watchDate = media.watchDate!;
+
+      switch (filter) {
+        case StatisticsFilterType.month:
+          final targetMonth = month ?? now.month;
+          final targetYear = year ?? now.year;
+          return watchDate.month == targetMonth && watchDate.year == targetYear;
+
+        case StatisticsFilterType.year:
+          final targetYear = year ?? now.year;
+          return watchDate.year == targetYear;
+
+        case StatisticsFilterType.lifetime:
+          return true;
+      }
+    }).toList();
+  }
+
+  String _formatMonthKey(DateTime date) {
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return '${monthNames[date.month - 1]} ${date.year}';
+  }
+
+  String _getMostFrequentKey(Map<String, int> counts) {
+    if (counts.isEmpty) {
+      return 'N/A';
+    }
+    String topKey = counts.keys.first;
+    int topValue = counts[topKey]!;
+
+    counts.forEach((key, value) {
+      if (value > topValue) {
+        topKey = key;
+        topValue = value;
+      }
+    });
+
+    return topKey;
+  }
+
+  double _calculateAverageWatchedPerMonth(Map<String, int> monthlyCounts) {
+    if (monthlyCounts.isEmpty) {
+      return 0.0;
+    }
+
+    final total = monthlyCounts.values.fold(0, (sum, count) => sum + count);
+    return total / monthlyCounts.length;
   }
 }
