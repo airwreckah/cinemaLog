@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import '../models/media.dart';
 
 class TrackerManager {
@@ -24,6 +27,11 @@ class TrackerManager {
 
   void markAsWatched(Media media) {
     media.watched = true;
+    media.watchDate = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
 
     if (_watchList.contains(media)) {
       _watchList.remove(media);
@@ -32,10 +40,19 @@ class TrackerManager {
     if (!_watchHistory.contains(media)) {
       _watchHistory.add(media);
     }
+
+    // Save to Firebase
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('userId')
+        .collection('watchHistory')
+        .doc(media.id)
+        .set(media.toMap());
   }
 
   void markAsUnwatched(Media media) {
     media.watched = false;
+    media.watchDate = null;
 
     if (_watchHistory.contains(media)) {
       _watchHistory.remove(media);

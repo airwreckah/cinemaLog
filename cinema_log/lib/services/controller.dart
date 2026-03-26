@@ -6,7 +6,6 @@ import 'tracker_manager.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 class Controller {
   final AuthService _authService = AuthService();
   final TrackerManager _trackerManager = TrackerManager();
@@ -94,16 +93,15 @@ class Controller {
   static String searchEndPnt = 'search/';
   static String popularEndPnt = 'trending/movie/day';
 
-  Future<void> getPopularMedia() async{
+  Future<void> getPopularMedia() async {
     final url = Uri.parse(mainURL + popularEndPnt + apiKey);
     final response = await http.get(url);
-    if (response.statusCode == 200){
+    if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      Welcome.popMedia =  data.values.toList()[1];
+      Welcome.popMedia = data.values.toList()[1];
       print(Welcome.popMedia);
-    } else{
+    } else {
       throw Exception('Failed to load popular movies.');
     }
   }
-
 }
