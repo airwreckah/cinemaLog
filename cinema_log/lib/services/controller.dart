@@ -111,7 +111,7 @@ class Controller {
     int? month,
     int? year,
   }) {
-    return _trackerManager.calculateSatatistics(
+    return _trackerManager.calculateStatistics(
       filter: filterType,
       month: month,
       year: year,
