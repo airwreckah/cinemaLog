@@ -93,7 +93,7 @@ class Controller {
   static String mainImgURL = "https://image.tmdb.org/t/p/w185/";
   static String searchEndPnt = 'search/';
   static String popularEndPnt = 'trending/movie/day';
-
+  static String KeywordEndPnt = 'keyword';
   Future<void> getPopularMedia() async {
     final url = Uri.parse(mainURL + popularEndPnt + apiKey);
     final response = await http.get(url);
@@ -116,5 +116,16 @@ class Controller {
       month: month,
       year: year,
     );
+  }
+ Future<void> getSearchKeyword() async{
+    final url = Uri.parse(mainURL + searchEndPnt + KeywordEndPnt + apiKey);
+    final response = await http.get(url);
+    if (response.statusCode == 200){
+      final data = json.decode(response.body);
+      search.searchMedia =  data.values.toList()[1];
+      print(search.searchMedia);
+    } else{
+      throw Exception('Failed to load keyword search.');
+    }
   }
 }
