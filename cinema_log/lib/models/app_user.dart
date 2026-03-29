@@ -10,7 +10,9 @@ class AppUser{
   List<List> mediaLists = [];
   List<Media> watchHistory = [];
 
+//blank user for start-up
   AppUser.anonymous();
+//actual constructor
   AppUser.creation(this.uid, this.email, this.fullName,  this.age);
   
   bool watchHistoryNotEmpty(){

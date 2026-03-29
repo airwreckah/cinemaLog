@@ -28,6 +28,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser>{
     return Scaffold(
       //header bar with logo
       appBar: AppBar( 
+        automaticallyImplyLeading: false,
         title:  GradientText(
           'Cinema Log',
           style: TextStyle(
@@ -154,14 +155,19 @@ class _WelcomeUserScreenState extends State<WelcomeUser>{
                 scrollDirection: Axis.horizontal,
                 itemCount: Welcome_new.popMedia.length,
                 itemBuilder: (context, index){
-                  return Container(
-                    width: 160,
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      image : DecorationImage(
-                        image: NetworkImage(Controller.mainImgURL + Welcome_new.upcomingMovies[index]['poster_path'] + Controller.apiKey)
+                  return GestureDetector(
+                    child: Container(
+                      width: 160,
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        image : DecorationImage(
+                          image: NetworkImage(Controller.mainImgURL + Welcome_new.upcomingMovies[index]['poster_path'] + Controller.apiKey)
+                        )
                       )
-                    )
+                    ),
+                    onTap:(){
+                       Navigator.push(context, MaterialPageRoute<void>(builder: (context) => Movie()));
+                    }
                   );
                 },
               )
