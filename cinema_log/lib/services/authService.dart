@@ -1,5 +1,8 @@
-import 'package:cinema_log/models/users.dart';
+import 'package:cinema_log/models/app_user.dart';
+import 'package:cinema_log/screens/welcome_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cinema_log/main.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,5 +18,23 @@ class AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
   }
+//Need to figure out how to make sure the user is added to the collection
+  Future<AppUser> signUserUp(String email, String password, String age, String fullName) async{
+    //put code to hash password here
+    CollectionReference users = FirebaseFirestore.instance.collection('users');
+    final userAccount = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    User? user = userAccount.user;
+    String? uid = user?.uid;
+    final result = await users.add({
+      'age': age,
+      'email': email,
+      'fullName': fullName,
+      'uid': uid
+      });
+    AppUser currentUser = AppUser.creation(user, email, fullName, age);
+    WelcomeUser.currentUser = currentUser;
+    return currentUser;
+    }
+  }
 
-}
+

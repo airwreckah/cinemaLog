@@ -1,7 +1,10 @@
+import 'package:cinema_log/screens/welcome_user.dart';
+import 'package:cinema_log/services/authService.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cinema_log/screens/welcome_new.dart';
 
 class Sign_Up extends StatefulWidget{
   const Sign_Up({super.key});
@@ -11,53 +14,14 @@ class Sign_Up extends StatefulWidget{
 }
 
 class _SignUpScreenState extends State<Sign_Up>{
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfController = TextEditingController();
-  String? _nameErrorText;
-  String? _emailErrorText;
-  String? _ageErrorText;
-  String? _passwordErrorText;
+  final AuthService _authService = AuthService();
+  String error = '';
+  String email = '';
+  String password = '';
+  String fullName = '';
+  String age = '';
   
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  @override 
-  void didChangeDependencies(){
-    _nameErrorText = null;
-    _emailErrorText = null;
-    _ageErrorText = null;
-    _passwordErrorText = null;
-    super.didChangeDependencies();
-  }
-
-  void _nameValidate() {
-    if (_nameController.value.text.isEmpty) {
-      _nameErrorText = 'Can\'t be empty';
-    } else {
-      _nameErrorText = null;
-    }
-  }
-
-  void _ageValidate() {
-    if (_nameController.value.text.isEmpty) {
-      _nameErrorText = 'Can\'t be empty';
-    } else {
-      _nameErrorText = null;
-    }
-  }
-
-  void _passwordValidate() {
-    if (_passwordController.value.text.isEmpty) {
-      _passwordErrorText = 'Can\'t be empty';
-    } else if (_passwordController.value.text.length < 4) {
-      _passwordErrorText = 'Too short';
-    } else {
-      _passwordErrorText = null;
-    }
-  }
-
 
   @override
   Widget build(BuildContext context){
@@ -118,6 +82,11 @@ class _SignUpScreenState extends State<Sign_Up>{
                 fontSize:16,
                 height: 2.0,
               ),
+              onChanged: (value){
+                setState(() {
+                  fullName = value;
+                });
+              },
               decoration: InputDecoration(
                 labelText: 'Full Name',
                 contentPadding: EdgeInsets.all(15), // Example of a moving label
@@ -125,7 +94,6 @@ class _SignUpScreenState extends State<Sign_Up>{
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              controller: _nameController,
             ),
           ),
           SizedBox(
@@ -136,6 +104,9 @@ class _SignUpScreenState extends State<Sign_Up>{
               fontSize:16,
               height: 2.0,
               ),
+            onChanged: (value){
+              setState(() => email = value);
+            },
             decoration: InputDecoration(
               labelText: 'Email Address',
               contentPadding: EdgeInsets.all(15), // Example of a moving label
@@ -143,7 +114,6 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
               ), // Example of a moving label
             ),
-            controller: _emailController,
             ),
           ),
           SizedBox(
@@ -154,6 +124,9 @@ class _SignUpScreenState extends State<Sign_Up>{
               fontSize:16,
               height: 2.0,
               ),
+              onChanged: (value){
+                setState(() => age = value);
+              },
               decoration:  InputDecoration(
               labelText: 'Enter your age',
               contentPadding: EdgeInsets.all(15), // Example of a moving label
@@ -161,7 +134,6 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
                 ), // Example of a moving label
               ),
-              controller: _ageController,
               ),
           ),
           SizedBox(
@@ -172,6 +144,9 @@ class _SignUpScreenState extends State<Sign_Up>{
               fontSize:16,
               height: 2.0,
               ),
+              onChanged: (value){
+                setState(() => password = value);
+                },
             decoration: InputDecoration(
               labelText: 'Enter your password',
               contentPadding: EdgeInsets.all(15), // Example of a moving label
@@ -179,7 +154,6 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
               ), // Example of a moving label
             ),
-            controller: _passwordController,
             ),
           ),
           SizedBox(
@@ -197,7 +171,6 @@ class _SignUpScreenState extends State<Sign_Up>{
               borderRadius: BorderRadius.circular(30),
               ), // Example of a moving label
             ),
-            controller: _passwordConfController
             ),
           ),
           Container(
@@ -221,7 +194,15 @@ class _SignUpScreenState extends State<Sign_Up>{
             ),
             onPressed: (){
               if(_formKey.currentState!.validate()){
-
+                dynamic result = _authService.signUserUp(email, password, age, fullName);
+                if(result == null){
+                        setState((){
+                          error = 'Could not sign in';
+                        });
+                      }else{
+                        Navigator.push(context, MaterialPageRoute<void>(builder: (context) => WelcomeUser()),
+                    );
+                      }
               }
             }
           ),

@@ -1,5 +1,5 @@
 import 'package:cinema_log/screens/sign_up.dart';
-import 'package:cinema_log/screens/welcome.dart';
+import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/services/authService.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -151,7 +151,7 @@ class _LoginScreenState extends State<Login>{
                           error = 'Could not sign in';
                         });
                       }else{
-                        Navigator.push(context, MaterialPageRoute<void>(builder: (context) => Welcome()),
+                        Navigator.push(context, MaterialPageRoute<void>(builder: (context) => Welcome_new()),
                     );
                       }
                     }
