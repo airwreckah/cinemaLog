@@ -2,11 +2,11 @@ import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
 
 import '../models/media.dart';
+import '../models/statistics.dart';
 import 'authService.dart';
 import 'tracker_manager.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 
 class Controller {
   final AuthService _authService = AuthService();
@@ -95,13 +95,16 @@ class Controller {
   static String searchEndPnt = 'search/';
   static String popularEndPnt = 'trending/movie/day';
   static String upcomingEndpnt = 'movie/upcoming';
-
-
-  Future<void> getPopularMedia() async{
+  static String KeywordEndPnt = 'keyword';
+  
+  Future<void> getPopularMedia() async {
     final url = Uri.parse(mainURL + popularEndPnt + apiKey);
+    
     final response = await http.get(url);
-    if (response.statusCode == 200){
+    
+    if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      
       Welcome_new.popMedia =  data.values.toList()[1];
       WelcomeUser.popMedia =  data.values.toList()[1];
     } else{
@@ -111,9 +114,12 @@ class Controller {
 
   Future<void> getupcomingMovies() async{
     final url = Uri.parse(mainURL + upcomingEndpnt+ apiKey);
+    
     final response = await http.get(url);
+    
     if (response.statusCode == 200){
       final data = json.decode(response.body);
+      
       Welcome_new.upcomingMovies =  data.values.toList()[2];
       WelcomeUser.upcomingMovies =  data.values.toList()[2];
     } else{
@@ -121,4 +127,29 @@ class Controller {
     }
   }
 
+  Statistics calculateStatistics({
+    required StatisticsFilterType filterType,
+    int? month,
+    int? year,
+  }) {
+    return _trackerManager.calculateStatistics(
+      filter: filterType,
+      month: month,
+      year: year,
+    );
+  }
+  
+ Future<void> getSearchKeyword() async{
+    final url = Uri.parse(mainURL + searchEndPnt + KeywordEndPnt + apiKey);
+    final response = await http.get(url);
+   
+    if (response.statusCode == 200){
+      final data = json.decode(response.body);
+      
+      search.searchMedia =  data.values.toList()[1];
+      print(search.searchMedia);
+    } else{
+      throw Exception('Failed to load keyword search.');
+    }
+  }
 }
