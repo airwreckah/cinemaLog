@@ -3,6 +3,7 @@ import 'package:cinema_log/screens/welcome_user.dart';
 
 import '../models/media.dart';
 import '../models/statistics.dart';
+import '../models/custom_list.dart';
 import 'authService.dart';
 import 'tracker_manager.dart';
 
@@ -168,5 +169,33 @@ class Controller {
     } else {
       throw Exception('Failed to search movies.');
     }
+  }
+
+  List<CustomList> getCustomLists() {
+    return _trackerManager.getCustomLists();
+  }
+
+  void createCustomList(String name) {
+    _trackerManager.createCustomList(name);
+  }
+
+  void deleteCustomList(String id) {
+    _trackerManager.deleteCustomList(id);
+  }
+
+  void renameCustomList(String id, String newName) {
+    _trackerManager.renameCustomList(id, newName);
+  }
+
+  void addMediaToCustomList(String listId, Media media) {
+    _trackerManager.addMediaToCustomList(listId, media);
+  }
+
+  void removeMediaFromCustomList(String listId, Media media) {
+    _trackerManager.removeMediaFromCustomList(listId, media);
+  }
+
+  CustomList? getCustomListById(String id) {
+    return _trackerManager.getCustomListById(id);
   }
 }

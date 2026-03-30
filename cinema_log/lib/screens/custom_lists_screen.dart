@@ -1,0 +1,106 @@
+import 'package:cinema_log/services/controller.dart';
+import 'package:flutter/material.dart';
+
+import '../services/controller.dart';
+import '../models/custom_list.dart';
+
+class CustomListsScreen extends StatefulWidget {
+  const CustomListsScreen({super.key});
+
+  @override
+  State<CustomListsScreen> createState() => _CustomListsScreenState();
+}
+
+class _CustomListsScreenState extends State<CustomListsScreen> {
+  final Controller _controller = Controller();
+  final TextEditingController _listNameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _listNameController.dispose();
+    super.dispose();
+  }
+
+  void _createList() {
+    final listName = _listNameController.text.trim();
+
+    if (listName.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter a list name')));
+      return;
+    }
+
+    _controller.createCustomList(listName);
+
+    setState(() {
+      _listNameController.clear();
+    });
+  }
+
+  void _deleteList(String id) {
+    _controller.deleteCustomList(id);
+
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final List<CustomList> customLists = _controller.getCustomLists();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Custom Lists'), centerTitle: true),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              controller: _listNameController,
+              decoration: InputDecoration(
+                labelText: 'Enter custom list name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: _createList,
+                ),
+              ),
+              onSubmitted: (_) => _createList(),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: customLists.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No custom lists yet.',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: customLists.length,
+                      itemBuilder: (context, index) {
+                        final customList = customLists[index];
+
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListTile(
+                            title: Text(customList.name),
+                            subtitle: Text(
+                              '${customList.items.length} item(s)',
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => _deleteList(customList.id),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

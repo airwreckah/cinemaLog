@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import '../models/media.dart';
 import '../models/statistics.dart';
+import '../models/custom_list.dart';
 
 enum StatisticsFilterType { month, year, lifetime }
 
@@ -17,6 +18,7 @@ class TrackerManager {
 
   final List<Media> _watchList = [];
   final List<Media> _watchHistory = [];
+  final List<CustomList> _customLists = [];
 
   void addToWatchList(Media media) {
     if (!_watchList.contains(media) && !_watchHistory.contains(media)) {
@@ -135,6 +137,7 @@ class TrackerManager {
   void resetAll() {
     _watchList.clear();
     _watchHistory.clear();
+    _customLists.clear();
   }
 
   Statistics calculateStatistics({
@@ -265,5 +268,62 @@ class TrackerManager {
 
     final total = monthlyCounts.values.fold(0, (sum, count) => sum + count);
     return total / monthlyCounts.length;
+  }
+
+  List<CustomList> getCustomLists() {
+    return List.unmodifiable(_customLists);
+  }
+
+  void createCustomList(String name) {
+    final trimmedName = name.trim();
+
+    if (trimmedName.isEmpty) return;
+
+    final alreadyExists = _customLists.any(
+      (list) => list.name.toLowerCase() == trimmedName.toLowerCase(),
+    );
+
+    if (!alreadyExists) {
+      _customLists.add(
+        CustomList(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          name: trimmedName,
+        ),
+      );
+    }
+  }
+
+  void deleteCustomList(String id) {
+    _customLists.removeWhere((list) => list.id == id);
+  }
+
+  CustomList? getCustomListById(String id) {
+    for (final list in _customLists) {
+      if (list.id == id) {
+        return list;
+      }
+    }
+    return null;
+  }
+
+  void renameCustomList(String id, String newName) {
+    final list = getCustomListById(id);
+    if (list != null && newName.trim().isNotEmpty) {
+      list.name = newName.trim();
+    }
+  }
+
+  void addMediaToCustomList(String listId, Media media) {
+    final list = getCustomListById(listId);
+    if (list != null) {
+      list.addMedia(media);
+    }
+  }
+
+  void removeMediaFromCustomList(String listId, Media media) {
+    final list = getCustomListById(listId);
+    if (list != null) {
+      list.removeMedia(media);
+    }
   }
 }
