@@ -18,23 +18,30 @@ class AuthService {
   Future<void> signOut() async {
     await _auth.signOut();
   }
-//Need to figure out how to make sure the user is added to the collection
-  Future<AppUser> signUserUp(String email, String password, String age, String fullName) async{
+
+  //Need to figure out how to make sure the user is added to the collection
+  Future<AppUser> signUp(
+    String email,
+    String password,
+    String age,
+    String fullName,
+  ) async {
     //put code to hash password here
     CollectionReference users = FirebaseFirestore.instance.collection('users');
-    final userAccount = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    final userAccount = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
     User? user = userAccount.user;
     String? uid = user?.uid;
     final result = await users.add({
       'age': age,
       'email': email,
       'fullName': fullName,
-      'uid': uid
-      });
+      'uid': uid,
+    });
     AppUser currentUser = AppUser.creation(user, email, fullName, age);
     WelcomeUser.currentUser = currentUser;
     return currentUser;
-    }
   }
-
-
+}

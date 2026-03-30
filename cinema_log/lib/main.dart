@@ -14,21 +14,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:auto_route/auto_route.dart';
 //import 'app_router.gr.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Controller appController = Controller();
   await appController.getPopularMedia();
-  await appController.getupcomingMovies();
+  await appController.getUpcomingMovies();
   AppUser currentUser = AppUser.anonymous();
   WelcomeUser.currentUser = currentUser;
   runApp(CinemaLog());
-} 
+}
 
-
-class CinemaLog extends StatelessWidget{
+class CinemaLog extends StatelessWidget {
   const CinemaLog({super.key});
 
   @override
@@ -37,13 +34,11 @@ class CinemaLog extends StatelessWidget{
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF615FFF),
-          brightness: Brightness.dark
+          brightness: Brightness.dark,
         ),
-
       ),
-      home:  Welcome_new()
+      home: Welcome_new(),
     );
     //throw UnimplementedError();
   }
 }
-

@@ -5,6 +5,7 @@ import '../models/media.dart';
 import '../models/statistics.dart';
 import 'authService.dart';
 import 'tracker_manager.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -16,6 +17,20 @@ class Controller {
   Future<bool> signIn(String email, String password) async {
     try {
       await _authService.signIn(email, password);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> signUp(
+    String email,
+    String password,
+    String name,
+    int age,
+  ) async {
+    try {
+      await _authService.signUp(email, password, name, age.toString());
       return true;
     } catch (e) {
       return false;
@@ -88,45 +103,6 @@ class Controller {
     _trackerManager.resetAll();
   }
 
-  //API CONSTANTS
-  static String apiKey = '?api_key=e7d7f274b57eea7f8d7c9a51361d201d';
-  static String mainURL = 'https://api.themoviedb.org/3/';
-  static String mainImgURL = "https://image.tmdb.org/t/p/w185";
-  static String searchEndPnt = 'search/';
-  static String popularEndPnt = 'trending/movie/day';
-  static String upcomingEndpnt = 'movie/upcoming';
-  static String KeywordEndPnt = 'keyword';
-  
-  Future<void> getPopularMedia() async {
-    final url = Uri.parse(mainURL + popularEndPnt + apiKey);
-    
-    final response = await http.get(url);
-    
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      
-      Welcome_new.popMedia =  data.values.toList()[1];
-      WelcomeUser.popMedia =  data.values.toList()[1];
-    } else{
-      throw Exception('Failed to load popular movies.');
-    }
-  }
-
-  Future<void> getupcomingMovies() async{
-    final url = Uri.parse(mainURL + upcomingEndpnt+ apiKey);
-    
-    final response = await http.get(url);
-    
-    if (response.statusCode == 200){
-      final data = json.decode(response.body);
-      
-      Welcome_new.upcomingMovies =  data.values.toList()[2];
-      WelcomeUser.upcomingMovies =  data.values.toList()[2];
-    } else{
-      throw Exception('Failed to load upcoming movies.');
-    }
-  }
-
   Statistics calculateStatistics({
     required StatisticsFilterType filterType,
     int? month,
@@ -138,18 +114,59 @@ class Controller {
       year: year,
     );
   }
-  
- Future<void> getSearchKeyword() async{
-    final url = Uri.parse(mainURL + searchEndPnt + KeywordEndPnt + apiKey);
+
+  //API CONSTANTS
+  static const String apiKey = 'e7d7f274b57eea7f8d7c9a51361d201d';
+  static const String mainURL = 'api.themoviedb.org';
+  static const String mainImgURL = "https://image.tmdb.org/t/p/w185";
+  static const String searchEndPnt = 'search/';
+  static const String popularEndPnt = '/3/trending/movie/day';
+  static const String upcomingEndPnt = '/3/movie/upcoming';
+  static const String searchMovieEndPnt = '/3/search/movie';
+
+  Future<void> getPopularMedia() async {
+    final url = Uri.https(mainURL, popularEndPnt, {'api_key': apiKey});
+
     final response = await http.get(url);
-   
-    if (response.statusCode == 200){
+
+    if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      
-      search.searchMedia =  data.values.toList()[1];
-      print(search.searchMedia);
-    } else{
-      throw Exception('Failed to load keyword search.');
+
+      Welcome_new.popMedia = data['results'] ?? [];
+      WelcomeUser.popMedia = data['results'] ?? [];
+    } else {
+      throw Exception('Failed to load popular movies.');
+    }
+  }
+
+  Future<void> getUpcomingMovies() async {
+    final url = Uri.https(mainURL, upcomingEndPnt, {'api_key': apiKey});
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      Welcome_new.upcomingMovies = data['results'] ?? [];
+      WelcomeUser.upcomingMovies = data['results'] ?? [];
+    } else {
+      throw Exception('Failed to load upcoming movies.');
+    }
+  }
+
+  Future<List<dynamic>> searchMovies(String query) async {
+    final url = Uri.https(mainURL, searchMovieEndPnt, {
+      'api_key': apiKey,
+      'query': query,
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['results'] ?? [];
+    } else {
+      throw Exception('Failed to search movies.');
     }
   }
 }
