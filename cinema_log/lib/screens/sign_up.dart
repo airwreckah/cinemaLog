@@ -14,6 +14,10 @@ class Sign_Up extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<Sign_Up> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   final AuthService _authService = AuthService();
   String error = '';
   String email = '';
@@ -21,7 +25,17 @@ class _SignUpScreenState extends State<Sign_Up> {
   String fullName = '';
   String age = '';
 
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +151,9 @@ class _SignUpScreenState extends State<Sign_Up> {
                   height: 75,
                   width: 350,
                   child: TextFormField(
+                    controller: _passwordController,
                     style: TextStyle(fontSize: 16, height: 2.0),
+                    obscureText: _obscurePassword,
                     onChanged: (value) {
                       setState(() => password = value);
                     },
@@ -149,13 +165,39 @@ class _SignUpScreenState extends State<Sign_Up> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                       ), // Example of a moving label
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters long';
+                      }
+                      return null;
+                    },
                   ),
                 ),
                 SizedBox(
                   height: 75.0,
                   width: 350,
                   child: TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureConfirmPassword,
+                    onChanged: (value) {
+                      setState(() => password = value);
+                    },
                     style: TextStyle(fontSize: 16, height: 2.0),
                     decoration: InputDecoration(
                       labelText: 'Confirm password',
@@ -165,9 +207,49 @@ class _SignUpScreenState extends State<Sign_Up> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
                       ), // Example of a moving label
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
+                      ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please confirm your password';
+                      }
+                      if (value != _passwordController.text) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
                   ),
                 ),
+                if (_confirmPasswordController.text.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6, bottom: 12),
+                    child: Text(
+                      _confirmPasswordController.text ==
+                              _passwordController.text
+                          ? 'Passwords match'
+                          : 'Passwords do not match',
+                      style: TextStyle(
+                        color:
+                            _confirmPasswordController.text ==
+                                _passwordController.text
+                            ? Colors.green
+                            : Colors.red,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 Container(
                   width: 350,
                   height: 60,
