@@ -1,4 +1,5 @@
-import 'package:cinema_log/screens/welcome.dart';
+import 'package:cinema_log/screens/welcome_new.dart';
+import 'package:cinema_log/screens/welcome_user.dart';
 
 import '../models/media.dart';
 import '../models/statistics.dart';
@@ -90,19 +91,39 @@ class Controller {
   //API CONSTANTS
   static String apiKey = '?api_key=e7d7f274b57eea7f8d7c9a51361d201d';
   static String mainURL = 'https://api.themoviedb.org/3/';
-  static String mainImgURL = "https://image.tmdb.org/t/p/w185/";
+  static String mainImgURL = "https://image.tmdb.org/t/p/w185";
   static String searchEndPnt = 'search/';
   static String popularEndPnt = 'trending/movie/day';
+  static String upcomingEndpnt = 'movie/upcoming';
   static String KeywordEndPnt = 'keyword';
+  
   Future<void> getPopularMedia() async {
     final url = Uri.parse(mainURL + popularEndPnt + apiKey);
+    
     final response = await http.get(url);
+    
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      Welcome.popMedia = data.values.toList()[1];
-      print(Welcome.popMedia);
-    } else {
+      
+      Welcome_new.popMedia =  data.values.toList()[1];
+      WelcomeUser.popMedia =  data.values.toList()[1];
+    } else{
       throw Exception('Failed to load popular movies.');
+    }
+  }
+
+  Future<void> getupcomingMovies() async{
+    final url = Uri.parse(mainURL + upcomingEndpnt+ apiKey);
+    
+    final response = await http.get(url);
+    
+    if (response.statusCode == 200){
+      final data = json.decode(response.body);
+      
+      Welcome_new.upcomingMovies =  data.values.toList()[2];
+      WelcomeUser.upcomingMovies =  data.values.toList()[2];
+    } else{
+      throw Exception('Failed to load upcoming movies.');
     }
   }
 
@@ -117,11 +138,14 @@ class Controller {
       year: year,
     );
   }
+  
  Future<void> getSearchKeyword() async{
     final url = Uri.parse(mainURL + searchEndPnt + KeywordEndPnt + apiKey);
     final response = await http.get(url);
+   
     if (response.statusCode == 200){
       final data = json.decode(response.body);
+      
       search.searchMedia =  data.values.toList()[1];
       print(search.searchMedia);
     } else{
