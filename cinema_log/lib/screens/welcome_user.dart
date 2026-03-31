@@ -1,7 +1,10 @@
 import 'package:cinema_log/screens/login.dart';
 import 'package:cinema_log/screens/movie.dart';
+import 'package:cinema_log/screens/profile.dart';
+import 'package:cinema_log/screens/search.dart';
 import '../models/app_user.dart';
 import '../services/tracker_manager.dart';
+import '../screens/profile.dart';
 import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +20,20 @@ class WelcomeUser extends StatefulWidget {
   static late AppUser currentUser;
   static late List popMedia;
   static late List upcomingMovies;
+  
+  
+  void selectMedia(int index, BuildContext context){
+    int mediaId = popMedia[index]['id'];
+    String mediaTitle = popMedia[index]['original_title'];
+    String mediaDesc = popMedia[index]['overview'];
+    String mediaPoster = popMedia[index]['poster_path'];
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (context) => Movie(
+        mediaId: mediaId, mediaTitle: mediaTitle, mediaDesc: mediaDesc, mediaPoster: mediaPoster,
+      )),
+      );
+  }
 
   @override
   _WelcomeUserScreenState createState() => _WelcomeUserScreenState();
@@ -135,10 +152,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                       ),
                     ),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(builder: (context) => Movie()),
-                      );
+                      widget.selectMedia(index, context);
                     },
                   );
                 },
@@ -196,7 +210,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute<void>(builder: (context) => Movie()),
+                        MaterialPageRoute<void>(builder: (context) => WelcomeUser()),
                       );
                     },
                   );
@@ -213,8 +227,16 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
         onTap: (index) {
           if (index == 0) {
             // Home tab
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WelcomeUser())
+              );
           } else if (index == 1) {
             // Search tab
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Search())
+              );
           } else if (index == 2) {
             // Lists tab
             Navigator.push(
@@ -223,6 +245,10 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
             );
           } else if (index == 3) {
             // Profile tab
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Profile())
+              );
           }
 
           setState(() {

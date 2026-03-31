@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
 
@@ -120,10 +122,12 @@ class Controller {
   static const String apiKey = 'e7d7f274b57eea7f8d7c9a51361d201d';
   static const String mainURL = 'api.themoviedb.org';
   static const String mainImgURL = "https://image.tmdb.org/t/p/w185";
-  static const String searchEndPnt = 'search/';
+  static const String searchEndPnt = '/3/search/keyword';
   static const String popularEndPnt = '/3/trending/movie/day';
   static const String upcomingEndPnt = '/3/movie/upcoming';
   static const String searchMovieEndPnt = '/3/search/movie';
+  static const String idEndPnt = '/3/find/external_id';
+  static const String movieEndPnt = '/3/movie/';
 
   Future<void> getPopularMedia() async {
     final url = Uri.https(mainURL, popularEndPnt, {'api_key': apiKey});
@@ -166,6 +170,25 @@ class Controller {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       return data['results'] ?? [];
+    } else {
+      throw Exception('Failed to search movies.');
+    }
+  }
+
+  Future<List<dynamic>> fetchMovieByID(String query) async {
+    final url = Uri.https(mainURL, movieEndPnt, {
+      'movie_id': query,
+      'language': 'en-US',
+      'api_key': apiKey,
+      
+    });
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final movie = await data as Future<List<dynamic>>;
+      return movie;
     } else {
       throw Exception('Failed to search movies.');
     }

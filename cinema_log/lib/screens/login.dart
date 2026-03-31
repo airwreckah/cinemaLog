@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cinema_log/screens/sign_up.dart';
 import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
