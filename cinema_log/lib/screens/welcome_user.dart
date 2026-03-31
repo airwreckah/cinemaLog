@@ -21,19 +21,6 @@ class WelcomeUser extends StatefulWidget {
   static late List popMedia;
   static late List upcomingMovies;
   
-  
-  void selectMedia(int index, BuildContext context){
-    int mediaId = popMedia[index]['id'];
-    String mediaTitle = popMedia[index]['original_title'];
-    String mediaDesc = popMedia[index]['overview'];
-    String mediaPoster = popMedia[index]['poster_path'];
-    Navigator.push(
-      context,
-      MaterialPageRoute<void>(builder: (context) => Movie(
-        mediaId: mediaId, mediaTitle: mediaTitle, mediaDesc: mediaDesc, mediaPoster: mediaPoster,
-      )),
-      );
-  }
 
   @override
   _WelcomeUserScreenState createState() => _WelcomeUserScreenState();
