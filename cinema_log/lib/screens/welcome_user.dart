@@ -137,6 +137,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                 scrollDirection: Axis.horizontal,
                 itemCount: Welcome_new.popMedia.length,
                 itemBuilder: (context, index) {
+                  final selectedMovie = WelcomeUser.popMedia[index];
                   return GestureDetector(
                     child: Container(
                       width: 160,
@@ -152,7 +153,12 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                       ),
                     ),
                     onTap: () {
-                      widget.selectMedia(index, context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => Movie(movie: selectedMovie),
+                        ),
+                      );
                     },
                   );
                 },
@@ -192,6 +198,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                 scrollDirection: Axis.horizontal,
                 itemCount: Welcome_new.popMedia.length,
                 itemBuilder: (context, index) {
+                  final selectedMovie = WelcomeUser.popMedia[index];
                   return GestureDetector(
                     child: Container(
                       width: 160,
@@ -210,7 +217,9 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute<void>(builder: (context) => WelcomeUser()),
+                        MaterialPageRoute<void>(
+                          builder: (context) => Movie(movie: selectedMovie),
+                        ),
                       );
                     },
                   );
