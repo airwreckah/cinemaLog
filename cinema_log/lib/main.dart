@@ -11,6 +11,7 @@ import 'package:cinema_log/firebase_options.dart';
 import 'package:cinema_log/services/controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'screens/auth_wrapper.dart';
 //import 'package:auto_route/auto_route.dart';
 //import 'app_router.gr.dart';
 
@@ -37,7 +38,7 @@ class CinemaLog extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      home: Welcome_new(),
+      home: const AuthWrapper(),
     );
     //throw UnimplementedError();
   }
