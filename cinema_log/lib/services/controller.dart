@@ -175,6 +175,26 @@ class Controller {
     }
   }
 
+  // Genre
+  Future<Map<int, String>> getMovieGenres() async {
+  final url = Uri.https(mainURL, '/3/genre/movie/list', {
+    'api_key': apiKey,
+  });
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final List genres = data['genres'] ?? [];
+
+    return {
+      for (var genre in genres) genre['id'] as int: genre['name'] as String,
+    };
+  } else {
+    throw Exception('Failed to load genres.');
+  }
+}
+
   Future<List<dynamic>> fetchMovieByID(String query) async {
     final url = Uri.https(mainURL, movieEndPnt, {
       'movie_id': query,
