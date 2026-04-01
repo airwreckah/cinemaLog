@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:cinema_log/services/controller.dart';
 import 'package:cinema_log/main.dart';
+import '../services/controller.dart';
+import '../models/media.dart';
 
 class Movie extends StatefulWidget {
   final Map<String, dynamic> movie;
@@ -15,9 +17,12 @@ class Movie extends StatefulWidget {
 class _MovieScreenState extends State<Movie> {
   int _selectedIndex = 0;
 
+  final Controller _controller = Controller();
+
   @override
   Widget build(BuildContext context) {
     final movie = widget.movie;
+    final isWatched = _controller.isWatched(movie['id'].toString());
 
     final String title = movie['title'] ?? 'Untitled';
     final String overview = movie['overview'] ?? 'No summary available.';
@@ -84,12 +89,14 @@ class _MovieScreenState extends State<Movie> {
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Mark as Watched'),
+                  onPressed: _toggleWatched,
+                  child: Text(
+                    isWatched ? 'Already Watched ✓' : 'Mark as Watched',
+                  ),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _showAddToCustomListDialog,
                   child: const Text('Add to Custom List'),
                 ),
               ],
@@ -146,5 +153,105 @@ class _MovieScreenState extends State<Movie> {
         ],
       ),
     );
+  }
+
+  void _showAddToCustomListDialog() {
+    final customLists = _controller.getCustomLists();
+
+    if (customLists.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Create a custom list')));
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add to Custom List'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: customLists.length,
+              itemBuilder: (context, index) {
+                final customList = customLists[index];
+
+                return ListTile(
+                  title: Text(customList.name),
+                  subtitle: Text('${customList.items.length} movies'),
+                  onTap: () {
+                    final movie = widget.movie;
+
+                    final media = Media(
+                      id: movie['id'].toString(),
+                      title: movie['title'] ?? 'Untitled',
+                      type: 'movie',
+                      year:
+                          movie['release_date'] != null &&
+                              movie['release_date'].toString().length >= 4
+                          ? int.tryParse(
+                                  movie['release_date'].toString().substring(
+                                    0,
+                                    4,
+                                  ),
+                                ) ??
+                                0
+                          : 0,
+                      genre: 'Unknown',
+                    );
+
+                    _controller.addMediaToCustomList(customList.id, media);
+                    Navigator.of(context).pop();
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Added to ${customList.name}')),
+                    );
+
+                    setState(() {});
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _toggleWatched() {
+    final movieData = widget.movie;
+
+    final media = Media(
+      id: movieData['id'].toString(),
+      title: movieData['title'] ?? 'Untitled',
+      type: 'movie',
+      year:
+          movieData['release_date'] != null &&
+              movieData['release_date'].toString().length >= 4
+          ? int.tryParse(
+                  movieData['release_date'].toString().substring(0, 4),
+                ) ??
+                0
+          : 0,
+      genre: 'Unknown',
+    );
+
+    final isWatched = _controller.isWatched(media.id);
+
+    _controller.toggleWatched(media);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isWatched
+              ? '${media.title} removed from watched list'
+              : '${media.title} marked as watched',
+        ),
+      ),
+    );
+
+    setState(() {});
   }
 }

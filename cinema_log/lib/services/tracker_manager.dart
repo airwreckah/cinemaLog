@@ -42,7 +42,7 @@ class TrackerManager {
       _watchList.remove(media);
     }
 
-    if (!_watchHistory.contains(media)) {
+    if (!_watchHistory.any((m) => m.id == media.id)) {
       _watchHistory.add(media);
     }
 
@@ -123,7 +123,7 @@ class TrackerManager {
   }
 
   void removeFromHistory(Media media) {
-    _watchHistory.remove(media);
+    _watchHistory.removeWhere((m) => m.id == media.id);
   }
 
   void removeFromHistoryById(String id) {

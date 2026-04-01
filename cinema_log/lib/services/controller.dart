@@ -180,7 +180,6 @@ class Controller {
       'movie_id': query,
       'language': 'en-US',
       'api_key': apiKey,
-      
     });
 
     final response = await http.get(url);
@@ -220,5 +219,21 @@ class Controller {
 
   CustomList? getCustomListById(String id) {
     return _trackerManager.getCustomListById(id);
+  }
+
+  bool isWatched(String id) {
+    return _trackerManager.getWatchHistory().any((m) => m.id == id);
+  }
+
+  void toggleWatched(Media media) {
+    final isWatched = _trackerManager.getWatchHistory().any(
+      (m) => m.id == media.id,
+    );
+
+    if (isWatched) {
+      _trackerManager.removeFromHistory(media);
+    } else {
+      _trackerManager.markAsWatched(media);
+    }
   }
 }
