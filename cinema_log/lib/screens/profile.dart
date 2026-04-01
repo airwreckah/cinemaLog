@@ -32,7 +32,10 @@ class _ProfileScreenState extends State<Profile>{
           colors : [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
       ),
-      body: Column(children: <Widget>[
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: <Widget>[
           Padding(padding: const EdgeInsetsGeometry.all(25),),
           Container( //person icon image
             padding: const EdgeInsets.all(20.0),
@@ -58,12 +61,12 @@ class _ProfileScreenState extends State<Profile>{
             ),),
           ),
           Row(
-            spacing: 60.0,
+            spacing: 50,
             children: <Widget>[
               Container( //# movies watched
                 margin: EdgeInsets.only(left: 20),
-                width: 155.50,
-                height: 126,
+                width: 160,
+                height: 130,
                 decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment(0.00, 0.00),
@@ -74,8 +77,8 @@ class _ProfileScreenState extends State<Profile>{
               ),
               Container( //total watch time
                 padding: EdgeInsets.only(right: 20),
-                width: 155.50,
-                height: 126,
+                width: 160,
+                height: 130,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment(0.00, 0.00),
@@ -87,34 +90,74 @@ class _ProfileScreenState extends State<Profile>{
             ],
           ),
           Container( //Most viewed genre
-            width: 327,
-            height: 118,
+            width: 375,
+            height: 150,
+            margin: EdgeInsets.only(top: 20),
             padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
-            decoration: BoxDecoration(color: const Color(0xFF101828)),
+            decoration: BoxDecoration(color: const Color(0xFF101728)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 16,
               children:<Widget>[
-                Icon(Icons.local_movies_outlined),
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.local_movies_outlined),
+                    Text('Favorite Genres')
+                  ],
+                ),
               ]
-               
             ),
           ),
-          Container( //settings text
-
-          ),
-          Container( //update password
-
-          ),
-          Container( //update email
-
-          ),
-          Container( //sign out button
-
-          ),
+          Container(
+            margin: EdgeInsets.all(10),
+            width: 324,
+            child: Text(
+              'SETTINGS',
+              style: TextStyle(
+                color: const Color(0xFF6A7282),
+                fontSize: 14,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                height: 1.43,
+                letterSpacing: 0.70,
+                ),
+              ),
+            ),
+          Stack(
+            children: <Widget>[
+              Positioned(
+                top: 10,
+                left: 10,
+                child:Container(
+                  width: 320,
+                  padding: const EdgeInsets.all(12),
+                  child: Text('Update Password'),
+                )
+              ),
+              Positioned(
+                top: 30,
+                left: 10,
+                child:Container(
+                width: 320,
+                padding: const EdgeInsets.all(12),
+                child: Text('Update Email'),
+                )
+              ),
+              Positioned(
+                top:50,
+                left:10,
+                child: Container(
+                width: 320,
+                padding: const EdgeInsets.all(12),
+                child: Text('Sign Out'),
+                )
+              ),
+            ],
+          )
         ],
+      ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
