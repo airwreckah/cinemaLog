@@ -185,6 +185,37 @@ class _LoginScreenState extends State<Login> {
                     ),
                   ),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding( 
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                      "Don't have an account? ",
+                      style: TextStyle(color: const Color(0xFF99A1AF), fontSize: 14),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Sign_Up()),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0), 
+                        child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          color: const Color(0xFF4F39F6),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
