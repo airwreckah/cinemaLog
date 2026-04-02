@@ -16,6 +16,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileScreenState extends State<Profile> {
   int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,8 +38,9 @@ class _ProfileScreenState extends State<Profile> {
         child: Column(
           children: <Widget>[
             Padding(padding: const EdgeInsetsGeometry.all(25)),
+
+            // Profile Icon
             Container(
-              //person icon image
               padding: const EdgeInsets.all(20.0),
               decoration: ShapeDecoration(
                 color: const Color(0xFFEADDFF),
@@ -48,11 +50,12 @@ class _ProfileScreenState extends State<Profile> {
               ),
               child: Icon(Icons.person, size: 100.0),
             ),
+
+            // Full Name
             Container(
-              //user's name
               padding: const EdgeInsets.all(20.0),
               child: Text(
-                "[User's Full Name]",
+                Profile.currentUser.fullName ?? "No Name",
                 style: TextStyle(
                   fontSize: 30,
                   fontFamily: 'Inter',
@@ -62,11 +65,33 @@ class _ProfileScreenState extends State<Profile> {
                 ),
               ),
             ),
+
+            // ADDED: UID, EMAIL, AGE
+            Column(
+              children: [
+                Text(
+                  "UID: ${Profile.currentUser.uid ?? "Loading..."}",
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(
+                  "Email: ${Profile.currentUser.email ?? "Loading..."}",
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(
+                  "Age: ${Profile.currentUser.age ?? "Loading..."}",
+                  style: TextStyle(color: Colors.grey),
+                ),
+                Text(
+                  "Watchlists: ${Profile.currentUser.mediaLists.length}",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+
             Row(
               spacing: 50,
               children: <Widget>[
                 Container(
-                  //# movies watched
                   margin: EdgeInsets.only(left: 20),
                   width: 160,
                   height: 130,
@@ -82,7 +107,6 @@ class _ProfileScreenState extends State<Profile> {
                   ),
                 ),
                 Container(
-                  //total watch time
                   padding: EdgeInsets.only(right: 20),
                   width: 160,
                   height: 130,
@@ -99,8 +123,8 @@ class _ProfileScreenState extends State<Profile> {
                 ),
               ],
             ),
+
             Container(
-              //Most viewed genre
               width: 375,
               height: 150,
               margin: EdgeInsets.only(top: 20),
@@ -121,6 +145,7 @@ class _ProfileScreenState extends State<Profile> {
                 ],
               ),
             ),
+
             Container(
               margin: EdgeInsets.all(10),
               width: 324,
@@ -136,6 +161,7 @@ class _ProfileScreenState extends State<Profile> {
                 ),
               ),
             ),
+
             Container(
               width: 320,
               padding: const EdgeInsets.all(12),
@@ -166,30 +192,27 @@ class _ProfileScreenState extends State<Profile> {
           ],
         ),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: (index) {
           if (index == 0) {
-            // Home tab
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => WelcomeUser()),
             );
           } else if (index == 1) {
-            // Search tab
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => Search()),
             );
           } else if (index == 2) {
-            // Lists tab
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => CustomListsScreen()),
             );
           } else if (index == 3) {
-            // Profile tab
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => Profile()),
@@ -201,23 +224,23 @@ class _ProfileScreenState extends State<Profile> {
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home), //Home tab
+            icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search), //Searflch tab
+            icon: Icon(Icons.search),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite), //List tab
+            icon: Icon(Icons.favorite),
             label: 'Lists',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person), //Profile tab
+            icon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
-      ), //for navigat
+      ),
     );
   }
 }

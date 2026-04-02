@@ -169,14 +169,19 @@ class _LoginScreenState extends State<Login> {
                 Container(
                   width: 350,
                   height: 60,
-                  padding: const EdgeInsets.all(16.0),
                   decoration: ShapeDecoration(
                     color: const Color(0xFF4F39F6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: ElevatedButton(
+                  child: TextButton(
+                    style:TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF4F39F6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
                     onPressed: _isLoading ? null : _login,
                     child: Text(
                       'Sign In',
@@ -184,6 +189,37 @@ class _LoginScreenState extends State<Login> {
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding( 
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                      "Don't have an account? ",
+                      style: TextStyle(color: const Color(0xFF99A1AF), fontSize: 14),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Sign_Up()),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0), 
+                        child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          color: const Color(0xFF4F39F6),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

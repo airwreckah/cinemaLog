@@ -34,13 +34,12 @@ class AuthService {
     );
     User? user = userAccount.user;
     String? uid = user?.uid;
-    final result = await users.add({
+    await users.doc(uid).set({
       'age': age,
       'email': email,
       'fullName': fullName,
-      'uid': uid,
     });
-    AppUser currentUser = AppUser.creation(user, email, fullName, age);
+    AppUser currentUser = AppUser.creation(uid, email, fullName, age);
     WelcomeUser.currentUser = currentUser;
     return currentUser;
   }
