@@ -1,3 +1,4 @@
+import 'package:cinema_log/screens/login.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
 import 'package:cinema_log/services/authService.dart';
 import 'package:flutter/gestures.dart';
@@ -41,6 +42,7 @@ class _SignUpScreenState extends State<Sign_Up> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: GradientText(
           'Cinema Log',
           style: TextStyle(
@@ -253,14 +255,16 @@ class _SignUpScreenState extends State<Sign_Up> {
                 Container(
                   width: 350,
                   height: 60,
-                  padding: const EdgeInsets.all(16.0),
                   decoration: ShapeDecoration(
                     color: const Color(0xFF4F39F6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: ElevatedButton(
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF4F39F6),
+                    ),
                     child: Text(
                       'Create Account',
                       textAlign: TextAlign.center,
@@ -307,7 +311,7 @@ class _SignUpScreenState extends State<Sign_Up> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const Sign_Up()),
+                          MaterialPageRoute(builder: (context) => const Login()),
                         );
                       },
                       child: Padding(

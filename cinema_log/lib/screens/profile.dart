@@ -80,6 +80,40 @@ class _ProfileScreenState extends State<Profile> {
                       ],
                     ),
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    
+                    children: [
+                      Padding( 
+                        padding: EdgeInsets.only(left: 20, top: 10),
+                        child: Icon(Icons.local_movies_rounded,
+                        color: Colors.white, size: 32),
+                      ),
+                      SizedBox(height: 10),
+                      Padding( 
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                        '0',
+                        style: TextStyle(
+                          color: Colors.white, 
+                          fontSize: 30,
+                          fontWeight: FontWeight.w700)
+                          ),
+                        ),
+
+                      SizedBox(height: 10),
+                      Padding( 
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                        'Movies Watched',
+                        style: TextStyle(color: const Color(0xFFBEDBFF), 
+                        fontSize: 12, 
+                        fontWeight: FontWeight.w400,
+                        height: 1.33),
+                      ),
+                      ),
+                    ],
+                  ),
                 ),
                 Container(
                   //total watch time
@@ -96,6 +130,40 @@ class _ProfileScreenState extends State<Profile> {
                       ],
                     ),
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    
+                    children: [
+                      Padding( 
+                        padding: EdgeInsets.only(left: 20, top: 10),
+                        child: Icon(Icons.access_time,
+                        color: Colors.white, size: 32),
+                      ),
+                      SizedBox(height: 10),
+                      Padding( 
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                        '#Hrs',
+                        style: TextStyle(
+                          color: Colors.white, 
+                          fontSize: 30,
+                          fontWeight: FontWeight.w700)
+                          ),
+                        ),
+
+                      SizedBox(height: 10),
+                      Padding( 
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text(
+                        '#m Total Time',
+                        style: TextStyle(color: const Color(0xFFBEDBFF), 
+                        fontSize: 12, 
+                        fontWeight: FontWeight.w400,
+                        height: 1.33),
+                      ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -105,7 +173,7 @@ class _ProfileScreenState extends State<Profile> {
               height: 150,
               margin: EdgeInsets.only(top: 20),
               padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
-              decoration: BoxDecoration(color: const Color(0xFF101728)),
+              decoration: BoxDecoration(color: const Color(0xFF1E2939)),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -114,8 +182,21 @@ class _ProfileScreenState extends State<Profile> {
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Icon(Icons.local_movies_outlined),
-                      Text('Favorite Genres'),
+                      Icon(Icons.movie_rounded,
+                      color: const Color(0xFF615FFF),
+                      ),
+                      Padding( 
+                        padding: EdgeInsets.only(left: 10),
+                        child: Text('Favorite Genres',
+                        style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        height: 1.56,
+                        ),
+                      ),
+                      ),
                     ],
                   ),
                 ],
@@ -137,28 +218,61 @@ class _ProfileScreenState extends State<Profile> {
               ),
             ),
             Container(
-              width: 320,
+              width: 375,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF101728),
-                borderRadius: BorderRadius.circular(12),
+                color: const Color(0xFF1E2939),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text('Update Password'),
+                    child: Text('Update Password',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      height: 1.43,
+                      letterSpacing: 0.70,
+                    ),
+                    ),
                   ),
                   Divider(),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text('Update Email'),
+                    child: Text('Update Email',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w600,
+                      height: 1.43,
+                      letterSpacing: 0.70,
+                    ),
+                    ),
                   ),
                   Divider(),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text('Sign Out'),
+                    child: Row(
+                      children: [
+                        Icon(Icons.logout,
+                        color: const Color(0xFFFB2C36),
+                        ),
+                        Text('Sign Out',
+                        style: TextStyle(
+                          color: const Color(0xFFFB2C36),
+                          fontSize: 14,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          height: 1.43,
+                          letterSpacing: 0.70,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

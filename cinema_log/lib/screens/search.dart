@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 import '../services/controller.dart';
 import '../screens/welcome_user.dart';
@@ -185,16 +186,17 @@ class _SearchScreenState extends State<Search> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
-          'Cinema Tracker',
+        title: GradientText(
+          'Cinema Log',
           style: TextStyle(
-            color: Color(0xFF615FFF),
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
+            fontSize: 30,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w900,
+            height: 1.33,
+            letterSpacing: -1.20,
           ),
+          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
       ),
       body: Padding(
