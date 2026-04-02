@@ -163,6 +163,7 @@ class _SearchScreenState extends State<Search> {
         MaterialPageRoute(builder: (_) => CustomListsScreen()),
       );
     } else if (index == 3) {
+      Profile.currentUser = WelcomeUser.currentUser;
       Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => Profile()),

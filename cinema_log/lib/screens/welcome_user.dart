@@ -271,6 +271,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
               MaterialPageRoute(builder: (context) => CustomListsScreen()),
             );
           } else if (index == 3) {
+            Profile.currentUser = WelcomeUser.currentUser;
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => Profile()),

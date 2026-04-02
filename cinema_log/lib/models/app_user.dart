@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/media.dart';
 
 class AppUser {
-  User? uid;
+  String? uid;
   String? email = '';
   String? fullName = '';
   String? age = '';
