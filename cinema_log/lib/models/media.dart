@@ -4,6 +4,7 @@ class Media {
   final String type;
   final int year;
   final String genre;
+  final String? posterPath;
   bool watched;
 
   DateTime? watchDate;
@@ -14,6 +15,7 @@ class Media {
     required this.type,
     required this.year,
     required this.genre,
+    this.posterPath,
     this.watched = false,
     this.watchDate,
   });

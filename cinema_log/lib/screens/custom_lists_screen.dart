@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../services/controller.dart';
 import '../models/custom_list.dart';
+import 'custom_list_detail.dart';
 
 class CustomListsScreen extends StatefulWidget {
   const CustomListsScreen({super.key});
@@ -93,6 +94,18 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
                               icon: const Icon(Icons.delete),
                               onPressed: () => _deleteList(customList.id),
                             ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CustomListDetailScreen(
+                                    customList: customList,
+                                  ),
+                                ),
+                              ).then((_) {
+                                setState(() {});
+                              });
+                            },
                           ),
                         );
                       },

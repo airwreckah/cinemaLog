@@ -236,6 +236,7 @@ class _MovieScreenState extends State<Movie> {
                 0
           : 0,
       genre: 'Unknown',
+      posterPath: movieData['poster_path'],
     );
 
     final isWatched = _controller.isWatched(media.id);
@@ -254,4 +255,6 @@ class _MovieScreenState extends State<Movie> {
 
     setState(() {});
   }
+
+  
 }
