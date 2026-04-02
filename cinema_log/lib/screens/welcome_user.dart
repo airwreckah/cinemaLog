@@ -15,12 +15,15 @@ import 'package:cinema_log/services/controller.dart';
 import 'package:cinema_log/main.dart';
 import 'custom_lists_screen.dart';
 
+// ✅ ADDED
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 class WelcomeUser extends StatefulWidget {
   const WelcomeUser({super.key});
   static late AppUser currentUser;
   static late List popMedia;
   static late List upcomingMovies;
-  
 
   @override
   _WelcomeUserScreenState createState() => _WelcomeUserScreenState();
@@ -28,6 +31,34 @@ class WelcomeUser extends StatefulWidget {
 
 class _WelcomeUserScreenState extends State<WelcomeUser> {
   int _selectedIndex = 0;
+
+  // ADDED FUNCTION
+  Future<void> loadUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      final data = doc.data();
+
+      Profile.currentUser = AppUser.creation(
+        user.uid,
+        user.email,
+        data?['fullName'] ?? '',
+        data?['age']?.toString() ?? '',
+      );
+    }
+  }
+
+  // ADDED INITSTATE
+  @override
+  void initState() {
+    super.initState();
+    loadUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +121,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
               ),
             ),
           Text('Please add movies to your watched list'),
+
           //header for popular section
           Container(
             height: 28.01,
@@ -135,7 +167,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                             Controller.mainImgURL +
                                 WelcomeUser.popMedia[index]['poster_path'] +
                                 Controller.apiKey,
-                          ), //image path
+                          ),
                         ),
                       ),
                     ),
@@ -152,6 +184,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
               ),
             ),
           ),
+
           //Title for Upcoming list
           Container(
             height: 28.01,
@@ -172,6 +205,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
               ],
             ),
           ),
+
           //Scrollable list
           Container(
             margin: const EdgeInsets.symmetric(vertical: 15),
@@ -222,29 +256,25 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
         currentIndex: _selectedIndex,
         onTap: (index) {
           if (index == 0) {
-            // Home tab
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => WelcomeUser())
-              );
+              MaterialPageRoute(builder: (context) => WelcomeUser()),
+            );
           } else if (index == 1) {
-            // Search tab
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Search())
-              );
+              MaterialPageRoute(builder: (context) => Search()),
+            );
           } else if (index == 2) {
-            // Lists tab
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => CustomListsScreen()),
             );
           } else if (index == 3) {
-            // Profile tab
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Profile())
-              );
+              MaterialPageRoute(builder: (context) => Profile()),
+            );
           }
 
           setState(() {
@@ -253,23 +283,23 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home), //Home tab
+            icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search), //Searflch tab
+            icon: Icon(Icons.search),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite), //List tab
+            icon: Icon(Icons.favorite),
             label: 'Lists',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person), //Profile tab
+            icon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
-      ), //for navigation at bottom of screen
+      ),
     );
   }
 }
