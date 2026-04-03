@@ -6,6 +6,7 @@ import '../services/controller.dart';
 import '../screens/welcome_user.dart';
 import '../screens/custom_lists_screen.dart';
 import '../screens/profile.dart';
+import '../screens/movie_details_screen.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -272,6 +273,16 @@ class _SearchScreenState extends State<Search> {
                               ),
                               child: ListTile(
                                 contentPadding: const EdgeInsets.all(10),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => MovieDetailsScreen(
+                                        movieId: movie['id'].toString(),
+                                      ),
+                                    ),
+                                  );
+                                },
                                 leading: posterPath != null
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(10),

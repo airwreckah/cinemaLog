@@ -176,7 +176,7 @@ class Controller {
   }
 
   // Genre
-  Future<Map<int, String>> getMovieGenres() async {
+ Future<Map<int, String>> getMovieGenres() async {
   final url = Uri.https(mainURL, '/3/genre/movie/list', {
     'api_key': apiKey,
   });
@@ -195,23 +195,25 @@ class Controller {
   }
 }
 
-  Future<List<dynamic>> fetchMovieByID(String query) async {
-    final url = Uri.https(mainURL, movieEndPnt, {
-      'movie_id': query,
-      'language': 'en-US',
+  Future<Map<String, dynamic>> fetchMovieById(String movieId) async {
+  final url = Uri.https(
+    mainURL,
+    '$movieEndPnt$movieId',
+    {
       'api_key': apiKey,
-    });
+      'language': 'en-US',
+    },
+  );
 
-    final response = await http.get(url);
+  final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final movie = await data as Future<List<dynamic>>;
-      return movie;
-    } else {
-      throw Exception('Failed to search movies.');
-    }
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    return data;
+  } else {
+    throw Exception('Failed to fetch movie details.');
   }
+}
 
   List<CustomList> getCustomLists() {
     return _trackerManager.getCustomLists();
