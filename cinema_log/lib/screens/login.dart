@@ -238,7 +238,7 @@ class _LoginScreenState extends State<Login> {
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite), //List tab
+            icon: Icon(Icons.bookmark_border), //List tab
             label: 'Lists',
           ),
           BottomNavigationBarItem(

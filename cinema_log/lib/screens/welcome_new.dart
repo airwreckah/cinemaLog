@@ -190,7 +190,7 @@ class _WelcomeNewScreenState extends State<Welcome_new>{
             icon: Icon(Icons.search),//Searflch tab
             label: 'Search'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),//List tab
+            icon: Icon(Icons.bookmark_border),//List tab
             label: 'Lists'),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),//Profile tab

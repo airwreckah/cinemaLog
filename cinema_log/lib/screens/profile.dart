@@ -21,7 +21,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<Profile> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
   TrackerManager tracker = Profile.trackerManager;
   StatisticsFilterType statFilter = StatisticsFilterType.lifetime;
   late Statistics stats = tracker.calculateStatistics(filter: statFilter);
@@ -35,6 +35,7 @@ class _ProfileScreenState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: GradientText(
           'Cinema Log',
           style: TextStyle(
@@ -71,6 +72,7 @@ class _ProfileScreenState extends State<Profile> {
               child: Text(
                 Profile.currentUser.fullName ?? "No Name",
                 style: TextStyle(
+                  color: Colors.white,
                   fontSize: 30,
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w900,
@@ -393,7 +395,7 @@ class _ProfileScreenState extends State<Profile> {
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.bookmark_border),
             label: 'Lists',
           ),
           BottomNavigationBarItem(

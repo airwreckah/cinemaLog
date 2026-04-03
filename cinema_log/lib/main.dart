@@ -37,9 +37,14 @@ class CinemaLog extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF615FFF),
-          brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF000814),
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color(0xFF000814),
+          selectedItemColor: Color(0xFF615FFF),
+          unselectedItemColor: Colors.white54,
         ),
       ),
       home: const AuthWrapper(),

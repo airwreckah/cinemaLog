@@ -292,7 +292,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.bookmark_border),
             label: 'Lists',
           ),
           BottomNavigationBarItem(
