@@ -14,6 +14,6 @@ class Statistics {
     required this.moviesWatchedPerMonth,
     required this.genreCounts,
     required this.mostViewedGenre,
-    required this.averageWatchedPerMonth,
+    required this.averageWatchedPerMonth
   });
 }

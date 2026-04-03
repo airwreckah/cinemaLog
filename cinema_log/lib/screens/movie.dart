@@ -4,6 +4,10 @@ import 'package:cinema_log/services/controller.dart';
 import 'package:cinema_log/main.dart';
 import '../services/controller.dart';
 import '../models/media.dart';
+import 'welcome_user.dart';
+import 'profile.dart';
+import 'search.dart';
+import '../screens/custom_lists_screen.dart';
 
 class Movie extends StatefulWidget {
   final Map<String, dynamic> movie;
@@ -129,30 +133,53 @@ class _MovieScreenState extends State<Movie> {
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
         onTap: (index) {
+          if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WelcomeUser()),
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Search()),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CustomListsScreen()),
+            );
+          } else if (index == 3) {
+            Profile.currentUser = WelcomeUser.currentUser;
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Profile()),
+            );
+          }
+
           setState(() {
             _selectedIndex = index;
           });
         },
-        items: const <BottomNavigationBarItem>[
+        items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home), //Home tab
+            icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search), //Searflch tab
+            icon: Icon(Icons.search),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite), //List tab
+            icon: Icon(Icons.favorite),
             label: 'Lists',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person), //Profile tab
+            icon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
       ),
-    );
+      );
   }
 
   void _showAddToCustomListDialog() {

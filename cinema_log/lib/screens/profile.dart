@@ -1,21 +1,35 @@
+import 'package:cinema_log/models/statistics.dart';
+import 'package:cinema_log/services/tracker_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../models/app_user.dart';
 import '../screens/welcome_user.dart';
 import '../screens/custom_lists_screen.dart';
 import '../screens/search.dart';
+import 'package:cinema_log/main.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
   static late AppUser currentUser;
-
+  static late Statistics userStats;
+  static late TrackerManager trackerManager;
+  
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<Profile> {
   int _selectedIndex = 0;
+  TrackerManager tracker = Profile.trackerManager;
+  StatisticsFilterType statFilter = StatisticsFilterType.lifetime;
+  late Statistics stats = tracker.calculateStatistics(filter: statFilter);
+  int get totalMoviesWatched => stats.totalMoviesWatched;
+  late String totalMoviesStr = totalMoviesWatched.toString();
+  int get averageWatchedPerMonth => stats.averageWatchedPerMonth.round();
+  late String averageWatchedPerMonthStr = averageWatchedPerMonth.toString();
+  String get favoriteGenre => stats.mostViewedGenre;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +131,7 @@ class _ProfileScreenState extends State<Profile> {
                       Padding( 
                         padding: EdgeInsets.only(left: 20),
                         child: Text(
-                        '0',
+                        totalMoviesStr,
                         style: TextStyle(
                           color: Colors.white, 
                           fontSize: 30,
@@ -166,7 +180,7 @@ class _ProfileScreenState extends State<Profile> {
                       Padding( 
                         padding: EdgeInsets.only(left: 20),
                         child: Text(
-                        '#Hrs',
+                        averageWatchedPerMonthStr,
                         style: TextStyle(
                           color: Colors.white, 
                           fontSize: 30,
@@ -174,11 +188,11 @@ class _ProfileScreenState extends State<Profile> {
                           ),
                         ),
 
-                      SizedBox(height: 10),
+                      SizedBox(height: 2),
                       Padding( 
                         padding: EdgeInsets.only(left: 20),
                         child: Text(
-                        '#m Total Time',
+                        'Average Watched/Month',
                         style: TextStyle(color: const Color(0xFFBEDBFF), 
                         fontSize: 12, 
                         fontWeight: FontWeight.w400,
@@ -210,7 +224,7 @@ class _ProfileScreenState extends State<Profile> {
                       ),
                       Padding( 
                         padding: EdgeInsets.only(left: 10),
-                        child: Text('Favorite Genres',
+                        child: Text('Favorite Genre',
                         style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -221,6 +235,18 @@ class _ProfileScreenState extends State<Profile> {
                       ),
                       ),
                     ],
+                  ),
+                  Padding( 
+                    padding: EdgeInsets.only(left: 32, top: 10),
+                    child: Text(favoriteGenre,
+                    style: TextStyle(
+                      color: const Color(0xFFBEDBFF),
+                      fontSize: 14,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w400,
+                      height: 1.43,
+                    ),
+                    ),
                   ),
                 ],
               ),
@@ -288,6 +314,27 @@ class _ProfileScreenState extends State<Profile> {
                         color: const Color(0xFFFB2C36),
                         ),
                         Text('Sign Out',
+                        style: TextStyle(
+                          color: const Color(0xFFFB2C36),
+                          fontSize: 14,
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w600,
+                          height: 1.43,
+                          letterSpacing: 0.70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Divider(),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete_forever_rounded,
+                        color: const Color(0xFFFB2C36),
+                        ),
+                        Text('Delete Account',
                         style: TextStyle(
                           color: const Color(0xFFFB2C36),
                           fontSize: 14,

@@ -1,3 +1,4 @@
+import 'package:cinema_log/services/tracker_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
@@ -12,6 +13,7 @@ import 'package:cinema_log/services/controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/auth_wrapper.dart';
+import 'screens/profile.dart';
 //import 'package:auto_route/auto_route.dart';
 //import 'app_router.gr.dart';
 
@@ -22,6 +24,8 @@ void main() async {
   await appController.getPopularMedia();
   await appController.getUpcomingMovies();
   AppUser currentUser = AppUser.anonymous();
+  TrackerManager trackerManager = TrackerManager();
+  Profile.trackerManager = trackerManager;
   WelcomeUser.currentUser = currentUser;
   runApp(CinemaLog());
 }
