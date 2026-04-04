@@ -12,6 +12,8 @@ import 'tracker_manager.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'dart:io';
+
 class Controller {
   final AuthService _authService = AuthService();
   final TrackerManager _trackerManager = TrackerManager();
@@ -118,8 +120,29 @@ class Controller {
     );
   }
 
+
+
+
+
+Future<String> readEnv({String path = 'cinema_log\.env'}) async {
+  final file = File(path);
+  final lines = await file.readAsLines();
+  return lines.isEmpty ? '' : lines.first.trim();
+}
+
+
+static String apiKey='';
+   Future<void> init() async {
+    apiKey = await readEnv();
+  }
+
+
+
+
+
+  
   //API CONSTANTS
-  static const String apiKey = 'e7d7f274b57eea7f8d7c9a51361d201d';
+
   static const String mainURL = 'api.themoviedb.org';
   static const String mainImgURL = "https://image.tmdb.org/t/p/w185";
   static const String searchEndPnt = '/3/search/keyword';
