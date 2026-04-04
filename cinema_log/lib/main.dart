@@ -21,7 +21,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Controller appController = Controller();
-   await appController.readEnv(); 
+  await appController.init(); 
   await appController.getPopularMedia();
   await appController.getUpcomingMovies();
   AppUser currentUser = AppUser.anonymous();

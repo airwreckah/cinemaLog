@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
@@ -6,6 +7,7 @@ import 'package:cinema_log/screens/welcome_user.dart';
 import '../models/media.dart';
 import '../models/statistics.dart';
 import '../models/custom_list.dart';
+import '../env/env.dart';
 import 'authService.dart';
 import 'tracker_manager.dart';
 
@@ -133,7 +135,7 @@ Future<String> readEnv({String path = 'cinema_log\.env'}) async {
 
 static String apiKey='';
    Future<void> init() async {
-    apiKey = await readEnv();
+    apiKey = Env.apiKey;
   }
 
 
