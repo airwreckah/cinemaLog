@@ -14,6 +14,7 @@ migrate_working_dir/
 
 # API key storage
 .env
+env.g.dart
 
 # IntelliJ related
 *.iml
