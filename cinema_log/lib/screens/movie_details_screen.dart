@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/controller.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
   final String movieId;
@@ -74,14 +75,18 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
+        title: GradientText(
           'Cinema Log',
           style: TextStyle(
-            color: Color(0xFF615FFF),
-            fontWeight: FontWeight.bold,
+            fontSize: 30,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w900,
+            height: 1.33,
+            letterSpacing: -1.20,
           ),
+          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
-      ),
+        ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
