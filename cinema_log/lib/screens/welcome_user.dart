@@ -217,9 +217,9 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
               ),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: Welcome_new.popMedia.length,
+                itemCount: Welcome_new.upcomingMovies.length,
                 itemBuilder: (context, index) {
-                  final selectedMovie = WelcomeUser.popMedia[index];
+                  final selectedMovie = WelcomeUser.upcomingMovies[index];
                   return GestureDetector(
                     child: Container(
                       width: 160,
