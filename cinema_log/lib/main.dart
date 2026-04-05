@@ -42,6 +42,11 @@ class CinemaLog extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF000814),
         ),
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(color: Colors.white),
+          bodyLarge: TextStyle(color: Colors.white),
+          bodySmall: TextStyle(color: Colors.white),
+        ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color(0xFF000814),
           selectedItemColor: Color(0xFF615FFF),

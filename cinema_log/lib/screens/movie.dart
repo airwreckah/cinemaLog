@@ -33,6 +33,10 @@ class _MovieScreenState extends State<Movie> {
     final String releaseDate = movie['release_date'] ?? 'Unknown';
     final String posterPath = movie['poster_path'] ?? '';
     final String rating = movie['vote_average']?.toString() ?? 'N/A';
+    final String releaseYear = releaseDate != 'Unknown' && releaseDate.length >= 4
+        ? releaseDate.substring(0, 4)
+        : 'Unknown';
+    final String runtime = movie['runtime'] != null ? '${movie['runtime']} min' : 'Unknown';
 
     final String imageUrl = posterPath.isNotEmpty
         ? 'https://image.tmdb.org/t/p/w500$posterPath'
@@ -61,9 +65,11 @@ class _MovieScreenState extends State<Movie> {
               title,
               style: const TextStyle(
                 fontSize: 24,
+                color: Colors.white,
                 fontFamily: 'Arimo',
                 fontWeight: FontWeight.bold,
               ),
+              
             ),
             const SizedBox(height: 16),
 
@@ -91,17 +97,67 @@ class _MovieScreenState extends State<Movie> {
             const SizedBox(height: 16),
 
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton(
+                Icon(Icons.star, color: Colors.amber),
+                Text(
+                  rating,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.white70,
+                    fontFamily: 'Arimo',
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  '$releaseYear',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
+                    fontFamily: 'Arimo',
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                Text(
+                  runtime,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
+                    fontFamily: 'Arimo',
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                   style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF352c48),
+                    ),
                   onPressed: _toggleWatched,
                   child: Text(
                     isWatched ? 'Already Watched ✓' : 'Mark as Watched',
-                  ),
-                ),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    ),
+                 ),
                 const SizedBox(width: 16),
-                ElevatedButton(
+                TextButton(
+                   style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF352c48),
+                    ),
                   onPressed: _showAddToCustomListDialog,
-                  child: const Text('Add to Custom List'),
+                  child: const Text('Add to Custom List',
+                    style: TextStyle(
+                    color: Colors.white,
+                    ),
+                    ),
                 ),
               ],
             ),

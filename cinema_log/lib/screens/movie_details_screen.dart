@@ -69,6 +69,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final title = _movieData!['title'] ?? 'Untitled';
     final overview = _movieData!['overview'] ?? 'No summary available.';
     final posterPath = _movieData!['poster_path'];
+    final String releaseDate = _movieData!['release_date'] ?? 'Unknown';
+    final String releaseYear = releaseDate != 'Unknown' && releaseDate.length >= 4
+        ? releaseDate.substring(0, 4)
+        : 'Unknown';
+    final String rating = _movieData!['vote_average']?.toString() ?? 'N/A'; 
+    final String runtime = _movieData!['runtime'] != null ? '${_movieData!['runtime']} min' : 'Unknown';
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -96,11 +102,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               title,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 24,
+                fontFamily: 'Arimo',
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             if (posterPath != null)
               Center(
                 child: Image.network(
@@ -108,15 +115,64 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   height: 300,
                 ),
               ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton(
+                  Row( children:[
+                    const Icon(Icons.star, 
+                    color: Colors.amber
+                    ),
+                    Text(
+                      rating,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                        fontFamily: 'Arimo',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+                Icon(Icons.circle, color: Colors.white70, size: 10),
+                Text(
+                  '$releaseYear',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
+                    fontFamily: 'Arimo',
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                Icon(Icons.circle, color: Colors.white70, size: 10),
+                Row(
+                  children: [
+                    const Icon(Icons.access_time
+                    , color: Colors.white70
+                    ),
+                    Text(
+                      runtime,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
+                        fontFamily: 'Arimo',
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
                   onPressed: () {
                     // later: connect to TrackerManager
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1B1B2F),
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFF352c48),
                     foregroundColor: Colors.white,
                   ),
                   child: const Text('Mark as Watched'),
@@ -127,7 +183,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     // later: connect to custom list logic
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1B1B2F),
+                    backgroundColor: const Color(0xFF352c48),
                     foregroundColor: Colors.white,
                   ),
                   child: const Text('Add to Custom List'),
@@ -143,7 +199,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 1),
             Text(
               overview,
               style: const TextStyle(
