@@ -153,6 +153,7 @@ static String apiKey='';
   static const String searchMovieEndPnt = '/3/search/movie';
   static const String idEndPnt = '/3/find/external_id';
   static const String movieEndPnt = '/3/movie/';
+  static const String providerEndPnt = '/watch/providers';
 
   Future<void> getPopularMedia() async {
     final url = Uri.https(mainURL, popularEndPnt, {'api_key': apiKey});
@@ -185,19 +186,26 @@ static String apiKey='';
   }
 
   Future<List<dynamic>> searchMovies(String query) async {
-    final url = Uri.https(mainURL, searchMovieEndPnt, {
-      'api_key': apiKey,
-      'query': query,
-    });
+    List<dynamic> allResults = [];
+    for (int page = 1; page <= 3; page++) {
+      final url = Uri.https(mainURL, searchMovieEndPnt, {
+        'api_key': apiKey,
+        'query': query,
+        'page': page.toString(),
+      });
 
-    final response = await http.get(url);
+      final response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return data['results'] ?? [];
-    } else {
-      throw Exception('Failed to search movies.');
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final results = data['results'] ?? [];
+        allResults.addAll(results);
+        if (results.length < 20) break; // No more pages
+      } else {
+        throw Exception('Failed to search movies.');
+      }
     }
+    return allResults;
   }
 
   // Genre
@@ -233,12 +241,44 @@ static String apiKey='';
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
-    final data = json.decode(response.body);
+    final decoded = json.decode(response.body);
+    final data = Map<String, dynamic>.from(decoded as Map);
     return data;
   } else {
     throw Exception('Failed to fetch movie details.');
   }
 }
+
+Future<Map<String, dynamic>> fetchProviderById(String movieId) async {
+  final url = Uri.https(
+    mainURL,
+    '$movieEndPnt$movieId$providerEndPnt',
+    {
+      'api_key': apiKey,
+      'language': 'en-US',
+    },
+  );
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final decoded = json.decode(response.body) as Map;
+    final data = Map<String, dynamic>.from(decoded);
+    final results = data['results'] as Map?;
+    if (results != null) {
+      final dataUS = results['US'] as Map?;
+      if (dataUS != null) {
+        return Map<String, dynamic>.from(dataUS);
+      }
+    }
+    return <String, dynamic>{};
+  } else {
+    throw Exception('Failed to fetch movie details.');
+  }
+}
+
+
+
 
   List<CustomList> getCustomLists() {
     return _trackerManager.getCustomLists();

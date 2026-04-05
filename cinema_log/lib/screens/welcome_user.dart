@@ -165,8 +165,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                         image: DecorationImage(
                           image: NetworkImage(
                             Controller.mainImgURL +
-                                WelcomeUser.popMedia[index]['poster_path'] +
-                                Controller.apiKey,
+                                WelcomeUser.popMedia[index]['poster_path'],
                           ),
                         ),
                       ),
@@ -229,8 +228,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                           image: NetworkImage(
                             Controller.mainImgURL +
                                 Welcome_new
-                                    .upcomingMovies[index]['poster_path'] +
-                                Controller.apiKey,
+                                    .upcomingMovies[index]['poster_path'],
                           ),
                         ),
                       ),

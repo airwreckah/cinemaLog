@@ -287,7 +287,7 @@ class _SearchScreenState extends State<Search> {
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: Image.network(
-                                          '${Controller.mainImgURL}/$posterPath',
+                                          '${Controller.mainImgURL}$posterPath',
                                           width: 50,
                                           fit: BoxFit.cover,
                                         ),
