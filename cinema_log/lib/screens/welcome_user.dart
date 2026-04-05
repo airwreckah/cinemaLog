@@ -157,18 +157,56 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                 itemCount: Welcome_new.popMedia.length,
                 itemBuilder: (context, index) {
                   final selectedMovie = WelcomeUser.popMedia[index];
-                  return GestureDetector(
-                    child: Container(
-                      width: 160,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            Controller.mainImgURL +
-                                WelcomeUser.popMedia[index]['poster_path'],
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      child: Stack(
+                      children: [
+                        Container(
+                          width: 160,
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                Controller.mainImgURL +
+                                    WelcomeUser.popMedia[index]['poster_path'],
+                              ),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
+                        Container(
+                          width: 160,
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.7),
+                              ],
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(1.0),
+                              child: Text(
+                                selectedMovie['title'] ?? 'Untitled',
+                                textAlign: TextAlign.right,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     onTap: () {
                       Navigator.push(
@@ -178,7 +216,8 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                         ),
                       );
                     },
-                  );
+                  ),
+                );
                 },
               ),
             ),
@@ -217,21 +256,60 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: Welcome_new.upcomingMovies.length,
+                
                 itemBuilder: (context, index) {
                   final selectedMovie = WelcomeUser.upcomingMovies[index];
-                  return GestureDetector(
-                    child: Container(
-                      width: 160,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            Controller.mainImgURL +
-                                Welcome_new
-                                    .upcomingMovies[index]['poster_path'],
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: GestureDetector(
+                      child: Stack(
+                      children: [
+                        Container(
+                          width: 160,
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                Controller.mainImgURL +
+                                    Welcome_new
+                                        .upcomingMovies[index]['poster_path'],
+                              ),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
+                        Container(
+                          width: 160,
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.7),
+                              ],
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Text(
+                                selectedMovie['title'] ?? 'Untitled',
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     onTap: () {
                       Navigator.push(
@@ -241,7 +319,8 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                         ),
                       );
                     },
-                  );
+                  ),
+                );
                 },
               ),
             ),
