@@ -13,7 +13,6 @@ class MovieDetailsScreen extends StatefulWidget {
   @override
   State<MovieDetailsScreen> createState() => _MovieDetailsScreenState();
 }
-
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   final Controller _controller = Controller();
   Map<String, dynamic>? _movieData;
@@ -205,7 +204,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -240,12 +238,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Column(
-              children: [
-                Text(
-                  freeProviders.isNotEmpty
-                      ? 'Available for free on:'
-                      : 'Not available for free streaming',
+            if (freeProviders.isEmpty && rentProviders.isEmpty && buyProviders.isEmpty && flatrateProviders.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  'No providers are available for this movie',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
@@ -253,12 +250,28 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     fontWeight: FontWeight.normal,
                   ),
                 ),
-                Container(
-                  height:75,
-                  child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: freeProviders.length,
-                  itemBuilder: (context, index) {
+              )
+            else
+            Column(
+              children: [
+                Text(
+                  freeProviders.isNotEmpty
+                      ? 'Available for free on:'
+                      : '',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
+                    fontFamily: 'Arimo',
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                freeProviders.isNotEmpty ?
+                  Container(
+                    height:75,
+                    child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: freeProviders.length,
+                    itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Column(
@@ -266,14 +279,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           Image.network(
                             '${Controller.mainImgURL}${freeProviders[index]['logo_path']}',
                             height: 50,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                ),
-                Text('Available for rent on:',
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ) : Container(),
+                Text( rentProviders.isNotEmpty ? 'Available for rent on:' : '',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
@@ -281,30 +294,31 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     fontWeight: FontWeight.normal,
                   ),
                 ),
-                Container(
-                  height:75,
-                  child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: rentProviders.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Column(
-                        children: [
-                          Image.network(
-                            '${Controller.mainImgURL}${rentProviders[index]['logo_path']}',
-                            height: 50,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                ),
+                rentProviders.isNotEmpty ?
+                  Container(
+                    height:75,
+                    child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: rentProviders.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Column(
+                          children: [
+                            Image.network(
+                              '${Controller.mainImgURL}${rentProviders[index]['logo_path']}',
+                              height: 50,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  ) : Container(),
                 Text(
                   buyProviders.isNotEmpty
                       ? 'Available for purchase on:'
-                      : 'Not available for purchase',
+                      : '',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
@@ -312,12 +326,13 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     fontWeight: FontWeight.normal,
                   ),
                 ),
-                Container(
-                  height:75,
-                  child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: buyProviders.length,
-                  itemBuilder: (context, index) {
+                buyProviders.isNotEmpty ?
+                  Container(
+                    height:75,
+                    child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: buyProviders.length,
+                    itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Column(
@@ -331,23 +346,24 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     );
                   },
                 ),
-                ),
+                ):Container(),
                 Text(
                   flatrateProviders.isNotEmpty
                       ? 'Available for streaming on:'
-                      : 'Not available for streaming',
+                      : '',
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
                     fontFamily: 'Arimo',
-                )
+                  ),
                 ),
-                Container(
-                  height:75,
-                  child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: flatrateProviders.length,
-                  itemBuilder: (context, index) {
+                flatrateProviders.isNotEmpty ?
+                  Container(
+                    height:75,
+                    child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: flatrateProviders.length,
+                    itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Column(
@@ -361,10 +377,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     );
                   },
                 ),
-                ),
+                ):Container()
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             const Text(
               'Summary',
               style: TextStyle(
