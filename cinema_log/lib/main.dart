@@ -14,14 +14,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/auth_wrapper.dart';
 import 'screens/profile.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 //import 'package:auto_route/auto_route.dart';
 //import 'app_router.gr.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   Controller appController = Controller();
-  await appController.init(); 
+  await appController.init();
   await appController.getPopularMedia();
   await appController.getUpcomingMovies();
   AppUser currentUser = AppUser.anonymous();
@@ -39,9 +41,7 @@ class CinemaLog extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.black,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF000814),
-        ),
+        appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF000814)),
         textTheme: TextTheme(
           bodyMedium: TextStyle(color: Colors.white),
           bodyLarge: TextStyle(color: Colors.white),

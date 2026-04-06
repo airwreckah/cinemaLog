@@ -1,8 +1,5 @@
-import 'package:envied/envied.dart';
-part 'env.g.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-@Envied(path: '.env', obfuscate: true)
-abstract class Env {
-  @EnviedField(varName: 'API_KEY')
-  static const String apiKey = _Env.apiKey;
+class Env {
+  static String get apiKey => dotenv.env['API_KEY'] ?? '';
 }
