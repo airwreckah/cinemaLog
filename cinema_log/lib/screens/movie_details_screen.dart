@@ -1,3 +1,4 @@
+import 'package:cinema_log/screens/notes_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/controller.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
@@ -170,6 +171,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 TextButton(
                   onPressed: () {
                     // later: connect to TrackerManager
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => notesScreen(movieData: _movieData)));
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFF352c48),

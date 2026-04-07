@@ -147,6 +147,7 @@ static String apiKey='';
 
   static const String mainURL = 'api.themoviedb.org';
   static const String mainImgURL = "https://image.tmdb.org/t/p/w185";
+  static const String smallImgURL = "https://image.tmdb.org/t/p/w92";
   static const String searchEndPnt = '/3/search/keyword';
   static const String popularEndPnt = '/3/trending/movie/day';
   static const String upcomingEndPnt = '/3/movie/upcoming';
