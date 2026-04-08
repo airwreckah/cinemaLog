@@ -22,7 +22,7 @@ class Controller {
     try {
       await _authService.signIn(email, password);
 
-      // ✅ LOAD WATCH HISTORY AFTER LOGIN
+      //LOAD WATCH HISTORY AFTER LOGIN
       await _trackerManager.loadWatchHistory();
 
       return true;
@@ -40,7 +40,7 @@ class Controller {
     try {
       await _authService.signUp(email, password, name, age.toString());
 
-      // ✅ LOAD WATCH HISTORY AFTER SIGNUP
+      // LOAD WATCH HISTORY AFTER SIGNUP
       await _trackerManager.loadWatchHistory();
 
       return true;
@@ -129,7 +129,7 @@ class Controller {
 
   // ================= API =================
 
-  static const String apiKey = 'b8285d8033763eb6d14c00c05d194403';
+  static const String apiKey = '';
   static const String mainURL = 'api.themoviedb.org';
   static const String mainImgURL = "https://image.tmdb.org/t/p/w185";
   static const String searchEndPnt = '/3/search/keyword';
@@ -268,7 +268,7 @@ class Controller {
     );
 
     if (isWatched) {
-      _trackerManager.markAsUnwatched(media); // ✅ FIXED
+      _trackerManager.markAsUnwatched(media);
     } else {
       _trackerManager.markAsWatched(media);
     }
