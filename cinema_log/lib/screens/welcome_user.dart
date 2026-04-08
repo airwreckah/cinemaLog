@@ -1,5 +1,6 @@
 import 'package:cinema_log/screens/login.dart';
 import 'package:cinema_log/screens/movie.dart';
+import 'package:cinema_log/screens/movie_details_screen.dart';
 import 'package:cinema_log/screens/profile.dart';
 import 'package:cinema_log/screens/search.dart';
 import '../models/app_user.dart';
@@ -175,7 +176,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (context) => Movie(movie: selectedMovie),
+                          builder: (context) => MovieDetailsScreen(movieId: selectedMovie['id'].toString()),
                         ),
                       );
                     },
@@ -239,7 +240,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (context) => Movie(movie: selectedMovie),
+                          builder: (context) => MovieDetailsScreen(movieId: selectedMovie['id'].toString()),
                         ),
                       );
                     },
