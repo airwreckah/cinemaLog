@@ -332,10 +332,17 @@ class TrackerManager {
     return null;
   }
 
-  void renameCustomList(String id, String newName) {
+  Future<void> renameCustomList(String id, String newName) async {
     final list = getCustomListById(id);
     if (list != null && newName.trim().isNotEmpty) {
       list.name = newName.trim();
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_uid)
+          .collection('customLists')
+          .doc(id)
+          .update({'name': list.name});
     }
   }
 

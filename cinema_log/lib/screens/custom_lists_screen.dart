@@ -34,7 +34,7 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
     super.dispose();
   }
 
-  void _createList() {
+  Future<void> _createList() async {
     final listName = _listNameController.text.trim();
 
     if (listName.isEmpty) {
@@ -44,16 +44,17 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
       return;
     }
 
-    _controller.createCustomList(listName);
+    await _controller.createCustomList(listName);
+    await _controller.loadCustomLists();
 
     setState(() {
       _listNameController.clear();
     });
   }
 
-  void _deleteList(String id) {
-    _controller.deleteCustomList(id);
-
+  Future<void> _deleteList(String id) async {
+    await _controller.deleteCustomList(id);
+    await _controller.loadCustomLists();
     setState(() {});
   }
 

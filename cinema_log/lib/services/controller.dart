@@ -237,12 +237,12 @@ class Controller {
     await _trackerManager.loadCustomLists();
   }
 
-  void deleteCustomList(String id) {
-    _trackerManager.deleteCustomList(id);
+  Future<void> deleteCustomList(String id) async {
+    await _trackerManager.deleteCustomList(id);
   }
 
-  void renameCustomList(String id, String newName) {
-    _trackerManager.renameCustomList(id, newName);
+  Future<void> renameCustomList(String id, String newName) async {
+    await _trackerManager.renameCustomList(id, newName);
   }
 
   Future<void> addMediaToCustomList(String listId, Media media) async {

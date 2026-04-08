@@ -4,6 +4,7 @@ import '../models/custom_list.dart';
 import '../models/media.dart';
 import '../services/controller.dart';
 import 'movie.dart';
+import 'movie_details_screen.dart';
 
 class CustomListDetailScreen extends StatefulWidget {
   final CustomList customList;
@@ -40,24 +41,28 @@ class _CustomListDetailScreenState extends State<CustomListDetailScreen> {
                     vertical: 6,
                   ),
                   child: ListTile(
-                    leading: const Icon(Icons.movie),
+                    leading:
+                        media.posterPath != null && media.posterPath!.isNotEmpty
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              '$Controller.mainImgUrl${media.posterPath}',
+                              width: 50,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.movie);
+                              },
+                            ),
+                          )
+                        : const Icon(Icons.movie),
                     title: Text(media.title),
                     subtitle: Text('${media.type} • ${media.year}'),
 
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Movie(
-                          movie: {
-                            'id': media.id,
-                            'title': media.title,
-                            'type': media.type,
-                            'release_date': media.year.toString(),
-                            'overview': 'No description avaiable',
-                            'poster_path': media.posterPath ?? '',
-                            'vote_average': 0,
-                          },
-                        ),
+                        builder: (_) =>
+                            MovieDetailsScreen(movieId: media.id.toString()),
                       ),
                     ),
                     trailing: IconButton(
