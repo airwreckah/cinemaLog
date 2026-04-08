@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../models/media.dart';
 import '../models/statistics.dart';
@@ -16,6 +17,7 @@ class TrackerManager {
   }
 
   TrackerManager._internal();
+  String get _uid => FirebaseAuth.instance.currentUser!.uid;
 
   final List<Media> _watchList = [];
   final List<Media> _watchHistory = [];
@@ -275,27 +277,50 @@ class TrackerManager {
     return List.unmodifiable(_customLists);
   }
 
-  void createCustomList(String name) {
+  Future<void> createCustomList(String name) async {
     final trimmedName = name.trim();
-
     if (trimmedName.isEmpty) return;
-
     final alreadyExists = _customLists.any(
       (list) => list.name.toLowerCase() == trimmedName.toLowerCase(),
     );
 
-    if (!alreadyExists) {
-      _customLists.add(
-        CustomList(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: trimmedName,
-        ),
-      );
+    if (alreadyExists) return;
+    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    final list = CustomList(id: id, name: trimmedName, items: []);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('customLists')
+        .doc(id)
+        .set(list.toMap());
+
+    _customLists.add(list);
+  }
+
+  Future<void> loadCustomLists() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('customLists')
+        .get();
+
+    _customLists.clear();
+
+    for (final doc in snapshot.docs) {
+      _customLists.add(CustomList.fromMap(doc.data()));
     }
   }
 
-  void deleteCustomList(String id) {
+  Future<void> deleteCustomList(String id) async {
     _customLists.removeWhere((list) => list.id == id);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('customLists')
+        .doc(id)
+        .delete();
   }
 
   CustomList? getCustomListById(String id) {
@@ -314,17 +339,32 @@ class TrackerManager {
     }
   }
 
-  void addMediaToCustomList(String listId, Media media) {
+  Future<void> addMediaToCustomList(String listId, Media media) async {
     final list = getCustomListById(listId);
+
     if (list != null) {
       list.addMedia(media);
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_uid)
+          .collection('customLists')
+          .doc(listId)
+          .update({'items': list.items.map((e) => e.toMap()).toList()});
     }
   }
 
-  void removeMediaFromCustomList(String listId, Media media) {
+  Future<void> removeMediaFromCustomList(String listId, Media media) async {
     final list = getCustomListById(listId);
     if (list != null) {
       list.removeMedia(media);
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(_uid)
+          .collection('customLists')
+          .doc(listId)
+          .update({'items': list.items.map((e) => e.toMap()).toList()});
     }
   }
 }

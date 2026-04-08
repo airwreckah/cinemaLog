@@ -27,6 +27,7 @@ class Media {
       'type': type,
       'year': year,
       'genre': genre,
+      'posterPath': posterPath,
       'watched': watched,
       'watchDate': watchDate?.toIso8601String(),
     };
@@ -39,6 +40,7 @@ class Media {
       type: map['type'],
       year: map['year'],
       genre: map['genre'],
+      posterPath: map['posterPath'],
       watched: map['watched'] ?? false,
       watchDate: map['watchDate'] != null
           ? DateTime.parse(map['watchDate'])
