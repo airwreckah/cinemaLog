@@ -160,7 +160,7 @@ class _ProfileScreenState extends State<Profile> {
 
             infoBox("Favorite Genre", favoriteGenre),
 
-            // 🔥 MOVIES WATCHED (FIXED NAVIGATION)
+            // MOVIES WATCHED
             Container(
               width: double.infinity,
               margin: EdgeInsets.all(10),
@@ -257,7 +257,7 @@ class _ProfileScreenState extends State<Profile> {
     );
   }
 
-  // UI helpers (unchanged)
+  // UI helpers
   Widget statBox(String value, String label, IconData icon, List<Color> colors) {
     return Container(
       margin: EdgeInsets.all(10),
