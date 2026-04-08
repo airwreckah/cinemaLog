@@ -261,7 +261,6 @@ class Controller {
     return _trackerManager.getWatchHistory().any((m) => m.id == id);
   }
 
-  // 🔥 FIXED TOGGLE (CRITICAL)
   void toggleWatched(Media media) {
     final isWatched = _trackerManager.getWatchHistory().any(
       (m) => m.id == media.id,
