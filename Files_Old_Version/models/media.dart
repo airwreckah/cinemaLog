@@ -5,7 +5,7 @@ class Media {
   final int year;
   final String genre;
   final String? posterPath;
-  final String? overview; // ✅ ADDED
+  final String? overview; // ADDED
   bool watched;
 
   DateTime? watchDate;
@@ -17,7 +17,7 @@ class Media {
     required this.year,
     required this.genre,
     this.posterPath,
-    this.overview, // ✅ ADDED
+    this.overview, // ADDED
     this.watched = false,
     this.watchDate,
   });
@@ -29,8 +29,8 @@ class Media {
       'type': type,
       'year': year,
       'genre': genre,
-      'posterPath': posterPath, // ✅ ADDED
-      'overview': overview,     // ✅ ADDED
+      'posterPath': posterPath, // ADDED
+      'overview': overview,     // ADDED
       'watched': watched,
       'watchDate': watchDate?.toIso8601String(),
     };
@@ -43,8 +43,8 @@ class Media {
       type: map['type'],
       year: map['year'],
       genre: map['genre'],
-      posterPath: map['posterPath'], // ✅ ADDED
-      overview: map['overview'],     // ✅ ADDED
+      posterPath: map['posterPath'], // ADDED
+      overview: map['overview'],     // ADDED
       watched: map['watched'] ?? false,
       watchDate: map['watchDate'] != null
           ? DateTime.parse(map['watchDate'])
