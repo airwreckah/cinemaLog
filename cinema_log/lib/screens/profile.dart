@@ -1,4 +1,5 @@
 import 'package:cinema_log/models/statistics.dart';
+import 'package:cinema_log/screens/stats_screen.dart';
 import 'package:cinema_log/services/tracker_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
@@ -107,101 +108,119 @@ class _ProfileScreenState extends State<Profile> {
             Row(
               spacing: 50,
               children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(left: 20),
-                  width: 160,
-                  height: 130,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment(0.00, 0.00),
-                      end: Alignment(1.00, 1.00),
-                      colors: [
-                        const Color(0xFF4F39F6),
-                        const Color(0xFF9810FA),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => StatsScreen()),
+                  );
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    margin: EdgeInsets.only(left: 20),
+                    width: 160,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(0.00, 0.00),
+                        end: Alignment(1.00, 1.00),
+                        colors: [
+                          const Color(0xFF4F39F6),
+                          const Color(0xFF9810FA),
+                        ],
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding( 
+                          padding: EdgeInsets.only(left: 20, top: 10),
+                          child: Icon(Icons.local_movies_rounded,
+                          color: Colors.white, size: 32),
+                        ),
+                        SizedBox(height: 10),
+                        Padding( 
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                          totalMoviesStr,
+                          style: TextStyle(
+                            color: Colors.white, 
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700)
+                            ),
+                          ),
+
+                        SizedBox(height: 10),
+                        Padding( 
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                          'Movies Watched',
+                          style: TextStyle(color: const Color(0xFFBEDBFF), 
+                          fontSize: 12, 
+                          fontWeight: FontWeight.w400,
+                          height: 1.33),
+                        ),
+                        ),
                       ],
                     ),
-                  ),
-                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding( 
-                        padding: EdgeInsets.only(left: 20, top: 10),
-                        child: Icon(Icons.local_movies_rounded,
-                        color: Colors.white, size: 32),
-                      ),
-                      SizedBox(height: 10),
-                      Padding( 
-                        padding: EdgeInsets.only(left: 20),
-                        child: Text(
-                        totalMoviesStr,
-                        style: TextStyle(
-                          color: Colors.white, 
-                          fontSize: 30,
-                          fontWeight: FontWeight.w700)
-                          ),
-                        ),
-
-                      SizedBox(height: 10),
-                      Padding( 
-                        padding: EdgeInsets.only(left: 20),
-                        child: Text(
-                        'Movies Watched',
-                        style: TextStyle(color: const Color(0xFFBEDBFF), 
-                        fontSize: 12, 
-                        fontWeight: FontWeight.w400,
-                        height: 1.33),
-                      ),
-                      ),
-                    ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.only(right: 20),
-                  width: 160,
-                  height: 130,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment(0.00, 0.00),
-                      end: Alignment(1.00, 1.00),
-                      colors: [
-                        const Color(0xFF155DFC),
-                        const Color(0xFF0092B8),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => StatsScreen()),
+                  );
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Container(
+                    padding: EdgeInsets.only(right: 20),
+                    width: 160,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(0.00, 0.00),
+                        end: Alignment(1.00, 1.00),
+                        colors: [
+                          const Color(0xFF155DFC),
+                          const Color(0xFF0092B8),
+                        ],
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      
+                      children: [
+                        Padding( 
+                          padding: EdgeInsets.only(left: 20, top: 10),
+                          child: Icon(Icons.access_time,
+                          color: Colors.white, size: 32),
+                        ),
+                        SizedBox(height: 10),
+                        Padding( 
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                          averageWatchedPerMonthStr,
+                          style: TextStyle(
+                            color: Colors.white, 
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700)
+                            ),
+                          ),
+
+                        SizedBox(height: 2),
+                        Padding( 
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text(
+                          'Average Watched/Month',
+                          style: TextStyle(color: const Color(0xFFBEDBFF), 
+                          fontSize: 12, 
+                          fontWeight: FontWeight.w400,
+                          height: 1.33),
+                        ),
+                        ),
                       ],
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    
-                    children: [
-                      Padding( 
-                        padding: EdgeInsets.only(left: 20, top: 10),
-                        child: Icon(Icons.access_time,
-                        color: Colors.white, size: 32),
-                      ),
-                      SizedBox(height: 10),
-                      Padding( 
-                        padding: EdgeInsets.only(left: 20),
-                        child: Text(
-                        averageWatchedPerMonthStr,
-                        style: TextStyle(
-                          color: Colors.white, 
-                          fontSize: 30,
-                          fontWeight: FontWeight.w700)
-                          ),
-                        ),
-
-                      SizedBox(height: 2),
-                      Padding( 
-                        padding: EdgeInsets.only(left: 20),
-                        child: Text(
-                        'Average Watched/Month',
-                        style: TextStyle(color: const Color(0xFFBEDBFF), 
-                        fontSize: 12, 
-                        fontWeight: FontWeight.w400,
-                        height: 1.33),
-                      ),
-                      ),
-                    ],
                   ),
                 ),
               ],

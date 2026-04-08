@@ -251,7 +251,6 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
           ),
         ],
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
