@@ -28,7 +28,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
   int _selectedIndex = 0;
   bool isLoading = true;
 
-  // ✅ Load user data BEFORE UI renders
+  // Load user data BEFORE UI renders
   Future<void> loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -85,7 +85,6 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
         ),
       ),
 
-      // ✅ FIXED SCROLLING (vertical + horizontal)
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -114,7 +113,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                 ),
               ),
 
-            // 🔹 Popular Section
+
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               alignment: Alignment.centerLeft,
@@ -196,7 +195,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                   itemCount: WelcomeUser.upcomingMovies.length,
                   itemBuilder: (context, index) {
                     final selectedMovie =
-                        WelcomeUser.upcomingMovies[index]; // ✅ FIXED
+                        WelcomeUser.upcomingMovies[index]; 
 
                     return GestureDetector(
                       onTap: () {
@@ -230,7 +229,6 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
         ),
       ),
 
-      // ✅ FIXED NAVIGATION (no pushReplacement)
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
