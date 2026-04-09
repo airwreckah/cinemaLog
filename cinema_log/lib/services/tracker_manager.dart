@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -197,6 +199,20 @@ class TrackerManager {
       averageWatchedPerMonth: averageWatchedPerMonth,
     );
   }
+
+Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
+    final Map<String, double> countsPerMonth = {};
+
+    for (final media in history) {
+      if (media.type.toLowerCase().trim() == 'movie' && media.watchDate != null) {
+        final monthKey = _formatMonthKey(media.watchDate!);
+        countsPerMonth[monthKey] = (countsPerMonth[monthKey] ?? 0) + 1;
+      }
+    }
+
+    return countsPerMonth;
+  }
+
 
   List<Media> _getFilteredHistory({
     required StatisticsFilterType filter,

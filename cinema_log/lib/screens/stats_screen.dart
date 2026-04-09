@@ -20,6 +20,7 @@ class StatsScreen extends StatefulWidget {
 
 class _StatsScreenState extends State<StatsScreen> {
   int _selectedIndex = 3;
+  Map<String, double> moviesWatchedPerMonth = TrackerManager().getMoviesWatchedByMonth(TrackerManager().getWatchHistory());
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +41,13 @@ class _StatsScreenState extends State<StatsScreen> {
           colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 20),
-          Text(
-            'Your Movie Stats',
-            style: TextStyle(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            Text(
+              'Your Movie Stats',
+              style: TextStyle(
               fontSize: 24,
               fontFamily: 'Inter',
               fontWeight: FontWeight.w700,
@@ -53,8 +55,27 @@ class _StatsScreenState extends State<StatsScreen> {
             ),
           ),
           SizedBox(height: 20),
-          
-        ],
+          SizedBox(
+            height: 300,
+            width: 300,
+            child: BarChart(
+              BarChartData(
+                barGroups: moviesWatchedPerMonth.entries.map((entry) {
+                  return BarChartGroupData(
+                    x: 0,
+                    barRods: [
+                    BarChartRodData(
+                      toY: entry.value,
+                      color: Colors.blue,
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+          ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
