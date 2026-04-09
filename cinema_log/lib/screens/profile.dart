@@ -1,285 +1,257 @@
-import 'package:cinema_log/models/statistics.dart';
-import 'package:cinema_log/screens/stats_screen.dart';
-import 'package:cinema_log/services/tracker_manager.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../models/app_user.dart';
-import '../screens/welcome_user.dart';
-import '../screens/custom_lists_screen.dart';
-import '../screens/search.dart';
-import 'package:cinema_log/main.dart';
-import 'package:simple_gradient_text/simple_gradient_text.dart';
+import '../services/tracker_manager.dart';
+import '../models/statistics.dart';
+import '../screens/movie_details_screen.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
+
   static late AppUser currentUser;
-  static late Statistics userStats;
   static late TrackerManager trackerManager;
-  
+
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<Profile> createState() => _ProfileState();
 }
 
-class _ProfileScreenState extends State<Profile> {
-  int _selectedIndex = 3;
-  TrackerManager tracker = Profile.trackerManager;
-  StatisticsFilterType statFilter = StatisticsFilterType.lifetime;
-  late Statistics stats = tracker.calculateStatistics(filter: statFilter);
-  int get totalMoviesWatched => stats.totalMoviesWatched;
-  late String totalMoviesStr = totalMoviesWatched.toString();
-  int get averageWatchedPerMonth => stats.averageWatchedPerMonth.round();
-  late String averageWatchedPerMonthStr = averageWatchedPerMonth.toString();
-  String get favoriteGenre => stats.mostViewedGenre;
+class _ProfileState extends State<Profile> {
+  final TrackerManager tracker = TrackerManager();
+
+  // ADDED: load Firebase data
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  // ADDED
+  Future<void> _loadData() async {
+    await tracker.loadWatchHistory();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    final stats = tracker.calculateStatistics(
+      filter: StatisticsFilterType.lifetime,
+    );
+
+    final history = tracker.getWatchHistory();
+
+    int totalMoviesWatched = stats.totalMoviesWatched;
+    int averageWatchedPerMonth = stats.averageWatchedPerMonth.round();
+    String favoriteGenre = stats.mostViewedGenre;
+
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: GradientText(
-          'Cinema Log',
-          style: TextStyle(
-            fontSize: 30,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w900,
-            height: 1.33,
-            letterSpacing: -1.20,
-          ),
-          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
-        ),
+        title: const Text("Profile"),
       ),
       body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
         child: Column(
-          children: <Widget>[
-            Padding(padding: const EdgeInsetsGeometry.all(25)),
+          children: [
+            const SizedBox(height: 20),
 
-            // Profile Icon
-            Container(
-              padding: const EdgeInsets.all(20.0),
-              decoration: ShapeDecoration(
-                color: const Color(0xFFEADDFF),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
-                ),
-              ),
-              child: Icon(Icons.person, size: 100.0),
+            // Profile Picture
+            const CircleAvatar(
+              radius: 50,
+              child: Icon(Icons.person, size: 50),
             ),
+
+            const SizedBox(height: 10),
 
             // Full Name
-            Container(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                Profile.currentUser.fullName ?? "No Name",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w900,
-                  height: 1.33,
-                  letterSpacing: -1.20,
-                ),
-              ),
+            Text(
+              Profile.currentUser.fullName ?? "No Name",
+              style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
 
-            // ADDED: UID, EMAIL, AGE
+            const SizedBox(height: 10),
+
+            // UID, Email, Age, Watchlists count
             Column(
               children: [
                 Text(
-                  "UID: ${Profile.currentUser.uid ?? "Loading..."}",
-                  style: TextStyle(color: Colors.grey),
+                  "UID: ${Profile.currentUser.uid ?? 'Loading...'}",
+                  style: const TextStyle(color: Colors.grey),
                 ),
                 Text(
-                  "Email: ${Profile.currentUser.email ?? "Loading..."}",
-                  style: TextStyle(color: Colors.grey),
+                  "Email: ${Profile.currentUser.email ?? 'Loading...'}",
+                  style: const TextStyle(color: Colors.grey),
                 ),
                 Text(
-                  "Age: ${Profile.currentUser.age ?? "Loading..."}",
-                  style: TextStyle(color: Colors.grey),
+                  "Age: ${Profile.currentUser.age ?? 'Loading...'}",
+                  style: const TextStyle(color: Colors.grey),
                 ),
                 Text(
                   "Watchlists: ${Profile.currentUser.mediaLists.length}",
-                  style: TextStyle(color: Colors.grey),
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
 
+            const SizedBox(height: 20),
+
+            // ===== Stats Images =====
             Row(
-              spacing: 50,
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => StatsScreen()),
-                  );
-                  },
-                  behavior: HitTestBehavior.opaque,
-                  child: Container(
-                    margin: EdgeInsets.only(left: 20),
-                    width: 160,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment(0.00, 0.00),
-                        end: Alignment(1.00, 1.00),
-                        colors: [
-                          const Color(0xFF4F39F6),
-                          const Color(0xFF9810FA),
-                        ],
-                      ),
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Total Movies Watched
+                Container(
+                  width: 160,
+                  height: 130,
+                  margin: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF4F39F6), Color(0xFF9810FA)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding( 
-                          padding: EdgeInsets.only(left: 20, top: 10),
-                          child: Icon(Icons.local_movies_rounded,
-                          color: Colors.white, size: 32),
-                        ),
-                        SizedBox(height: 10),
-                        Padding( 
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                          totalMoviesStr,
-                          style: TextStyle(
-                            color: Colors.white, 
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700)
-                            ),
-                          ),
-
-                        SizedBox(height: 10),
-                        Padding( 
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                          'Movies Watched',
-                          style: TextStyle(color: const Color(0xFFBEDBFF), 
-                          fontSize: 12, 
-                          fontWeight: FontWeight.w400,
-                          height: 1.33),
-                        ),
-                        ),
-                      ],
-                    ),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => StatsScreen()),
-                  );
-                  },
-                  behavior: HitTestBehavior.opaque,
-                  child: Container(
-                    padding: EdgeInsets.only(right: 20),
-                    width: 160,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment(0.00, 0.00),
-                        end: Alignment(1.00, 1.00),
-                        colors: [
-                          const Color(0xFF155DFC),
-                          const Color(0xFF0092B8),
-                        ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.local_movies_rounded, color: Colors.white, size: 32),
+                      const SizedBox(height: 10),
+                      Text(
+                        totalMoviesWatched.toString(),
+                        style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      
-                      children: [
-                        Padding( 
-                          padding: EdgeInsets.only(left: 20, top: 10),
-                          child: Icon(Icons.access_time,
-                          color: Colors.white, size: 32),
-                        ),
-                        SizedBox(height: 10),
-                        Padding( 
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                          averageWatchedPerMonthStr,
-                          style: TextStyle(
-                            color: Colors.white, 
-                            fontSize: 30,
-                            fontWeight: FontWeight.w700)
-                            ),
-                          ),
-
-                        SizedBox(height: 2),
-                        Padding( 
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text(
-                          'Average Watched/Month',
-                          style: TextStyle(color: const Color(0xFFBEDBFF), 
-                          fontSize: 12, 
-                          fontWeight: FontWeight.w400,
-                          height: 1.33),
-                        ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            Container(
-              width: 375,
-              height: 150,
-              margin: EdgeInsets.only(top: 20),
-              padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
-              decoration: BoxDecoration(color: const Color(0xFF101728)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 16,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Icon(Icons.movie_rounded,
-                      color: const Color(0xFF615FFF),
-                      ),
-                      Padding( 
-                        padding: EdgeInsets.only(left: 10),
-                        child: Text('Favorite Genre',
-                        style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        height: 1.56,
-                        ),
-                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        "Movies Watched",
+                        style: TextStyle(color: Color(0xFFBEDBFF), fontSize: 12),
                       ),
                     ],
                   ),
-                  Padding( 
-                    padding: EdgeInsets.only(left: 32, top: 10),
-                    child: Text(favoriteGenre,
-                    style: TextStyle(
-                      color: const Color(0xFFBEDBFF),
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w400,
-                      height: 1.43,
+                ),
+
+                // Average Watched/Month
+                Container(
+                  width: 160,
+                  height: 130,
+                  margin: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF155DFC), Color(0xFF0092B8)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.access_time, color: Colors.white, size: 32),
+                      const SizedBox(height: 10),
+                      Text(
+                        averageWatchedPerMonth.toString(),
+                        style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        "Avg Watched/Month",
+                        style: TextStyle(color: Color(0xFFBEDBFF), fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            // Favorite Genre
+            Container(
+              width: 350,
+              margin: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF101728),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.movie_rounded, color: Color(0xFF615FFF)),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Favorite Genre",
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        favoriteGenre,
+                        style: const TextStyle(color: Color(0xFFBEDBFF), fontSize: 14),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
 
+            // ===== Watch History =====
+            const Text(
+              "Watch History",
+              style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 200,
+              child: history.isEmpty
+                  ? const Center(
+                      child: Text(
+                        "No watched media",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: history.length,
+                      itemBuilder: (context, index) {
+                        final media = history[index];
+                        final posterUrl = media.posterPath != null
+                            ? "https://image.tmdb.org/t/p/w500${media.posterPath}"
+                            : null;
+
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    MovieDetailsScreen(movieId: media.id),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 120,
+                            margin: const EdgeInsets.only(left: 10),
+                            child: posterUrl != null
+                                ? Image.network(posterUrl, fit: BoxFit.cover)
+                                : const Icon(Icons.movie, color: Colors.white),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+
+            const SizedBox(height: 30),
+
+            // ===== SETTINGS UI =====
             Container(
-              margin: EdgeInsets.all(10),
+              margin: const EdgeInsets.all(10),
               width: 324,
-              child: Text(
+              child: const Text(
                 'SETTINGS',
                 style: TextStyle(
-                  color: const Color(0xFF6A7282),
+                  color: Color(0xFF6A7282),
                   fontSize: 14,
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w600,
@@ -288,7 +260,6 @@ class _ProfileScreenState extends State<Profile> {
                 ),
               ),
             ),
-
             Container(
               width: 375,
               padding: const EdgeInsets.all(12),
@@ -301,49 +272,21 @@ class _ProfileScreenState extends State<Profile> {
                 children: const [
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text('Update Password',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      height: 1.43,
-                      letterSpacing: 0.70,
-                    ),
-                    ),
+                    child: Text('Update Password', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
                   ),
                   Divider(),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text('Update Email',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w600,
-                      height: 1.43,
-                      letterSpacing: 0.70,
-                    ),
-                    ),
-                    ),
+                    child: Text('Update Email', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                  ),
                   Divider(),
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Row(
                       children: [
-                        Icon(Icons.logout,
-                        color: const Color(0xFFFB2C36),
-                        ),
-                        Text('Sign Out',
-                        style: TextStyle(
-                          color: const Color(0xFFFB2C36),
-                          fontSize: 14,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          height: 1.43,
-                          letterSpacing: 0.70,
-                          ),
-                        ),
+                        Icon(Icons.logout, color: Color(0xFFFB2C36)),
+                        SizedBox(width: 8),
+                        Text('Sign Out', style: TextStyle(color: Color(0xFFFB2C36), fontSize: 14, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
@@ -352,76 +295,18 @@ class _ProfileScreenState extends State<Profile> {
                     padding: EdgeInsets.symmetric(vertical: 8),
                     child: Row(
                       children: [
-                        Icon(Icons.delete_forever_rounded,
-                        color: const Color(0xFFFB2C36),
-                        ),
-                        Text('Delete Account',
-                        style: TextStyle(
-                          color: const Color(0xFFFB2C36),
-                          fontSize: 14,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                          height: 1.43,
-                          letterSpacing: 0.70,
-                          ),
-                        ),
+                        Icon(Icons.delete_forever_rounded, color: Color(0xFFFB2C36)),
+                        SizedBox(width: 8),
+                        Text('Delete Account', style: TextStyle(color: Color(0xFFFB2C36), fontSize: 14, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 30),
           ],
         ),
-      ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => WelcomeUser()),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Search()),
-            );
-          } else if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CustomListsScreen()),
-            );
-          } else if (index == 3) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Profile()),
-            );
-          }
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_border),
-            label: 'Lists',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }
