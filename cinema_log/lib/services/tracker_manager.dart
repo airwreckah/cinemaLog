@@ -1,13 +1,9 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'dart:ffi';
 import '../models/media.dart';
 import '../models/statistics.dart';
 import '../models/custom_list.dart';
-import '../env/env.dart';
 
 enum StatisticsFilterType { month, year, lifetime }
 
@@ -19,130 +15,145 @@ class TrackerManager {
   }
 
   TrackerManager._internal();
+
   String get _uid => FirebaseAuth.instance.currentUser!.uid;
 
   final List<Media> _watchList = [];
   final List<Media> _watchHistory = [];
   final List<CustomList> _customLists = [];
 
+  // ================= WATCHLIST =================
+
   void addToWatchList(Media media) {
-    if (!_watchList.contains(media) && !_watchHistory.contains(media)) {
+    if (!_watchList.contains(media) &&
+        !_watchHistory.any((m) => m.id == media.id)) {
       _watchList.add(media);
     }
   }
 
   void removeFromWatchList(Media media) {
-    _watchList.remove(media);
+    _watchList.removeWhere((m) => m.id == media.id);
   }
+
+  // ================= WATCH HISTORY =================
 
   Future<void> markAsWatched(Media media) async {
     media.watched = true;
-    media.watchDate = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-    );
+    media.watchDate = DateTime.now();
 
-    if (_watchList.contains(media)) {
-      _watchList.remove(media);
-    }
+    _watchList.removeWhere((m) => m.id == media.id);
 
     if (!_watchHistory.any((m) => m.id == media.id)) {
       _watchHistory.add(media);
     }
 
-    // Save to Firebase
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
-        .doc('userId')
+        .doc(_uid)
         .collection('watchHistory')
         .doc(media.id)
         .set(media.toMap());
   }
 
-  void markAsUnwatched(Media media) {
+  Future<void> markAsUnwatched(Media media) async {
     media.watched = false;
     media.watchDate = null;
 
-    if (_watchHistory.contains(media)) {
-      _watchHistory.remove(media);
+    _watchHistory.removeWhere((m) => m.id == media.id);
+
+    if (!_watchList.any((m) => m.id == media.id)) {
+      _watchList.add(media);
     }
 
-    if (!_watchList.contains(media)) {
-      _watchList.add(media);
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('watchHistory')
+        .doc(media.id)
+        .delete();
+  }
+
+  Future<void> loadWatchHistory() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('watchHistory')
+        .get();
+
+    _watchHistory.clear();
+
+    for (final doc in snapshot.docs) {
+      _watchHistory.add(Media.fromMap(doc.data()));
     }
   }
 
+  // ================= GETTERS =================
+
   bool isInWatchList(Media media) {
-    return _watchList.contains(media);
+    return _watchList.any((m) => m.id == media.id);
   }
 
   bool isInWatchHistory(Media media) {
-    return _watchHistory.contains(media);
+    return _watchHistory.any((m) => m.id == media.id);
   }
 
-  List<Media> getWatchList() {
-    return List.unmodifiable(_watchList);
-  }
+  List<Media> getWatchList() => List.unmodifiable(_watchList);
 
-  List<Media> getWatchHistory() {
-    return List.unmodifiable(_watchHistory);
-  }
+  List<Media> getWatchHistory() => List.unmodifiable(_watchHistory);
 
-  int getTotalWatched() {
-    return _watchHistory.length;
-  }
+  int getTotalWatched() => _watchHistory.length;
 
-  int getWatchListCount() {
-    return _watchList.length;
-  }
+  int getWatchListCount() => _watchList.length;
 
   double getCompletionRate() {
     final total = _watchList.length + _watchHistory.length;
-
-    if (total == 0) {
-      return 0.0;
-    }
-
-    return _watchHistory.length / total;
+    return total == 0 ? 0.0 : _watchHistory.length / total;
   }
 
   Media? getMediaById(String id) {
-    for (var media in _watchList) {
-      if (media.id == id) {
-        return media;
-      }
-    }
-
-    for (var media in _watchHistory) {
-      if (media.id == id) {
-        return media;
-      }
-    }
-
-    return null;
+    for (var m in _watchList) {
+      if (m.id == id) return m;
   }
+  for (var m in _watchHistory) {
+    if (m.id == id) return m;
+  }
+  return null;
+}
 
   void removeFromWatchListById(String id) {
-    _watchList.removeWhere((media) => media.id == id);
+    _watchList.removeWhere((m) => m.id == id);
+  }
+
+  void removeFromHistoryById(String id) {
+    _watchHistory.removeWhere((m) => m.id == id);
   }
 
   void removeFromHistory(Media media) {
     _watchHistory.removeWhere((m) => m.id == media.id);
   }
 
-  void removeFromHistoryById(String id) {
-    _watchHistory.removeWhere((media) => media.id == id);
-  }
-
-  void clearHistory() {
-    _watchHistory.clear();
-  }
+  void clearHistory() => _watchHistory.clear();
 
   void resetAll() {
     _watchList.clear();
     _watchHistory.clear();
     _customLists.clear();
+  }
+
+  // ================= STATS =================
+
+  Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
+    final Map<String, double> countsPerMonth = {};
+
+    for (final media in history) {
+      if (media.type.toLowerCase() == 'movie' &&
+          media.watchDate != null) {
+        final key = _formatMonthKey(media.watchDate!);
+        countsPerMonth[key] = (countsPerMonth[key] ?? 0) + 1;
+      }
+    }
+
+    return countsPerMonth;
   }
 
   Statistics calculateStatistics({
@@ -156,63 +167,40 @@ class TrackerManager {
       year: year,
     );
 
-    int totalMoviesWatched = 0;
-    int totalTvShowsWatched = 0;
+    int movies = 0;
+    int tv = 0;
 
-    final Map<String, int> moviesWatchedPerMonth = {};
-    final Map<String, int> genreCounts = {};
+    final Map<String, int> monthly = {};
+    final Map<String, int> genres = {};
 
     for (final media in filteredHistory) {
-      final mediaType = media.type.toLowerCase().trim();
+      final type = media.type.toLowerCase();
 
-      if (mediaType == 'movie') {
-        totalMoviesWatched++;
-
+      if (type == 'movie') {
+        movies++;
         if (media.watchDate != null) {
-          final monthKey = _formatMonthKey(media.watchDate!);
-          moviesWatchedPerMonth[monthKey] =
-              (moviesWatchedPerMonth[monthKey] ?? 0) + 1;
+          final key = _formatMonthKey(media.watchDate!);
+          monthly[key] = (monthly[key] ?? 0) + 1;
         }
-      } else if (mediaType == 'tv show') {
-        totalTvShowsWatched++;
+      } else if (type == 'tv show') {
+        tv++;
       }
 
-      final genreKey = media.genre.trim();
-      if (genreKey.isNotEmpty) {
-        genreCounts[genreKey] = (genreCounts[genreKey] ?? 0) + 1;
+      if (media.genre.isNotEmpty) {
+        genres[media.genre] = (genres[media.genre] ?? 0) + 1;
       }
     }
-
-    final totalItemsWatched = filteredHistory.length;
-    final mostViewedGenre = _getMostFrequentKey(genreCounts);
-    final averageWatchedPerMonth = _calculateAverageWatchedPerMonth(
-      moviesWatchedPerMonth,
-    );
 
     return Statistics(
-      totalMoviesWatched: totalMoviesWatched,
-      totalTvShowsWatched: totalTvShowsWatched,
-      totalItemsWatched: totalItemsWatched,
-      moviesWatchedPerMonth: moviesWatchedPerMonth,
-      genreCounts: genreCounts,
-      mostViewedGenre: mostViewedGenre,
-      averageWatchedPerMonth: averageWatchedPerMonth,
+      totalMoviesWatched: movies,
+      totalTvShowsWatched: tv,
+      totalItemsWatched: filteredHistory.length,
+      moviesWatchedPerMonth: monthly,
+      genreCounts: genres,
+      mostViewedGenre: _getMostFrequentKey(genres),
+      averageWatchedPerMonth: _calculateAverageWatchedPerMonth(monthly),
     );
   }
-
-Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
-    final Map<String, double> countsPerMonth = {};
-
-    for (final media in history) {
-      if (media.type.toLowerCase().trim() == 'movie' && media.watchDate != null) {
-        final monthKey = _formatMonthKey(media.watchDate!);
-        countsPerMonth[monthKey] = (countsPerMonth[monthKey] ?? 0) + 1;
-      }
-    }
-
-    return countsPerMonth;
-  }
-
 
   List<Media> _getFilteredHistory({
     required StatisticsFilterType filter,
@@ -222,22 +210,16 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
     final now = DateTime.now();
 
     return _watchHistory.where((media) {
-      if (media.watchDate == null) {
-        return false;
-      }
+      if (media.watchDate == null) return false;
 
-      final watchDate = media.watchDate!;
+      final d = media.watchDate!;
 
       switch (filter) {
         case StatisticsFilterType.month:
-          final targetMonth = month ?? now.month;
-          final targetYear = year ?? now.year;
-          return watchDate.month == targetMonth && watchDate.year == targetYear;
-
+          return d.month == (month ?? now.month) &&
+              d.year == (year ?? now.year);
         case StatisticsFilterType.year:
-          final targetYear = year ?? now.year;
-          return watchDate.year == targetYear;
-
+          return d.year == (year ?? now.year);
         case StatisticsFilterType.lifetime:
           return true;
       }
@@ -245,64 +227,36 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
   }
 
   String _formatMonthKey(DateTime date) {
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+    const months = [
+      'Jan','Feb','Mar','Apr','May','Jun',
+      'Jul','Aug','Sep','Oct','Nov','Dec'
     ];
-
-    return '${monthNames[date.month - 1]} ${date.year}';
+    return '${months[date.month - 1]} ${date.year}';
   }
 
-  String _getMostFrequentKey(Map<String, int> counts) {
-    if (counts.isEmpty) {
-      return 'N/A';
-    }
-    String topKey = counts.keys.first;
-    int topValue = counts[topKey]!;
-
-    counts.forEach((key, value) {
-      if (value > topValue) {
-        topKey = key;
-        topValue = value;
-      }
-    });
-
-    return topKey;
+  String _getMostFrequentKey(Map<String, int> map) {
+    if (map.isEmpty) return 'N/A';
+    return map.entries.reduce((a, b) => a.value > b.value ? a : b).key;
   }
 
-  double _calculateAverageWatchedPerMonth(Map<String, int> monthlyCounts) {
-    if (monthlyCounts.isEmpty) {
-      return 0.0;
-    }
-
-    final total = monthlyCounts.values.fold(0, (sum, count) => sum + count);
-    return total / monthlyCounts.length;
+  double _calculateAverageWatchedPerMonth(Map<String, int> monthly) {
+    if (monthly.isEmpty) return 0.0;
+    final total = monthly.values.reduce((a, b) => a + b);
+    return total / monthly.length;
   }
 
-  List<CustomList> getCustomLists() {
-    return List.unmodifiable(_customLists);
-  }
+  // ================= CUSTOM LISTS =================
+
+  List<CustomList> getCustomLists() => List.unmodifiable(_customLists);
 
   Future<void> createCustomList(String name) async {
-    final trimmedName = name.trim();
-    if (trimmedName.isEmpty) return;
-    final alreadyExists = _customLists.any(
-      (list) => list.name.toLowerCase() == trimmedName.toLowerCase(),
-    );
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return;
 
-    if (alreadyExists) return;
+    if (_customLists.any((l) => l.name.toLowerCase() == trimmed.toLowerCase())) return;
+
     final id = DateTime.now().millisecondsSinceEpoch.toString();
-    final list = CustomList(id: id, name: trimmedName, items: []);
+    final list = CustomList(id: id, name: trimmed, items: []);
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -329,7 +283,7 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
   }
 
   Future<void> deleteCustomList(String id) async {
-    _customLists.removeWhere((list) => list.id == id);
+    _customLists.removeWhere((l) => l.id == id);
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -340,12 +294,10 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
   }
 
   CustomList? getCustomListById(String id) {
-    for (final list in _customLists) {
-      if (list.id == id) {
-        return list;
-      }
-    }
-    return null;
+    return _customLists.firstWhere(
+      (l) => l.id == id,
+      orElse: () => null as CustomList,
+    );
   }
 
   Future<void> renameCustomList(String id, String newName) async {
@@ -364,30 +316,29 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
 
   Future<void> addMediaToCustomList(String listId, Media media) async {
     final list = getCustomListById(listId);
+    if (list == null) return;
 
-    if (list != null) {
-      list.addMedia(media);
+    list.addMedia(media);
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(_uid)
-          .collection('customLists')
-          .doc(listId)
-          .update({'items': list.items.map((e) => e.toMap()).toList()});
-    }
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('customLists')
+        .doc(listId)
+        .update({'items': list.items.map((e) => e.toMap()).toList()});
   }
 
   Future<void> removeMediaFromCustomList(String listId, Media media) async {
     final list = getCustomListById(listId);
-    if (list != null) {
-      list.removeMedia(media);
+    if (list == null) return;
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(_uid)
-          .collection('customLists')
-          .doc(listId)
-          .update({'items': list.items.map((e) => e.toMap()).toList()});
-    }
+    list.removeMedia(media);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('customLists')
+        .doc(listId)
+        .update({'items': list.items.map((e) => e.toMap()).toList()});
   }
 }
