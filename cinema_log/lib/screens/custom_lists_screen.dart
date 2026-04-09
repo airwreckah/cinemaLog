@@ -19,13 +19,22 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
   final Controller _controller = Controller();
   final TextEditingController _listNameController = TextEditingController();
   int _selectedIndex = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.loadCustomLists().then((_) {
+      setState(() {});
+    });
+  }
+
   @override
   void dispose() {
     _listNameController.dispose();
     super.dispose();
   }
 
-  void _createList() {
+  Future<void> _createList() async {
     final listName = _listNameController.text.trim();
 
     if (listName.isEmpty) {
@@ -35,16 +44,17 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
       return;
     }
 
-    _controller.createCustomList(listName);
+    await _controller.createCustomList(listName);
+    await _controller.loadCustomLists();
 
     setState(() {
       _listNameController.clear();
     });
   }
 
-  void _deleteList(String id) {
-    _controller.deleteCustomList(id);
-
+  Future<void> _deleteList(String id) async {
+    await _controller.deleteCustomList(id);
+    await _controller.loadCustomLists();
     setState(() {});
   }
 
@@ -53,7 +63,8 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
     final List<CustomList> customLists = _controller.getCustomLists();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Custom Lists'), 
+      appBar: AppBar(
+        title: const Text('Custom Lists'),
         centerTitle: true,
         automaticallyImplyLeading: false,
         titleTextStyle: TextStyle(
@@ -63,7 +74,8 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
           fontWeight: FontWeight.w700,
           height: 1.11,
           letterSpacing: -1.80,
-        ),),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -137,18 +149,19 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
               MaterialPageRoute(builder: (context) => const WelcomeUser()),
             );
           } else if (index == 1) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Search()),
-          );
-        } else if (index == 2) {
-          // Already on Custom Lists screen, do nothing
-        } else if (index == 3) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const Profile()),
-          );
-          };
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Search()),
+            );
+          } else if (index == 2) {
+            // Already on Custom Lists screen, do nothing
+          } else if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Profile()),
+            );
+          }
+          ;
         },
 
         items: const <BottomNavigationBarItem>[

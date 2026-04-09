@@ -58,8 +58,8 @@ class Controller {
     _trackerManager.removeFromWatchList(media);
   }
 
-  void markAsWatched(Media media) {
-    _trackerManager.markAsWatched(media);
+  Future<void> markAsWatched(Media media) async {
+    await _trackerManager.markAsWatched(media);
   }
 
   void markAsUnwatched(Media media) {
@@ -122,27 +122,17 @@ class Controller {
     );
   }
 
+  Future<String> readEnv({String path = 'cinema_log\.env'}) async {
+    final file = File(path);
+    final lines = await file.readAsLines();
+    return lines.isEmpty ? '' : lines.first.trim();
+  }
 
-
-
-
-Future<String> readEnv({String path = 'cinema_log\.env'}) async {
-  final file = File(path);
-  final lines = await file.readAsLines();
-  return lines.isEmpty ? '' : lines.first.trim();
-}
-
-
-static String apiKey='';
-   Future<void> init() async {
+  static String apiKey = '';
+  Future<void> init() async {
     apiKey = Env.apiKey;
   }
 
-
-
-
-
-  
   //API CONSTANTS
 
   static const String mainURL = 'api.themoviedb.org';
@@ -202,67 +192,65 @@ static String apiKey='';
   }
 
   // Genre
- Future<Map<int, String>> getMovieGenres() async {
-  final url = Uri.https(mainURL, '/3/genre/movie/list', {
-    'api_key': apiKey,
-  });
+  Future<Map<int, String>> getMovieGenres() async {
+    final url = Uri.https(mainURL, '/3/genre/movie/list', {'api_key': apiKey});
 
-  final response = await http.get(url);
+    final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    final List genres = data['genres'] ?? [];
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List genres = data['genres'] ?? [];
 
-    return {
-      for (var genre in genres) genre['id'] as int: genre['name'] as String,
-    };
-  } else {
-    throw Exception('Failed to load genres.');
+      return {
+        for (var genre in genres) genre['id'] as int: genre['name'] as String,
+      };
+    } else {
+      throw Exception('Failed to load genres.');
+    }
   }
-}
 
   Future<Map<String, dynamic>> fetchMovieById(String movieId) async {
-  final url = Uri.https(
-    mainURL,
-    '$movieEndPnt$movieId',
-    {
+    final url = Uri.https(mainURL, '$movieEndPnt$movieId', {
       'api_key': apiKey,
       'language': 'en-US',
-    },
-  );
+    });
 
-  final response = await http.get(url);
+    final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    return data;
-  } else {
-    throw Exception('Failed to fetch movie details.');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data;
+    } else {
+      throw Exception('Failed to fetch movie details.');
+    }
   }
-}
 
   List<CustomList> getCustomLists() {
     return _trackerManager.getCustomLists();
   }
 
-  void createCustomList(String name) {
-    _trackerManager.createCustomList(name);
+  Future<void> createCustomList(String name) async {
+    await _trackerManager.createCustomList(name);
   }
 
-  void deleteCustomList(String id) {
-    _trackerManager.deleteCustomList(id);
+  Future<void> loadCustomLists() async {
+    await _trackerManager.loadCustomLists();
   }
 
-  void renameCustomList(String id, String newName) {
-    _trackerManager.renameCustomList(id, newName);
+  Future<void> deleteCustomList(String id) async {
+    await _trackerManager.deleteCustomList(id);
   }
 
-  void addMediaToCustomList(String listId, Media media) {
-    _trackerManager.addMediaToCustomList(listId, media);
+  Future<void> renameCustomList(String id, String newName) async {
+    await _trackerManager.renameCustomList(id, newName);
   }
 
-  void removeMediaFromCustomList(String listId, Media media) {
-    _trackerManager.removeMediaFromCustomList(listId, media);
+  Future<void> addMediaToCustomList(String listId, Media media) async {
+    await _trackerManager.addMediaToCustomList(listId, media);
+  }
+
+  Future<void> removeMediaFromCustomList(String listId, Media media) async {
+    await _trackerManager.removeMediaFromCustomList(listId, media);
   }
 
   CustomList? getCustomListById(String id) {
