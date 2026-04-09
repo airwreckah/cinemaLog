@@ -176,7 +176,9 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (context) => Movie(movie: selectedMovie),
+                          builder: (_) => MovieDetailsScreen(
+                            movieId: selectedMovie['id'].toString(),
+                          ),
                         ),
                       );
                     },
@@ -240,7 +242,9 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (context) => Movie(movie: selectedMovie),
+                        builder: (_) => MovieDetailsScreen(
+                            movieId: selectedMovie['id'].toString(),
+                          ),
                         ),
                       );
                     },
@@ -285,10 +289,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_border),
-            label: 'Lists',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border),label: 'Lists',),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
