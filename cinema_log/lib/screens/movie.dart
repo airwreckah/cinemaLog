@@ -208,7 +208,7 @@ class _MovieScreenState extends State<Movie> {
             Profile.currentUser = WelcomeUser.currentUser;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Profile()),
+              MaterialPageRoute(builder: (context) => const Profile()),
             );
           }
 
