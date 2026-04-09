@@ -1,5 +1,6 @@
 import 'package:cinema_log/services/controller.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 import '../screens/welcome_user.dart';
 import '../screens/search.dart';
@@ -64,16 +65,17 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Custom Lists'),
-        centerTitle: true,
         automaticallyImplyLeading: false,
-        titleTextStyle: TextStyle(
-          color: Colors.white,
-          fontSize: 24,
-          fontFamily: 'Arimo',
-          fontWeight: FontWeight.w700,
-          height: 1.11,
-          letterSpacing: -1.80,
+        title: GradientText(
+          'Cinema Log',
+          style: TextStyle(
+            fontSize: 30,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w900,
+            height: 1.33,
+            letterSpacing: -1.20,
+          ),
+          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)], //header title
         ),
       ),
       body: Padding(
@@ -111,12 +113,21 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
                         return Card(
                           margin: const EdgeInsets.only(bottom: 12),
                           child: ListTile(
-                            title: Text(customList.name),
+                            tileColor: Color(0xFF101728),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            title: Text(customList.name,
+                              style:TextStyle(color: Colors.white),
+                              ),
                             subtitle: Text(
                               '${customList.items.length} item(s)',
+                              style: TextStyle(color: Color(0xFF99A1AF)),
                             ),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete),
+                              color: Color(0xFF99A1AF),
+                              focusColor: Colors.white,
                               onPressed: () => _deleteList(customList.id),
                             ),
                             onTap: () {
