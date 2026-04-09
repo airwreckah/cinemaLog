@@ -69,8 +69,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final String releaseDate = _movieData!['release_date'] ?? 'Unknown';
     final String releaseYear =
         releaseDate != 'Unknown' && releaseDate.length >= 4
-        ? releaseDate.substring(0, 4)
-        : 'Unknown';
+            ? releaseDate.substring(0, 4)
+            : 'Unknown';
     final String rating = _movieData!['vote_average']?.toString() ?? 'N/A';
     final String runtime = _movieData!['runtime'] != null
         ? '${_movieData!['runtime']} min'
@@ -84,6 +84,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       genre: '',
       posterPath: posterPath,
     );
+
+    final bool isWatched = _controller.isWatched(media.id);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -169,7 +171,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 ),
               ],
             ),
+
             const SizedBox(height: 16),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -198,7 +202,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 ),
 
                 const SizedBox(width: 12),
-
+                
                 // Add to Custom List button will open a bottom sheet with a list of the user's custom lists. The user can select a list to add the movie to, or if they have no custom lists, they will be prompted to create one first.
                 ElevatedButton(
                   onPressed: () async {
@@ -249,7 +253,46 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 ),
               ],
             ),
+
+            // ============================
+            //  TEMP TEST BUTTON (ADDED)
+            // ============================
+
+            const SizedBox(height: 12),
+
+            Center(
+              child: TextButton(
+                onPressed: () async {
+                  final wasWatched = _controller.isWatched(media.id);
+
+                  await _controller.toggleWatched(media);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        wasWatched
+                            ? 'Removed from watched'
+                            : 'Marked as watched',
+                      ),
+                    ),
+                  );
+
+                  setState(() {});
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text(
+                  isWatched
+                      ? 'TEST: UNWATCH'
+                      : 'TEST: WATCH',
+                ),
+              ),
+            ),
+
             const SizedBox(height: 24),
+
             const Text(
               'Summary',
               style: TextStyle(
