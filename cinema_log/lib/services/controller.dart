@@ -241,6 +241,10 @@ class Controller {
     await _trackerManager.deleteCustomList(id);
   }
 
+  Future<void> loadWatchHistory() async {
+  await _trackerManager.loadWatchHistory();
+}
+
   Future<void> renameCustomList(String id, String newName) async {
     await _trackerManager.renameCustomList(id, newName);
   }
@@ -261,13 +265,13 @@ class Controller {
     return _trackerManager.getWatchHistory().any((m) => m.id == id);
   }
 
-  void toggleWatched(Media media) {
+  Future<void> toggleWatched(Media media) async {
     final isWatched = _trackerManager.getWatchHistory().any(
       (m) => m.id == media.id,
     );
 
     if (isWatched) {
-      _trackerManager.removeFromHistory(media);
+      _trackerManager.markAsUnwatched(media);
     } else {
       _trackerManager.markAsWatched(media);
     }
