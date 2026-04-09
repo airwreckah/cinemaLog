@@ -1,5 +1,5 @@
 import 'package:cinema_log/screens/login.dart';
-import 'package:cinema_log/screens/movie.dart';
+import 'package:cinema_log/screens/movie_details_screen.dart';
 import 'package:cinema_log/screens/profile.dart';
 import 'package:cinema_log/screens/search.dart';
 import '../models/app_user.dart';
@@ -14,6 +14,7 @@ import 'package:cinema_log/screens/sign_up.dart';
 import 'package:cinema_log/services/controller.dart';
 import 'package:cinema_log/main.dart';
 import 'custom_lists_screen.dart';
+import 'movie_details_screen.dart';
 
 // ✅ ADDED
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -175,7 +176,9 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (context) => Movie(movie: selectedMovie),
+                          builder: (_) => MovieDetailsScreen(
+                            movieId: selectedMovie['id'].toString(),
+                          ),
                         ),
                       );
                     },
@@ -239,7 +242,9 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                       Navigator.push(
                         context,
                         MaterialPageRoute<void>(
-                          builder: (context) => Movie(movie: selectedMovie),
+                          builder: (_) => MovieDetailsScreen(
+                            movieId: selectedMovie['id'].toString(),
+                          ),
                         ),
                       );
                     },
@@ -283,22 +288,13 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark_border),
             label: 'Lists',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );

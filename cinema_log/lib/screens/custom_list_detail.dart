@@ -5,6 +5,7 @@ import '../models/media.dart';
 import '../services/controller.dart';
 import 'movie.dart';
 import 'movie_details_screen.dart';
+import '../widgets/media_tile.dart';
 
 class CustomListDetailScreen extends StatefulWidget {
   final CustomList customList;
@@ -35,54 +36,34 @@ class _CustomListDetailScreenState extends State<CustomListDetailScreen> {
               itemBuilder: (context, index) {
                 final media = updatedList.items[index];
 
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+                return MediaTile(
+                  media: media,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          MovieDetailsScreen(movieId: media.id.toString()),
+                    ),
                   ),
-                  child: ListTile(
-                    leading:
-                        media.posterPath != null && media.posterPath!.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              '$Controller.mainImgUrl${media.posterPath}',
-                              width: 50,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.movie);
-                              },
-                            ),
-                          )
-                        : const Icon(Icons.movie),
-                    title: Text(media.title),
-                    subtitle: Text('${media.type} • ${media.year}'),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.white70),
+                    onPressed: () async {
+                      await _controller.removeMediaFromCustomList(
+                        updatedList.id,
+                        media,
+                      );
+                      await _controller.loadCustomLists();
 
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            MovieDetailsScreen(movieId: media.id.toString()),
-                      ),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        _controller.removeMediaFromCustomList(
-                          updatedList.id,
-                          media,
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Removed "${media.title}" from "${updatedList.name}".',
-                            ),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Removed "${media.title}" from "${updatedList.name}".',
                           ),
-                        );
+                        ),
+                      );
 
-                        setState(() {});
-                      },
-                    ),
+                      setState(() {});
+                    },
                   ),
                 );
               },

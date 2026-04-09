@@ -58,8 +58,8 @@ class Controller {
     _trackerManager.removeFromWatchList(media);
   }
 
-  void markAsWatched(Media media) {
-    _trackerManager.markAsWatched(media);
+  Future<void> markAsWatched(Media media) async {
+    await _trackerManager.markAsWatched(media);
   }
 
   void markAsUnwatched(Media media) {

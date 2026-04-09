@@ -33,7 +33,7 @@ class TrackerManager {
     _watchList.remove(media);
   }
 
-  void markAsWatched(Media media) {
+  Future<void> markAsWatched(Media media) async {
     media.watched = true;
     media.watchDate = DateTime(
       DateTime.now().year,

@@ -2,14 +2,12 @@ import 'package:cinema_log/screens/notes_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/controller.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+import '../models/media.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
   final String movieId;
 
-  const MovieDetailsScreen({
-    super.key,
-    required this.movieId,
-  });
+  const MovieDetailsScreen({super.key, required this.movieId});
 
   @override
   State<MovieDetailsScreen> createState() => _MovieDetailsScreenState();
@@ -48,9 +46,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -71,11 +67,23 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final overview = _movieData!['overview'] ?? 'No summary available.';
     final posterPath = _movieData!['poster_path'];
     final String releaseDate = _movieData!['release_date'] ?? 'Unknown';
-    final String releaseYear = releaseDate != 'Unknown' && releaseDate.length >= 4
+    final String releaseYear =
+        releaseDate != 'Unknown' && releaseDate.length >= 4
         ? releaseDate.substring(0, 4)
         : 'Unknown';
-    final String rating = _movieData!['vote_average']?.toString() ?? 'N/A'; 
-    final String runtime = _movieData!['runtime'] != null ? '${_movieData!['runtime']} min' : 'Unknown';
+    final String rating = _movieData!['vote_average']?.toString() ?? 'N/A';
+    final String runtime = _movieData!['runtime'] != null
+        ? '${_movieData!['runtime']} min'
+        : 'Unknown';
+
+    final media = Media(
+      id: widget.movieId,
+      title: title,
+      type: 'movie',
+      year: int.tryParse(releaseYear) ?? 0,
+      genre: '',
+      posterPath: posterPath,
+    );
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -93,7 +101,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           ),
           colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
-        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -120,10 +128,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                  Row( children:[
-                    const Icon(Icons.star, 
-                    color: Colors.amber
-                    ),
+                Row(
+                  children: [
+                    const Icon(Icons.star, color: Colors.amber),
                     Text(
                       rating,
                       style: const TextStyle(
@@ -148,9 +155,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 Icon(Icons.circle, color: Colors.white70, size: 10),
                 Row(
                   children: [
-                    const Icon(Icons.access_time
-                    , color: Colors.white70
-                    ),
+                    const Icon(Icons.access_time, color: Colors.white70),
                     Text(
                       runtime,
                       style: const TextStyle(
@@ -168,10 +173,22 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Mark as Watched button will add the movie to a "Watched" custom list. If the list doesn't exist, it will be created automatically. The user will also have the option to add the movie to any existing custom list they have created.
                 TextButton(
-                  onPressed: () {
-                    // later: connect to TrackerManager
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => notesScreen(movieData: _movieData)));
+                  onPressed: () async {
+                    await _controller.markAsWatched(media);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            notesScreen(movieData: _movieData),
+                      ),
+                    );
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Marked as watched')),
+                    );
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFF352c48),
@@ -179,10 +196,50 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   ),
                   child: const Text('Mark as Watched'),
                 ),
+
                 const SizedBox(width: 12),
+
+                // Add to Custom List button will open a bottom sheet with a list of the user's custom lists. The user can select a list to add the movie to, or if they have no custom lists, they will be prompted to create one first.
                 ElevatedButton(
-                  onPressed: () {
-                    // later: connect to custom list logic
+                  onPressed: () async {
+                    await _controller.loadCustomLists();
+                    final lists = _controller.getCustomLists();
+
+                    if (lists.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No custom lists available'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (_) {
+                        return ListView(
+                          children: lists.map((list) {
+                            return ListTile(
+                              title: Text(list.name),
+                              onTap: () async {
+                                await _controller.addMediaToCustomList(
+                                  list.id,
+                                  media,
+                                );
+
+                                Navigator.pop(context);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Added to "${list.name}"'),
+                                  ),
+                                );
+                              },
+                            );
+                          }).toList(),
+                        );
+                      },
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF352c48),
