@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,33 +41,53 @@ class TrackerManager {
       DateTime.now().day,
     );
 
-    if (_watchList.contains(media)) {
-      _watchList.remove(media);
-    }
+    _watchList.removeWhere((m) => m.id == media.id);
 
     if (!_watchHistory.any((m) => m.id == media.id)) {
       _watchHistory.add(media);
     }
 
-    // Save to Firebase
-    FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('users')
-        .doc('userId')
+        .doc(_uid) 
         .collection('watchHistory')
         .doc(media.id)
         .set(media.toMap());
   }
 
-  void markAsUnwatched(Media media) {
+  Future<void> markAsUnwatched(Media media) async {
     media.watched = false;
     media.watchDate = null;
 
-    if (_watchHistory.contains(media)) {
-      _watchHistory.remove(media);
+    _watchHistory.removeWhere((m) => m.id == media.id);
+
+    if (!_watchList.any((m) => m.id == media.id)) {
+      _watchList.add(media);
     }
 
-    if (!_watchList.contains(media)) {
-      _watchList.add(media);
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('watchHistory')
+        .doc(media.id)
+        .delete();
+  }
+
+  Future<void> loadWatchHistory() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('watchHistory')
+        .get();
+
+    _watchHistory.clear();
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+
+      final media = Media.fromMap(data);
+
+      _watchHistory.add(Media.fromMap(doc.data()));
     }
   }
 
@@ -78,7 +96,7 @@ class TrackerManager {
   }
 
   bool isInWatchHistory(Media media) {
-    return _watchHistory.contains(media);
+    return _watchHistory.any((m) => m.id == media.id);
   }
 
   List<Media> getWatchList() {
@@ -200,20 +218,6 @@ class TrackerManager {
     );
   }
 
-Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
-    final Map<String, double> countsPerMonth = {};
-
-    for (final media in history) {
-      if (media.type.toLowerCase().trim() == 'movie' && media.watchDate != null) {
-        final monthKey = _formatMonthKey(media.watchDate!);
-        countsPerMonth[monthKey] = (countsPerMonth[monthKey] ?? 0) + 1;
-      }
-    }
-
-    return countsPerMonth;
-  }
-
-
   List<Media> _getFilteredHistory({
     required StatisticsFilterType filter,
     int? month,
@@ -264,9 +268,8 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
   }
 
   String _getMostFrequentKey(Map<String, int> counts) {
-    if (counts.isEmpty) {
-      return 'N/A';
-    }
+    if (counts.isEmpty) return 'N/A';
+
     String topKey = counts.keys.first;
     int topValue = counts[topKey]!;
 
@@ -281,9 +284,7 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
   }
 
   double _calculateAverageWatchedPerMonth(Map<String, int> monthlyCounts) {
-    if (monthlyCounts.isEmpty) {
-      return 0.0;
-    }
+    if (monthlyCounts.isEmpty) return 0.0;
 
     final total = monthlyCounts.values.fold(0, (sum, count) => sum + count);
     return total / monthlyCounts.length;
@@ -296,11 +297,13 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
   Future<void> createCustomList(String name) async {
     final trimmedName = name.trim();
     if (trimmedName.isEmpty) return;
+
     final alreadyExists = _customLists.any(
       (list) => list.name.toLowerCase() == trimmedName.toLowerCase(),
     );
 
     if (alreadyExists) return;
+
     final id = DateTime.now().millisecondsSinceEpoch.toString();
     final list = CustomList(id: id, name: trimmedName, items: []);
 
@@ -341,9 +344,7 @@ Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
 
   CustomList? getCustomListById(String id) {
     for (final list in _customLists) {
-      if (list.id == id) {
-        return list;
-      }
+      if (list.id == id) return list;
     }
     return null;
   }
