@@ -159,7 +159,7 @@ class _SearchScreenState extends State<Search> {
       );
     } else if (index == 3) {
       Profile.currentUser = WelcomeUser.currentUser;
-      Navigator.push(context, MaterialPageRoute(builder: (_) => Profile()));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const Profile()));
     }
 
     setState(() {
@@ -314,10 +314,19 @@ class _SearchScreenState extends State<Search> {
         type: BottomNavigationBarType.fixed,
         onTap: _onNavTap,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home', ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: 'Watchlist',),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile', ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark_border),
+            label: 'Watchlist',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
+          ),
         ],
       ),
     );
