@@ -25,13 +25,16 @@ class WelcomeUser extends StatefulWidget {
   static late AppUser currentUser;
   static late List popMedia;
   static late List upcomingMovies;
-
+  
   @override
-  _WelcomeUserScreenState createState() => _WelcomeUserScreenState();
+  WelcomeUserScreenState createState() => WelcomeUserScreenState();
 }
 
-class _WelcomeUserScreenState extends State<WelcomeUser> {
+class WelcomeUserScreenState extends State<WelcomeUser> {
   int _selectedIndex = 0;
+  final TrackerManager tracker = TrackerManager();
+  late final history = tracker.getWatchHistory();
+  
 
   // ADDED FUNCTION
   Future<void> loadUserData() async {
@@ -62,6 +65,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
   }
 
   @override
+  
   Widget build(BuildContext context) {
     return Scaffold(
       //header bar with logo
@@ -79,9 +83,10 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
           colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          if (WelcomeUser.currentUser.watchHistoryNotEmpty())
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            if (!WelcomeUser.currentUser.watchHistoryNotEmpty())
             Container(
               height: 28.01,
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
@@ -101,27 +106,47 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
                 ],
               ),
             ),
-          if (!WelcomeUser.currentUser.watchHistoryNotEmpty())
-            Container(
-              height: 28.01,
+           Container(
+              margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    'Your Recently Watched',
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      height: 1.40,
+              height: 200,
+              child: history.isEmpty
+                  ? const Center(
+                      child: Text(
+                        "No watched media",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: history.length,
+                      itemBuilder: (context, index) {
+                        final media = history[index];
+                        final posterUrl = media.posterPath != null
+                            ? "https://image.tmdb.org/t/p/w185${media.posterPath}"
+                            : null;
+
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    MovieDetailsScreen(movieId: media.id),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: 160,
+                            padding: const EdgeInsets.all(5),
+                            child: posterUrl != null
+                                ? Image.network(posterUrl)
+                                : const Icon(Icons.movie, color: Colors.white),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ],
-              ),
             ),
-          Text('Please add movies to your watched list'),
 
           //header for popular section
           Container(
@@ -254,6 +279,7 @@ class _WelcomeUserScreenState extends State<WelcomeUser> {
             ),
           ),
         ],
+      ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
