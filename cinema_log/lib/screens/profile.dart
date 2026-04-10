@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 import '../models/app_user.dart';
 import '../services/tracker_manager.dart';
-import '../models/statistics.dart';
 import '../screens/movie_details_screen.dart';
+import 'package:cinema_log/screens/search.dart';
+import 'package:cinema_log/screens/custom_lists_screen.dart';
+import 'package:cinema_log/screens/welcome_user.dart';
+import 'package:cinema_log/screens/stats_screen.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -18,6 +22,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   final TrackerManager tracker = TrackerManager();
+  int _selectedIndex = 3;
 
   // ADDED: load Firebase data
   @override
@@ -49,10 +54,22 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text("Profile"),
+        automaticallyImplyLeading: false,
+        title: GradientText(
+          'Cinema Log',
+          style: TextStyle(
+            fontSize: 30,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w900,
+            height: 1.33,
+            letterSpacing: -1.20,
+          ),
+          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
 
@@ -69,144 +86,114 @@ class _ProfileState extends State<Profile> {
               Profile.currentUser.fullName ?? "No Name",
               style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
-
-            const SizedBox(height: 10),
-
-            // UID, Email, Age, Watchlists count
-            Column(
-              children: [
-                Text(
-                  "UID: ${Profile.currentUser.uid ?? 'Loading...'}",
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                Text(
+            const SizedBox(height: 5),
+            Text(
                   "Email: ${Profile.currentUser.email ?? 'Loading...'}",
                   style: const TextStyle(color: Colors.grey),
                 ),
-                Text(
-                  "Age: ${Profile.currentUser.age ?? 'Loading...'}",
-                  style: const TextStyle(color: Colors.grey),
-                ),
-                Text(
-                  "Watchlists: ${Profile.currentUser.mediaLists.length}",
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-            
-            // ===== Watch History =====
-            const Text(
-              "Watch History",
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 200,
-              child: history.isEmpty
-                  ? const Center(
-                      child: Text(
-                        "No watched media",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    )
-                  : ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: history.length,
-                      itemBuilder: (context, index) {
-                        final media = history[index];
-                        final posterUrl = media.posterPath != null
-                            ? "https://image.tmdb.org/t/p/w500${media.posterPath}"
-                            : null;
-
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    MovieDetailsScreen(movieId: media.id),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: 120,
-                            margin: const EdgeInsets.only(left: 10),
-                            child: posterUrl != null
-                                ? Image.network(posterUrl, fit: BoxFit.cover)
-                                : const Icon(Icons.movie, color: Colors.white),
-                          ),
-                        );
-                      },
-                    ),
-            ),
 
             const SizedBox(height: 30),
-
             // ===== SETTINGS UI =====
-            Container(
-              margin: const EdgeInsets.all(10),
-              width: 324,
-              child: const Text(
-                'SETTINGS',
-                style: TextStyle(
-                  color: Color(0xFF6A7282),
-                  fontSize: 14,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w600,
-                  height: 1.43,
-                  letterSpacing: 0.70,
+            Center(
+              child: Container(
+                width: 375,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF101728),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-            ),
-            Container(
-              width: 375,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF101728),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text('Update Password', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
-                  ),
-                  Divider(),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Text('Update Email', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
-                  ),
-                  Divider(),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        Icon(Icons.logout, color: Color(0xFFFB2C36)),
-                        SizedBox(width: 8),
-                        Text('Sign Out', style: TextStyle(color: Color(0xFFFB2C36), fontSize: 14, fontWeight: FontWeight.w600)),
-                      ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector( 
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => StatsScreen()),
+                        );
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text('View Your Statistics', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                      ),
                     ),
-                  ),
-                  Divider(),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete_forever_rounded, color: Color(0xFFFB2C36)),
-                        SizedBox(width: 8),
-                        Text('Delete Account', style: TextStyle(color: Color(0xFFFB2C36), fontSize: 14, fontWeight: FontWeight.w600)),
-                      ],
+                    Divider(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text('Update Password', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
                     ),
-                  ),
-                ],
+                    Divider(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text('Update Email', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Icon(Icons.logout, color: Color(0xFFFB2C36)),
+                          SizedBox(width: 8),
+                          Text('Sign Out', style: TextStyle(color: Color(0xFFFB2C36), fontSize: 14, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_forever_rounded, color: Color(0xFFFB2C36)),
+                          SizedBox(width: 8),
+                          Text('Delete Account', style: TextStyle(color: Color(0xFFFB2C36), fontSize: 14, fontWeight: FontWeight.w600)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 30),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WelcomeUser()),
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Search()),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CustomListsScreen()),
+            );
+          } else if (index == 3) {
+            Profile.currentUser = WelcomeUser.currentUser;
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Profile()),
+            );
+          }
+
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border),label: 'Lists',),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
       ),
     );
   }

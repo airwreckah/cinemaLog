@@ -1,18 +1,12 @@
-import 'package:cinema_log/screens/login.dart';
-import 'package:cinema_log/screens/movie.dart';
 import 'package:cinema_log/screens/profile.dart';
 import 'package:cinema_log/screens/search.dart';
 import '../models/app_user.dart';
 import '../services/tracker_manager.dart';
-import '../screens/profile.dart';
 import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cinema_log/screens/sign_up.dart';
 import 'package:cinema_log/services/controller.dart';
-import 'package:cinema_log/main.dart';
 import 'custom_lists_screen.dart';
 import 'movie_details_screen.dart';
 
@@ -106,6 +100,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 ],
               ),
             ),
+            Divider(
+            indent: 20,
+            endIndent: 20,
+            ),
            Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
@@ -168,7 +166,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
               ],
             ),
           ),
-
+          Divider(
+            indent: 20,
+            endIndent: 20,
+          ),
           //Shows the scrollable list of movies
           Container(
             margin: const EdgeInsets.symmetric(vertical: 15),
@@ -212,7 +213,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
               ),
             ),
           ),
-
+          
           //Title for Upcoming list
           Container(
             height: 28.01,
@@ -233,7 +234,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
               ],
             ),
           ),
-
+          Divider(
+            indent: 20,
+            endIndent: 20,
+          ),
           //Scrollable list
           Container(
             margin: const EdgeInsets.symmetric(vertical: 15),
