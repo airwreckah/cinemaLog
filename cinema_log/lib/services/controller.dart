@@ -66,6 +66,12 @@ class Controller {
     _trackerManager.markAsUnwatched(media);
   }
 
+  Future<void> markAsWatchedWithNotes(Media media, String notes, int rating) async {
+    media.notes = notes;
+    media.rating = rating;
+    await _trackerManager.markAsWatched(media);
+  }
+  
   List<Media> getWatchList() {
     return _trackerManager.getWatchList();
   }

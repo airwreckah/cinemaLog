@@ -5,6 +5,7 @@ import '../screens/custom_lists_screen.dart';
 import '../screens/search.dart';
 import '../screens/profile.dart';
 import '../services/controller.dart';
+import '../models/media.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class notesScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class _notesScreenState extends State<notesScreen> {
   String noteText = '';
   Map<String, dynamic>? _movieData;
   int currentRating = 0;
+  final Controller controller = Controller();
 
   @override
   void initState() {
@@ -32,6 +34,8 @@ class _notesScreenState extends State<notesScreen> {
 
   @override
   Widget build(BuildContext context) { 
+    final movieId = _movieData?['id'] ?? 0;
+    final String movieIdStr = movieId.toString();
     final title = _movieData!['title'] ?? 'Untitled';
     final overview = _movieData!['overview'] ?? 'No summary available.';
     final posterPath = _movieData!['poster_path'];
@@ -41,6 +45,8 @@ class _notesScreenState extends State<notesScreen> {
         : 'Unknown';
     final String rating = _movieData!['vote_average']?.toString() ?? 'N/A'; 
     final String runtime = _movieData!['runtime'] != null ? '${_movieData!['runtime']} min' : 'Unknown';
+
+    
 
 
     return Scaffold(
@@ -58,6 +64,33 @@ class _notesScreenState extends State<notesScreen> {
           ),
           colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            padding: const EdgeInsets.only(right: 20),
+            iconSize: 35,
+            color: Colors.white,
+            onPressed: () {
+              final media = Media(
+                id: movieIdStr,
+                title: title,
+                type: 'movie',
+                year: int.tryParse(releaseYear) ?? 0,
+                genre: '',
+                posterPath: posterPath,
+                rating: currentRating,
+                notes: noteText,
+              );
+              controller.markAsWatched(media);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        Search()),
+                );// Handle save action here, e.g., save notes and rating to database
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),

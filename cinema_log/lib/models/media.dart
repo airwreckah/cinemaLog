@@ -6,6 +6,8 @@ class Media {
   final String genre;
   final String? posterPath;
   bool watched;
+  int? rating;
+  String? notes;
 
   DateTime? watchDate;
 
@@ -18,6 +20,8 @@ class Media {
     this.posterPath,
     this.watched = false,
     this.watchDate,
+    this.rating,
+    this.notes,
   });
 
   Map<String, dynamic> toMap() {
@@ -30,6 +34,8 @@ class Media {
       'posterPath': posterPath,
       'watched': watched,
       'watchDate': watchDate?.toIso8601String(),
+      'rating': rating,
+      'notes': notes,
     };
   }
 
@@ -45,6 +51,8 @@ class Media {
       watchDate: map['watchDate'] != null
           ? DateTime.parse(map['watchDate'])
           : null,
+      rating: map['rating'],
+      notes: map['notes'],
     );
   }
 
