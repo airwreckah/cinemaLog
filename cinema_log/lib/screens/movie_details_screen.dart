@@ -69,8 +69,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final String releaseDate = _movieData!['release_date'] ?? 'Unknown';
     final String releaseYear =
         releaseDate != 'Unknown' && releaseDate.length >= 4
-            ? releaseDate.substring(0, 4)
-            : 'Unknown';
+        ? releaseDate.substring(0, 4)
+        : 'Unknown';
     final String rating = _movieData!['vote_average']?.toString() ?? 'N/A';
     final String runtime = _movieData!['runtime'] != null
         ? '${_movieData!['runtime']} min'
@@ -179,30 +179,94 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               children: [
                 // Mark as Watched button will add the movie to a "Watched" custom list. If the list doesn't exist, it will be created automatically. The user will also have the option to add the movie to any existing custom list they have created.
                 TextButton(
-                  onPressed: () async {
-                    await _controller.markAsWatched(media);
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (_) {
+                        return SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ListTile(
+                                leading: const Icon(Icons.check_circle_outline),
+                                title: const Text('Watched'),
+                                onTap: () async {
+                                  Navigator.pop(context);
+                                  await _controller.setMediaStatus(
+                                    media,
+                                    'watched',
+                                  );
+                                  if (context.mounted) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            notesScreen(movieData: _movieData),
+                                      ),
+                                    );
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            notesScreen(movieData: _movieData),
-                      ),
-                    );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Marked as watched'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.play_circle_outline),
+                                title: const Text('Watching'),
+                                onTap: () async {
+                                  await _controller.setMediaStatus(
+                                    media,
+                                    'watching',
+                                  );
+                                  Navigator.pop(context);
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Marked as watched')),
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Added to watching'),
+                                    ),
+                                  );
+
+                                  setState(() {});
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.bookmark_border),
+                                title: const Text('Want to Watch'),
+                                onTap: () async {
+                                  Navigator.pop(context);
+
+                                  await _controller.setMediaStatus(
+                                    media,
+                                    'want_to_watch',
+                                  );
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Added to want to watch'),
+                                    ),
+                                  );
+
+                                  setState(() {});
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     );
                   },
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFF352c48),
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Mark as Watched'),
+                  child: const Text('Watch Status'),
                 ),
 
                 const SizedBox(width: 12),
-                
+
                 // Add to Custom List button will open a bottom sheet with a list of the user's custom lists. The user can select a list to add the movie to, or if they have no custom lists, they will be prompted to create one first.
                 ElevatedButton(
                   onPressed: () async {
@@ -252,43 +316,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   child: const Text('Add to Custom List'),
                 ),
               ],
-            ),
-
-            // ============================
-            //  TEMP TEST BUTTON (ADDED)
-            // ============================
-
-            const SizedBox(height: 12),
-
-            Center(
-              child: TextButton(
-                onPressed: () async {
-                  final wasWatched = _controller.isWatched(media.id);
-
-                  await _controller.toggleWatched(media);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        wasWatched
-                            ? 'Removed from watched'
-                            : 'Marked as watched',
-                      ),
-                    ),
-                  );
-
-                  setState(() {});
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(
-                  isWatched
-                      ? 'TEST: UNWATCH'
-                      : 'TEST: WATCH',
-                ),
-              ),
             ),
 
             const SizedBox(height: 24),

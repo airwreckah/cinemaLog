@@ -14,10 +14,18 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
   final Controller _controller = Controller();
 
   @override
+  void initState() {
+    super.initState();
+    _controller.loadWatchStatus().then((_) {
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final watched = _controller.getWatchHistory();
-    final watching = _controller.getCurrentlyWatching();
-    final wantToWatch = _controller.getWatchList();
+    final watched = _controller.getWatchedItems();
+    final watching = _controller.getWatchingItems();
+    final wantToWatch = _controller.getWantToWatchItems();
 
     return Scaffold(
       appBar: AppBar(title: const Text("Watch Status")),

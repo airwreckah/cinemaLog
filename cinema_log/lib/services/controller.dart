@@ -291,7 +291,31 @@ class Controller {
     _trackerManager.addToCurrentlyWatching(media);
   }
 
+  void removeFromCurrentlyWatching(Media media) {
+    _trackerManager.removeFromCurrentlyWatching(media);
+  }
+
   List<Media> getCurrentlyWatching() {
     return _trackerManager.getCurrentlyWatching();
+  }
+
+  Future<void> setMediaStatus(Media media, String status) async {
+    await _trackerManager.setMediaStatus(media, status);
+  }
+
+  Future<void> loadWatchStatus() async {
+    await _trackerManager.loadWatchStatus();
+  }
+
+  List<Media> getWatchedItems() {
+    return _trackerManager.getWatchedItems();
+  }
+
+  List<Media> getWatchingItems() {
+    return _trackerManager.getWatchingItems();
+  }
+
+  List<Media> getWantToWatchItems() {
+    return _trackerManager.getWantToWatchItems();
   }
 }

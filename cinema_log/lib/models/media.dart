@@ -8,6 +8,7 @@ class Media {
   bool watched;
   int? rating;
   String? notes;
+  String? watchStatus;
 
   DateTime? watchDate;
 
@@ -22,6 +23,7 @@ class Media {
     this.watchDate,
     this.rating,
     this.notes,
+    this.watchStatus,
   });
 
   Map<String, dynamic> toMap() {
@@ -36,6 +38,7 @@ class Media {
       'watchDate': watchDate?.toIso8601String(),
       'rating': rating,
       'notes': notes,
+      'watchStatus': watchStatus,
     };
   }
 
@@ -53,6 +56,7 @@ class Media {
           : null,
       rating: map['rating'],
       notes: map['notes'],
+      watchStatus: map['watchStatus'],
     );
   }
 

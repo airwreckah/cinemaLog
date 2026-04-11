@@ -22,6 +22,7 @@ class TrackerManager {
   final List<Media> _currentlyWatching = [];
   final List<Media> _watchHistory = [];
   final List<CustomList> _customLists = [];
+  final List<Media> _watchStatus = [];
 
   // ================= WATCHLIST =================
 
@@ -152,6 +153,7 @@ class TrackerManager {
   void resetAll() {
     _watchList.clear();
     _watchHistory.clear();
+    _currentlyWatching.clear();
     _customLists.clear();
   }
 
@@ -366,4 +368,62 @@ class TrackerManager {
         .doc(listId)
         .update({'items': list.items.map((e) => e.toMap()).toList()});
   }
+
+  Future<void> setMediaStatus(Media media, String status) async {
+    media.watchStatus = status;
+
+    if (status == 'watched') {
+      media.watched = true;
+      media.watchDate = DateTime.now();
+    } else {
+      media.watched = false;
+      media.watchDate = null;
+    }
+
+    _watchStatus.removeWhere((m) => m.id == media.id);
+    _watchStatus.add(media);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('watchStatuses')
+        .doc(media.id)
+        .set(media.toMap());
+  }
+
+  Future<void> removeMediaStatus(String mediaId) async {
+    _watchStatus.removeWhere((m) => m.id == mediaId);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('watchStatuses')
+        .doc(mediaId)
+        .delete();
+  }
+
+  Future<void> loadWatchStatus() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(_uid)
+        .collection('watchStatuses')
+        .get();
+
+    _watchStatus.clear();
+
+    for (final doc in snapshot.docs) {
+      _watchStatus.add(Media.fromMap(doc.data()));
+    }
+  }
+
+  List<Media> getWatchStatuses() => List.unmodifiable(_watchStatus);
+
+  List<Media> getWatchedItems() =>
+      _watchStatus.where((m) => m.watchStatus == 'watched').toList();
+
+  List<Media> getWatchingItems() =>
+      _watchStatus.where((m) => m.watchStatus == 'watching').toList();
+
+  List<Media> getWantToWatchItems() =>
+      _watchStatus.where((m) => m.watchStatus == 'want_to_watch').toList();
 }

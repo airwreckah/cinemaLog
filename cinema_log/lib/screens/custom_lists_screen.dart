@@ -25,7 +25,10 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
   @override
   void initState() {
     super.initState();
-    _controller.loadCustomLists().then((_) {
+    Future.wait([
+      _controller.loadCustomLists(),
+      _controller.loadWatchStatus(),
+    ]).then((_) {
       setState(() {});
     });
   }
