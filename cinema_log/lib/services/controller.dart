@@ -66,12 +66,16 @@ class Controller {
     _trackerManager.markAsUnwatched(media);
   }
 
-  Future<void> markAsWatchedWithNotes(Media media, String notes, int rating) async {
+  Future<void> markAsWatchedWithNotes(
+    Media media,
+    String notes,
+    int rating,
+  ) async {
     media.notes = notes;
     media.rating = rating;
     await _trackerManager.markAsWatched(media);
   }
-  
+
   List<Media> getWatchList() {
     return _trackerManager.getWatchList();
   }
@@ -248,8 +252,8 @@ class Controller {
   }
 
   Future<void> loadWatchHistory() async {
-  await _trackerManager.loadWatchHistory();
-}
+    await _trackerManager.loadWatchHistory();
+  }
 
   Future<void> renameCustomList(String id, String newName) async {
     await _trackerManager.renameCustomList(id, newName);
@@ -281,5 +285,13 @@ class Controller {
     } else {
       _trackerManager.markAsWatched(media);
     }
+  }
+
+  void addToCurrentlyWatching(Media media) {
+    _trackerManager.addToCurrentlyWatching(media);
+  }
+
+  List<Media> getCurrentlyWatching() {
+    return _trackerManager.getCurrentlyWatching();
   }
 }

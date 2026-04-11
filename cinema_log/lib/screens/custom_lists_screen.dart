@@ -8,6 +8,7 @@ import '../screens/profile.dart';
 import '../services/controller.dart';
 import '../models/custom_list.dart';
 import 'custom_list_detail.dart';
+import 'watch_status_screen.dart';
 
 class CustomListsScreen extends StatefulWidget {
   const CustomListsScreen({super.key});
@@ -97,6 +98,31 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
               onSubmitted: (_) => _createList(),
             ),
             const SizedBox(height: 16),
+            // My Watch Status card
+            Card(
+              margin: const EdgeInsets.only(bottom: 12),
+              color: const Color(0xFF1A2238),
+              child: ListTile(
+                leading: const Icon(Icons.push_pin, color: Colors.amber),
+                title: const Text(
+                  'Watch Status',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Watched • Watching • Want to Watch',
+                  style: TextStyle(color: Color(0xFF99A1AF)),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => WatchStatusScreen()),
+                  );
+                },
+              ),
+            ),
             Expanded(
               child: customLists.isEmpty
                   ? const Center(
@@ -117,9 +143,10 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            title: Text(customList.name,
-                              style:TextStyle(color: Colors.white),
-                              ),
+                            title: Text(
+                              customList.name,
+                              style: TextStyle(color: Colors.white),
+                            ),
                             subtitle: Text(
                               '${customList.items.length} item(s)',
                               style: TextStyle(color: Color(0xFF99A1AF)),

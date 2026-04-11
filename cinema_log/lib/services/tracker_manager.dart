@@ -19,6 +19,7 @@ class TrackerManager {
   String get _uid => FirebaseAuth.instance.currentUser!.uid;
 
   final List<Media> _watchList = [];
+  final List<Media> _currentlyWatching = [];
   final List<Media> _watchHistory = [];
   final List<CustomList> _customLists = [];
 
@@ -54,6 +55,20 @@ class TrackerManager {
         .doc(media.id)
         .set(media.toMap());
   }
+
+  // ================= WANT TO WATCH =================
+
+  void addToCurrentlyWatching(Media media) {
+    if (!_currentlyWatching.any((m) => m.id == media.id)) {
+      _currentlyWatching.add(media);
+    }
+  }
+
+  void removeFromCurrentlyWatching(Media media) {
+    _currentlyWatching.removeWhere((m) => m.id == media.id);
+  }
+
+  List<Media> getCurrentlyWatching() => List.unmodifiable(_currentlyWatching);
 
   Future<void> markAsUnwatched(Media media) async {
     media.watched = false;
@@ -113,12 +128,12 @@ class TrackerManager {
   Media? getMediaById(String id) {
     for (var m in _watchList) {
       if (m.id == id) return m;
+    }
+    for (var m in _watchHistory) {
+      if (m.id == id) return m;
+    }
+    return null;
   }
-  for (var m in _watchHistory) {
-    if (m.id == id) return m;
-  }
-  return null;
-}
 
   void removeFromWatchListById(String id) {
     _watchList.removeWhere((m) => m.id == id);
@@ -146,8 +161,7 @@ class TrackerManager {
     final Map<String, double> countsPerMonth = {};
 
     for (final media in history) {
-      if (media.type.toLowerCase() == 'movie' &&
-          media.watchDate != null) {
+      if (media.type.toLowerCase() == 'movie' && media.watchDate != null) {
         final key = _formatMonthKey(media.watchDate!);
         countsPerMonth[key] = (countsPerMonth[key] ?? 0) + 1;
       }
@@ -228,8 +242,18 @@ class TrackerManager {
 
   String _formatMonthKey(DateTime date) {
     const months = [
-      'Jan','Feb','Mar','Apr','May','Jun',
-      'Jul','Aug','Sep','Oct','Nov','Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[date.month - 1]} ${date.year}';
   }
@@ -253,7 +277,8 @@ class TrackerManager {
     final trimmed = name.trim();
     if (trimmed.isEmpty) return;
 
-    if (_customLists.any((l) => l.name.toLowerCase() == trimmed.toLowerCase())) return;
+    if (_customLists.any((l) => l.name.toLowerCase() == trimmed.toLowerCase()))
+      return;
 
     final id = DateTime.now().millisecondsSinceEpoch.toString();
     final list = CustomList(id: id, name: trimmed, items: []);
