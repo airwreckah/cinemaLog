@@ -19,7 +19,7 @@ class WelcomeUser extends StatefulWidget {
   static late AppUser currentUser;
   static late List popMedia;
   static late List upcomingMovies;
-  
+
   @override
   WelcomeUserScreenState createState() => WelcomeUserScreenState();
 }
@@ -30,7 +30,6 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
 
   List history = [];
 
-  // ADDED FUNCTION
   Future<void> loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -51,7 +50,6 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
     }
   }
 
-  // Load BOTH user + history properly
   Future<void> _loadAllData() async {
     await loadUserData();
     await tracker.loadWatchHistory();
@@ -61,7 +59,6 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
     });
   }
 
-  // ADDED INITSTATE
   @override
   void initState() {
     super.initState();
@@ -71,19 +68,18 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //header bar with logo
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: GradientText(
           'Cinema Log',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 30,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w900,
             height: 1.33,
             letterSpacing: -1.20,
           ),
-          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
+          colors: const [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
       ),
       body: SingleChildScrollView(
@@ -93,7 +89,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
               Container(
                 height: 28.01,
                 padding: const EdgeInsets.symmetric(horizontal: 23.99),
-                child: Row(
+                child: const Row(
                   children: <Widget>[
                     Text(
                       'Your Recently Watched',
@@ -109,12 +105,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                   ],
                 ),
               ),
-            Divider(
+            const Divider(
               indent: 20,
               endIndent: 20,
             ),
-
-            
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
@@ -122,7 +116,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
               child: history.isEmpty
                   ? const Center(
                       child: Text(
-                        "No watched media",
+                        'No watched media',
                         style: TextStyle(color: Colors.grey),
                       ),
                     )
@@ -132,7 +126,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                       itemBuilder: (context, index) {
                         final media = history[index];
                         final posterUrl = media.posterPath != null
-                            ? "https://image.tmdb.org/t/p/w185${media.posterPath}"
+                            ? '${Controller.mainImgURL}${media.posterPath}'
                             : null;
 
                         return GestureDetector(
@@ -140,8 +134,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    MovieDetailsScreen(movieId: media.id),
+                                builder: (context) => MovieDetailsScreen(
+                                  mediaId: media.id.toString(),
+                                  mediaType: media.type,
+                                ),
                               ),
                             );
                           },
@@ -150,18 +146,20 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                             padding: const EdgeInsets.all(5),
                             child: posterUrl != null
                                 ? Image.network(posterUrl)
-                                : const Icon(Icons.movie, color: Colors.white),
+                                : const Icon(
+                                    Icons.movie,
+                                    color: Colors.white,
+                                  ),
                           ),
                         );
                       },
                     ),
             ),
 
-            //header for popular section
             Container(
               height: 28.01,
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
-              child: Row(
+              child: const Row(
                 children: <Widget>[
                   Text(
                     'Popular',
@@ -177,11 +175,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               indent: 20,
               endIndent: 20,
             ),
-            //Shows the scrollable list of movies
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
@@ -195,26 +192,34 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                   itemCount: Welcome_new.popMedia.length,
                   itemBuilder: (context, index) {
                     final selectedMovie = WelcomeUser.popMedia[index];
+                    final posterPath = selectedMovie['poster_path'];
+
                     return GestureDetector(
                       child: Container(
                         width: 160,
                         padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              Controller.mainImgURL +
-                                  WelcomeUser.popMedia[index]['poster_path'] +
-                                  Controller.apiKey,
-                            ),
-                          ),
-                        ),
+                        decoration: posterPath != null
+                            ? BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                    '${Controller.mainImgURL}$posterPath',
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : null,
+                        child: posterPath == null
+                            ? const Icon(Icons.movie, color: Colors.white)
+                            : null,
                       ),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute<void>(
                             builder: (_) => MovieDetailsScreen(
-                              movieId: selectedMovie['id'].toString(),
+                              mediaId: selectedMovie['id'].toString(),
+                              mediaType:
+                                  selectedMovie['media_type'] ?? 'movie',
                             ),
                           ),
                         );
@@ -225,11 +230,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
               ),
             ),
 
-            //Title for Upcoming list
             Container(
               height: 28.01,
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
-              child: Row(
+              child: const Row(
                 children: <Widget>[
                   Text(
                     'Upcoming',
@@ -245,11 +249,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 ],
               ),
             ),
-            Divider(
+            const Divider(
               indent: 20,
               endIndent: 20,
             ),
-            //Scrollable list
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
@@ -263,26 +266,34 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                   itemCount: Welcome_new.upcomingMovies.length,
                   itemBuilder: (context, index) {
                     final selectedMovie = WelcomeUser.upcomingMovies[index];
+                    final posterPath = selectedMovie['poster_path'];
+
                     return GestureDetector(
                       child: Container(
                         width: 160,
                         padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              Controller.mainImgURL +
-                                  Welcome_new.upcomingMovies[index]['poster_path'] +
-                                  Controller.apiKey,
-                            ),
-                          ),
-                        ),
+                        decoration: posterPath != null
+                            ? BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                    '${Controller.mainImgURL}$posterPath',
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : null,
+                        child: posterPath == null
+                            ? const Icon(Icons.movie, color: Colors.white)
+                            : null,
                       ),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute<void>(
                             builder: (_) => MovieDetailsScreen(
-                              movieId: selectedMovie['id'].toString(),
+                              mediaId: selectedMovie['id'].toString(),
+                              mediaType:
+                                  selectedMovie['media_type'] ?? 'movie',
                             ),
                           ),
                         );
@@ -295,7 +306,6 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
           ],
         ),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
@@ -303,23 +313,25 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
           if (index == 0) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => WelcomeUser()),
+              MaterialPageRoute(builder: (context) => const WelcomeUser()),
             );
           } else if (index == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Search()),
+              MaterialPageRoute(builder: (context) => const Search()),
             );
           } else if (index == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CustomListsScreen()),
+              MaterialPageRoute(
+                builder: (context) => CustomListsScreen(),
+              ),
             );
           } else if (index == 3) {
             Profile.currentUser = WelcomeUser.currentUser;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Profile()),
+              MaterialPageRoute(builder: (context) => const Profile()),
             );
           }
 
@@ -330,7 +342,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: 'Lists'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark_border),
+            label: 'Lists',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

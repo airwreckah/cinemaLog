@@ -90,7 +90,7 @@ class _notesScreenState extends State<notesScreen> {
             iconSize: 35,
             color: Colors.white,
             onPressed: () async {
-              await controller.markAsWatchedWithNotes(widget.media, noteText, watchDate, currentRating);
+              await controller.markAsWatchedWithNotes(widget.media, noteText, currentRating);
               if (context.mounted) {
                 Navigator.pop(context);
               }

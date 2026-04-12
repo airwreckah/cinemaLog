@@ -1,13 +1,19 @@
 import 'package:cinema_log/screens/notes_screen.dart';
 import 'package:flutter/material.dart';
-import '../services/controller.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
+
 import '../models/media.dart';
+import '../services/controller.dart';
 
 class MovieDetailsScreen extends StatefulWidget {
-  final String movieId;
+  final String mediaId;
+  final String mediaType; // 'movie' or 'tv'
 
-  const MovieDetailsScreen({super.key, required this.movieId});
+  const MovieDetailsScreen({
+    super.key,
+    required this.mediaId,
+    required this.mediaType,
+  });
 
   @override
   State<MovieDetailsScreen> createState() => _MovieDetailsScreenState();
@@ -15,30 +21,114 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   final Controller _controller = Controller();
-  Map<String, dynamic>? _movieData;
+
+  Map<String, dynamic>? _mediaData;
   bool _isLoading = true;
   String _errorMessage = '';
 
   @override
   void initState() {
     super.initState();
-    _loadMovieDetails();
+    _loadMediaDetails();
   }
 
-  Future<void> _loadMovieDetails() async {
+  Future<void> _loadMediaDetails() async {
     try {
-      final movie = await _controller.fetchMovieById(widget.movieId);
+      Map<String, dynamic> data;
+
+      if (widget.mediaType == 'tv') {
+        data = await _controller.fetchTvById(widget.mediaId);
+      } else {
+        data = await _controller.fetchMovieById(widget.mediaId);
+      }
 
       setState(() {
-        _movieData = movie;
+        _mediaData = data;
         _isLoading = false;
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load movie details.';
+        _errorMessage = 'Failed to load media details.';
         _isLoading = false;
       });
     }
+  }
+
+  String _getTitle() {
+    if (_mediaData == null) return 'Untitled';
+    return _mediaData!['title'] ?? _mediaData!['name'] ?? 'Untitled';
+  }
+
+  String _getOverview() {
+    if (_mediaData == null) return 'No summary available.';
+    return _mediaData!['overview'] ?? 'No summary available.';
+  }
+
+  String? _getPosterPath() {
+    if (_mediaData == null) return null;
+    return _mediaData!['poster_path'];
+  }
+
+  String _getReleaseDate() {
+    if (_mediaData == null) return 'Unknown';
+    return _mediaData!['release_date'] ??
+        _mediaData!['first_air_date'] ??
+        'Unknown';
+  }
+
+  String _getReleaseYear() {
+    final releaseDate = _getReleaseDate();
+    if (releaseDate != 'Unknown' && releaseDate.length >= 4) {
+      return releaseDate.substring(0, 4);
+    }
+    return 'Unknown';
+  }
+
+  String _getRating() {
+    if (_mediaData == null) return 'N/A';
+    final value = _mediaData!['vote_average'];
+    return value != null ? value.toString() : 'N/A';
+  }
+
+  String _getRuntimeOrSeasons() {
+    if (_mediaData == null) return 'Unknown';
+
+    if (widget.mediaType == 'tv') {
+      final seasons = _mediaData!['number_of_seasons'];
+      if (seasons != null) {
+        return '$seasons season${seasons == 1 ? '' : 's'}';
+      }
+      return 'Unknown';
+    }
+
+    final runtime = _mediaData!['runtime'];
+    if (runtime != null) {
+      return '$runtime min';
+    }
+    return 'Unknown';
+  }
+
+  String _getGenre() {
+    if (_mediaData == null) return '';
+
+    final genres = _mediaData!['genres'];
+    if (genres is List && genres.isNotEmpty) {
+      return genres.first['name'] ?? '';
+    }
+
+    return '';
+  }
+
+  Media _buildMediaObject() {
+    return Media(
+      id: widget.mediaId,
+      title: _getTitle(),
+      type: widget.mediaType,
+      year: int.tryParse(_getReleaseYear()) ?? 0,
+      genre: _getGenre(),
+      watched: false,
+      watchDate: null,
+    );
   }
 
   @override
@@ -50,7 +140,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       );
     }
 
-    if (_errorMessage.isNotEmpty || _movieData == null) {
+    if (_errorMessage.isNotEmpty || _mediaData == null) {
       return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(backgroundColor: Colors.black),
@@ -63,29 +153,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       );
     }
 
-    final title = _movieData!['title'] ?? 'Untitled';
-    final overview = _movieData!['overview'] ?? 'No summary available.';
-    final posterPath = _movieData!['poster_path'];
-    final String releaseDate = _movieData!['release_date'] ?? 'Unknown';
-    final String releaseYear =
-        releaseDate != 'Unknown' && releaseDate.length >= 4
-        ? releaseDate.substring(0, 4)
-        : 'Unknown';
-    final String rating = _movieData!['vote_average']?.toString() ?? 'N/A';
-    final String runtime = _movieData!['runtime'] != null
-        ? '${_movieData!['runtime']} min'
-        : 'Unknown';
+    final title = _getTitle();
+    final overview = _getOverview();
+    final posterPath = _getPosterPath();
+    final releaseYear = _getReleaseYear();
+    final rating = _getRating();
+    final runtimeOrSeasons = _getRuntimeOrSeasons();
 
-    final media = Media(
-      id: widget.movieId,
-      title: title,
-      type: 'movie',
-      year: int.tryParse(releaseYear) ?? 0,
-      genre: '',
-      posterPath: posterPath,
-    );
-
-    final bool isWatched = _controller.isWatched(media.id);
+    final media = _buildMediaObject();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -94,14 +169,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
         title: GradientText(
           'Cinema Log',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 30,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w900,
             height: 1.33,
             letterSpacing: -1.20,
           ),
-          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
+          colors: const [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
       ),
       body: SingleChildScrollView(
@@ -133,6 +208,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 Row(
                   children: [
                     const Icon(Icons.star, color: Colors.amber),
+                    const SizedBox(width: 4),
                     Text(
                       rating,
                       style: const TextStyle(
@@ -144,9 +220,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ),
                   ],
                 ),
-                Icon(Icons.circle, color: Colors.white70, size: 10),
+                const Icon(Icons.circle, color: Colors.white70, size: 10),
                 Text(
-                  '$releaseYear',
+                  releaseYear,
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white70,
@@ -154,12 +230,13 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     fontWeight: FontWeight.normal,
                   ),
                 ),
-                Icon(Icons.circle, color: Colors.white70, size: 10),
+                const Icon(Icons.circle, color: Colors.white70, size: 10),
                 Row(
                   children: [
                     const Icon(Icons.access_time, color: Colors.white70),
+                    const SizedBox(width: 4),
                     Text(
-                      runtime,
+                      runtimeOrSeasons,
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
@@ -171,13 +248,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 ),
               ],
             ),
-
             const SizedBox(height: 16),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Mark as Watched button will add the movie to a "Watched" custom list. If the list doesn't exist, it will be created automatically. The user will also have the option to add the movie to any existing custom list they have created.
                 TextButton(
                   onPressed: () {
                     showModalBottomSheet(
@@ -188,33 +262,27 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               ListTile(
-                                leading: const Icon(Icons.add_circle_outline),
-                                title: const Text('Quick Watch'),
+                                leading: const Icon(Icons.check_circle_outline),
+                                title: const Text('Watched'),
                                 onTap: () async {
                                   Navigator.pop(context);
                                   await _controller.setMediaStatus(
                                     media,
                                     'watched',
                                   );
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Marked as watched'),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                              ListTile(
-                                leading: const Icon(Icons.check_circle_outline_outlined),
-                                title: const Text('Watched'),
-                                onTap: () async {
+
                                   if (context.mounted) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            notesScreen(movieData: _movieData, media: media,),
+                                            notesScreen(movieData: _mediaData, media: media),
+                                      ),
+                                    );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Marked as watched'),
                                       ),
                                     );
                                   }
@@ -269,12 +337,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     backgroundColor: const Color(0xFF352c48),
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Set Watch Status'),
+                  child: const Text('Watch Status'),
                 ),
-
                 const SizedBox(width: 12),
-
-                // Add to Custom List button will open a bottom sheet with a list of the user's custom lists. The user can select a list to add the movie to, or if they have no custom lists, they will be prompted to create one first.
                 ElevatedButton(
                   onPressed: () async {
                     await _controller.loadCustomLists();
@@ -324,9 +389,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 ),
               ],
             ),
-
             const SizedBox(height: 24),
-
             const Text(
               'Summary',
               style: TextStyle(

@@ -24,7 +24,9 @@ class _SearchScreenState extends State<Search> {
 
   List<dynamic> _allResults = [];
   List<dynamic> _filteredResults = [];
-  Map<int, String> _genreMap = {};
+
+  Map<int, String> _movieGenreMap = {};
+  Map<int, String> _tvGenreMap = {};
   String? _selectedGenre;
 
   Timer? _debounce;
@@ -37,16 +39,19 @@ class _SearchScreenState extends State<Search> {
 
   Future<void> _loadGenres() async {
     try {
-      final genres = await _controller.getMovieGenres();
+      final movieGenres = await _controller.getMovieGenres();
+      final tvGenres = await _controller.getTvGenres();
+
       setState(() {
-        _genreMap = genres;
+        _movieGenreMap = movieGenres;
+        _tvGenreMap = tvGenres;
       });
     } catch (e) {
       debugPrint('Failed to load genres: $e');
     }
   }
 
-  Future<void> _searchMovies(String query) async {
+  Future<void> _searchMedia(String query) async {
     if (query.trim().isEmpty) {
       setState(() {
         _allResults = [];
@@ -60,10 +65,15 @@ class _SearchScreenState extends State<Search> {
     });
 
     try {
-      final results = await _controller.searchMovies(query);
+      final results = await _controller.searchMedia(query);
+
+      final filtered = results.where((item) {
+        final mediaType = item['media_type'];
+        return mediaType == 'movie' || mediaType == 'tv';
+      }).toList();
 
       setState(() {
-        _allResults = results;
+        _allResults = filtered;
         _applyGenreFilter();
       });
     } catch (e) {
@@ -85,7 +95,7 @@ class _SearchScreenState extends State<Search> {
     }
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      _searchMovies(value);
+      _searchMedia(value);
     });
   }
 
@@ -95,11 +105,14 @@ class _SearchScreenState extends State<Search> {
       return;
     }
 
-    _filteredResults = _allResults.where((movie) {
-      final List genreIds = movie['genre_ids'] ?? [];
+    _filteredResults = _allResults.where((media) {
+      final mediaType = media['media_type'];
+      final List genreIds = media['genre_ids'] ?? [];
+
+      final genreMap = mediaType == 'tv' ? _tvGenreMap : _movieGenreMap;
 
       final genreNames = genreIds
-          .map((id) => _genreMap[id])
+          .map((id) => genreMap[id])
           .where((name) => name != null)
           .cast<String>()
           .toList();
@@ -109,7 +122,11 @@ class _SearchScreenState extends State<Search> {
   }
 
   List<String> _getGenreNames() {
-    final genres = _genreMap.values.toList()..sort();
+    final allGenres = <String>{};
+    allGenres.addAll(_movieGenreMap.values);
+    allGenres.addAll(_tvGenreMap.values);
+
+    final genres = allGenres.toList()..sort();
     return ['All', ...genres];
   }
 
@@ -127,7 +144,10 @@ class _SearchScreenState extends State<Search> {
           shrinkWrap: true,
           children: genres.map((genre) {
             return ListTile(
-              title: Text(genre, style: const TextStyle(color: Colors.white)),
+              title: Text(
+                genre,
+                style: const TextStyle(color: Colors.white),
+              ),
               onTap: () {
                 setState(() {
                   _selectedGenre = genre == 'All' ? null : genre;
@@ -146,7 +166,10 @@ class _SearchScreenState extends State<Search> {
     if (index == _selectedIndex) return;
 
     if (index == 0) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => WelcomeUser()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => WelcomeUser()),
+      );
     } else if (index == 1) {
       Navigator.push(
         context,
@@ -159,12 +182,27 @@ class _SearchScreenState extends State<Search> {
       );
     } else if (index == 3) {
       Profile.currentUser = WelcomeUser.currentUser;
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const Profile()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const Profile()),
+      );
     }
 
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  String _getTitle(dynamic media) {
+    return media['title'] ?? media['name'] ?? 'Untitled';
+  }
+
+  String _getReleaseDate(dynamic media) {
+    return media['release_date'] ?? media['first_air_date'] ?? 'Unknown';
+  }
+
+  String _getMediaTypeLabel(dynamic media) {
+    return media['media_type'] == 'tv' ? 'TV Show' : 'Movie';
   }
 
   @override
@@ -182,14 +220,14 @@ class _SearchScreenState extends State<Search> {
         automaticallyImplyLeading: false,
         title: GradientText(
           'Cinema Log',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 30,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w900,
             height: 1.33,
             letterSpacing: -1.20,
           ),
-          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
+          colors: const [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
       ),
       body: Padding(
@@ -241,67 +279,72 @@ class _SearchScreenState extends State<Search> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _filteredResults.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'Start typing to search for movies.',
-                        style: TextStyle(color: Colors.white54),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: _filteredResults.length,
-                      itemBuilder: (context, index) {
-                        final movie = _filteredResults[index];
-                        final title = movie['title'] ?? 'Untitled';
-                        final releaseDate = movie['release_date'] ?? 'Unknown';
-                        final posterPath = movie['poster_path'];
-
-                        return Card(
-                          color: const Color(0xFF0A1228),
-                          margin: const EdgeInsets.only(bottom: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                      ? const Center(
+                          child: Text(
+                            'Start typing to search for movies or TV shows.',
+                            style: TextStyle(color: Colors.white54),
                           ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(10),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => MovieDetailsScreen(
-                                    movieId: movie['id'].toString(),
+                        )
+                      : ListView.builder(
+                          itemCount: _filteredResults.length,
+                          itemBuilder: (context, index) {
+                            final media = _filteredResults[index];
+                            final title = _getTitle(media);
+                            final releaseDate = _getReleaseDate(media);
+                            final mediaTypeLabel = _getMediaTypeLabel(media);
+                            final posterPath = media['poster_path'];
+
+                            return Card(
+                              color: const Color(0xFF0A1228),
+                              margin: const EdgeInsets.only(bottom: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.all(10),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => MovieDetailsScreen(
+                                        mediaId: media['id'].toString(),
+                                        mediaType:
+                                            media['media_type'] ?? 'movie',
+                                      ),
+                                    ),
+                                  );
+                                },
+                                leading: posterPath != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          '${Controller.mainImgURL}/$posterPath',
+                                          width: 50,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Icon(
+                                        media['media_type'] == 'tv'
+                                            ? Icons.tv
+                                            : Icons.movie,
+                                        color: Colors.white70,
+                                        size: 40,
+                                      ),
+                                title: Text(
+                                  title,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              );
-                            },
-                            leading: posterPath != null
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.network(
-                                      '${Controller.mainImgURL}/$posterPath',
-                                      width: 50,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : const Icon(
-                                    Icons.movie,
-                                    color: Colors.white70,
-                                    size: 40,
-                                  ),
-                            title: Text(
-                              title,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                                subtitle: Text(
+                                  '$mediaTypeLabel • $releaseDate',
+                                  style: const TextStyle(color: Colors.white60),
+                                ),
                               ),
-                            ),
-                            subtitle: Text(
-                              releaseDate,
-                              style: const TextStyle(color: Colors.white60),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                            );
+                          },
+                        ),
             ),
           ],
         ),
@@ -318,7 +361,10 @@ class _SearchScreenState extends State<Search> {
             icon: Icon(Icons.home_outlined),
             label: 'Home',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark_border),
             label: 'Watchlist',

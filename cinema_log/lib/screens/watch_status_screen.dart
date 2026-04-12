@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/controller.dart';
+
 import '../models/media.dart';
+import '../services/controller.dart';
 import 'movie_details_screen.dart';
 
 class WatchStatusScreen extends StatefulWidget {
@@ -17,7 +18,9 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
   void initState() {
     super.initState();
     _controller.loadWatchStatus().then((_) {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -28,13 +31,13 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
     final wantToWatch = _controller.getWantToWatchItems();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Watch Status")),
+      appBar: AppBar(title: const Text('Watch Status')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildSection("Watched", watched),
-          _buildSection("Watching", watching),
-          _buildSection("Want to Watch", wantToWatch),
+          _buildSection('Watched', watched),
+          _buildSection('Watching', watching),
+          _buildSection('Want to Watch', wantToWatch),
         ],
       ),
     );
@@ -47,19 +50,27 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
         const SizedBox(height: 16),
         Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8),
-        if (items.isEmpty) const Text("No items"),
+        if (items.isEmpty) const Text('No items'),
         ...items.map((media) {
           return ListTile(
-            title: Text(media.title,
-                style: const TextStyle(color: Color(0xFF99A1AF))),
+            title: Text(
+              media.title,
+              style: const TextStyle(color: Color(0xFF99A1AF)),
+            ),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => MovieDetailsScreen(movieId: media.id),
+                  builder: (_) => MovieDetailsScreen(
+                    mediaId: media.id.toString(),
+                    mediaType: media.type,
+                  ),
                 ),
               );
             },
