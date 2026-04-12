@@ -188,8 +188,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               ListTile(
-                                leading: const Icon(Icons.check_circle_outline),
-                                title: const Text('Watched'),
+                                leading: const Icon(Icons.add_circle_outline),
+                                title: const Text('Quick Watch'),
                                 onTap: () async {
                                   Navigator.pop(context);
                                   await _controller.setMediaStatus(
@@ -197,17 +197,24 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     'watched',
                                   );
                                   if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Marked as watched'),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.check_circle_outline_outlined),
+                                title: const Text('Watched'),
+                                onTap: () async {
+                                  if (context.mounted) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            notesScreen(movieData: _movieData),
-                                      ),
-                                    );
-
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Marked as watched'),
+                                            notesScreen(movieData: _movieData, media: media,),
                                       ),
                                     );
                                   }
@@ -262,7 +269,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     backgroundColor: const Color(0xFF352c48),
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Watch Status'),
+                  child: const Text('Set Watch Status'),
                 ),
 
                 const SizedBox(width: 12),

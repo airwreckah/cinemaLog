@@ -10,8 +10,10 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class notesScreen extends StatefulWidget {
   final Map<String, dynamic>? movieData;
+  final Media media;
   const notesScreen({super.key,
-    required this.movieData
+    required this.movieData,
+    required this.media
   });
 
 
@@ -87,20 +89,11 @@ class _notesScreenState extends State<notesScreen> {
             padding: const EdgeInsets.only(right: 20),
             iconSize: 35,
             color: Colors.white,
-            onPressed: () {
-              final media = Media(
-                id: movieIdStr,
-                title: title,
-                type: 'movie',
-                year: int.tryParse(releaseYear) ?? 0,
-                genre: '',
-                posterPath: posterPath,
-                rating: currentRating,
-                notes: noteText,
-                watchDate: watchDate,
-              );
-              controller.markAsWatched(media);
-                Navigator.pop(context);// Handle save action here, e.g., save notes and rating to database
+            onPressed: () async {
+              await controller.markAsWatchedWithNotes(widget.media, noteText, watchDate, currentRating);
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
             },
           ),
         ],

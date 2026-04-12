@@ -69,8 +69,10 @@ class Controller {
   Future<void> markAsWatchedWithNotes(
     Media media,
     String notes,
+    DateTime watchDate,
     int rating,
   ) async {
+    media.watchDate = watchDate;
     media.notes = notes;
     media.rating = rating;
     await _trackerManager.markAsWatched(media);
@@ -299,8 +301,8 @@ class Controller {
     return _trackerManager.getCurrentlyWatching();
   }
 
-  Future<void> setMediaStatus(Media media, String status) async {
-    await _trackerManager.setMediaStatus(media, status);
+  Future<void> setMediaStatus(Media media, String status, {DateTime? customWatchDate}) async {
+    await _trackerManager.setMediaStatus(media, status, customWatchDate: customWatchDate);
   }
 
   Future<void> loadWatchStatus() async {

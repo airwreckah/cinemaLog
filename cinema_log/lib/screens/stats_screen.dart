@@ -21,6 +21,9 @@ class StatsScreen extends StatefulWidget {
 class _StatsScreenState extends State<StatsScreen> {
   int _selectedIndex = 3;
   Map<String, double> moviesWatchedPerMonth = TrackerManager().getMoviesWatchedByMonth(TrackerManager().getWatchHistory());
+  final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+  List<int> monthsAsNum = [];
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +64,11 @@ class _StatsScreenState extends State<StatsScreen> {
             child: BarChart(
               BarChartData(
                 barGroups: moviesWatchedPerMonth.entries.map((entry) {
+                  int index = parseMonth(entry.key);
                   return BarChartGroupData(
-                    x: 0,
+                    x: index,
                     barRods: [
+
                     BarChartRodData(
                       toY: entry.value,
                       color: Colors.blue,
@@ -128,5 +133,12 @@ class _StatsScreenState extends State<StatsScreen> {
         ],
       ),
     );
+  }
+
+    int parseMonth(String key){
+    List<String> splitKey = key.split(',');
+    String month = splitKey[0];
+    int monthNum = months.indexOf(month);
+    return monthNum + 1;
   }
 }

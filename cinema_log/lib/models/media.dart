@@ -60,6 +60,10 @@ class Media {
     );
   }
 
+  void setWatchDate(DateTime watchDate){
+    this.watchDate = watchDate;
+  }
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;

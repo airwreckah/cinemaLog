@@ -1,3 +1,4 @@
+import 'package:cinema_log/screens/notes_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:ffi';
@@ -43,7 +44,7 @@ class TrackerManager {
     if (_uid == null) return;
 
     media.watched = true;
-    media.watchDate = DateTime.now();
+    media.watchDate =  media.watchDate ?? DateTime.now();
 
     _watchList.removeWhere((m) => m.id == media.id);
 
@@ -167,9 +168,11 @@ class TrackerManager {
 
   Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
     final Map<String, double> countsPerMonth = {};
+    DateTime? watchedDay;
 
     for (final media in history) {
       if (media.type.toLowerCase() == 'movie' && media.watchDate != null) {
+        watchedDay = media.watchDate;
         final key = _formatMonthKey(media.watchDate!);
         countsPerMonth[key] = (countsPerMonth[key] ?? 0) + 1;
       }
@@ -263,7 +266,7 @@ class TrackerManager {
       'Nov',
       'Dec',
     ];
-    return '${months[date.month - 1]} ${date.year}';
+    return '${months[date.month - 1]}, ${date.year}';
   }
 
   String _getMostFrequentKey(Map<String, int> map) {
@@ -394,10 +397,8 @@ class TrackerManager {
 
     if (status == 'watched') {
       media.watched = true;
-      media.watchDate = DateTime.now();
     } else {
       media.watched = false;
-      media.watchDate = null;
     }
 
     _watchStatus.removeWhere((m) => m.id == media.id);
