@@ -53,7 +53,8 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
         if (items.isEmpty) const Text("No items"),
         ...items.map((media) {
           return ListTile(
-            title: Text(media.title),
+            title: Text(media.title,
+                style: const TextStyle(color: Color(0xFF99A1AF))),
             onTap: () {
               Navigator.push(
                 context,

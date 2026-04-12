@@ -14,6 +14,7 @@ class notesScreen extends StatefulWidget {
     required this.movieData
   });
 
+
   @override
   State<notesScreen> createState() => _notesScreenState();
 }
@@ -24,7 +25,23 @@ class _notesScreenState extends State<notesScreen> {
   String noteText = '';
   Map<String, dynamic>? _movieData;
   int currentRating = 0;
+  DateTime watchDate = DateTime.now();
+  
   final Controller controller = Controller();
+
+  Future<void> selectWatchDate(BuildContext context) async {
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (selectedDate != null) {
+      setState(() {
+        watchDate = selectedDate;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -80,14 +97,10 @@ class _notesScreenState extends State<notesScreen> {
                 posterPath: posterPath,
                 rating: currentRating,
                 notes: noteText,
+                watchDate: watchDate,
               );
               controller.markAsWatched(media);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        Search()),
-                );// Handle save action here, e.g., save notes and rating to database
+                Navigator.pop(context);// Handle save action here, e.g., save notes and rating to database
             },
           ),
         ],
@@ -111,7 +124,7 @@ class _notesScreenState extends State<notesScreen> {
               Center(
                 child: Image.network(
                   '${Controller.mainImgURL}/$posterPath',
-                  height: 300,
+                  height: 200,
                 ),
               ),
             const SizedBox(height: 16),
@@ -121,7 +134,7 @@ class _notesScreenState extends State<notesScreen> {
               List.generate(5, (index) =>
                 IconButton(
                     icon: Icon((index < currentRating && selected) ? Icons.star : Icons.star_border),
-                    iconSize: 35,
+                    iconSize: 25,
                     color: Colors.amber,
                     onPressed: () => 
                       setState(() {
@@ -133,6 +146,31 @@ class _notesScreenState extends State<notesScreen> {
                 ),
             ),
             SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Notes',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Row( 
+                  children: [
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today_outlined, color: Colors.white54),
+                    onPressed: () {
+                      selectWatchDate(context);
+                    },
+                  ),
+                  Text("${watchDate.month}/${watchDate.day}/${watchDate.year}",
+                    style: const TextStyle(color: Colors.white54)),
+                ],
+                )
+              ],
+            ),
             SizedBox( 
               height: 300,
               child: TextField(
