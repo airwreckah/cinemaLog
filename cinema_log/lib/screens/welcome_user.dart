@@ -10,7 +10,7 @@ import 'package:cinema_log/services/controller.dart';
 import 'custom_lists_screen.dart';
 import 'movie_details_screen.dart';
 
-// ✅ ADDED
+// ADDED
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -27,8 +27,8 @@ class WelcomeUser extends StatefulWidget {
 class WelcomeUserScreenState extends State<WelcomeUser> {
   int _selectedIndex = 0;
   final TrackerManager tracker = TrackerManager();
-  late final history = tracker.getWatchHistory();
-  
+
+  List history = [];
 
   // ADDED FUNCTION
   Future<void> loadUserData() async {
@@ -51,15 +51,24 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
     }
   }
 
+  // Load BOTH user + history properly
+  Future<void> _loadAllData() async {
+    await loadUserData();
+    await tracker.loadWatchHistory();
+
+    setState(() {
+      history = tracker.getWatchHistory();
+    });
+  }
+
   // ADDED INITSTATE
   @override
   void initState() {
     super.initState();
-    loadUserData();
+    _loadAllData();
   }
 
   @override
-  
   Widget build(BuildContext context) {
     return Scaffold(
       //header bar with logo
@@ -81,30 +90,32 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
         child: Column(
           children: <Widget>[
             if (!WelcomeUser.currentUser.watchHistoryNotEmpty())
-            Container(
-              height: 28.01,
-              padding: const EdgeInsets.symmetric(horizontal: 23.99),
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    'Your Recently Watched',
-                    textAlign: TextAlign.justify,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      height: 1.40,
+              Container(
+                height: 28.01,
+                padding: const EdgeInsets.symmetric(horizontal: 23.99),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      'Your Recently Watched',
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        height: 1.40,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             Divider(
-            indent: 20,
-            endIndent: 20,
+              indent: 20,
+              endIndent: 20,
             ),
-           Container(
+
+            
+            Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
               height: 200,
@@ -146,145 +157,145 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                     ),
             ),
 
-          //header for popular section
-          Container(
-            height: 28.01,
-            padding: const EdgeInsets.symmetric(horizontal: 23.99),
-            child: Row(
-              children: <Widget>[
-                Text(
-                  'Popular',
-                  textAlign: TextAlign.justify,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    height: 1.40,
+            //header for popular section
+            Container(
+              height: 28.01,
+              padding: const EdgeInsets.symmetric(horizontal: 23.99),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    'Popular',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                      height: 1.40,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-          ),
-          //Shows the scrollable list of movies
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 15),
-            padding: const EdgeInsets.symmetric(horizontal: 23.99),
-            height: 200,
-            child: ScrollConfiguration(
-              behavior: const MaterialScrollBehavior().copyWith(
-                dragDevices: {...PointerDeviceKind.values},
+                ],
               ),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: Welcome_new.popMedia.length,
-                itemBuilder: (context, index) {
-                  final selectedMovie = WelcomeUser.popMedia[index];
-                  return GestureDetector(
-                    child: Container(
-                      width: 160,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            Controller.mainImgURL +
-                                WelcomeUser.popMedia[index]['poster_path'] +
-                                Controller.apiKey,
+            ),
+            Divider(
+              indent: 20,
+              endIndent: 20,
+            ),
+            //Shows the scrollable list of movies
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 23.99),
+              height: 200,
+              child: ScrollConfiguration(
+                behavior: const MaterialScrollBehavior().copyWith(
+                  dragDevices: {...PointerDeviceKind.values},
+                ),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: Welcome_new.popMedia.length,
+                  itemBuilder: (context, index) {
+                    final selectedMovie = WelcomeUser.popMedia[index];
+                    return GestureDetector(
+                      child: Container(
+                        width: 160,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              Controller.mainImgURL +
+                                  WelcomeUser.popMedia[index]['poster_path'] +
+                                  Controller.apiKey,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) => MovieDetailsScreen(
-                            movieId: selectedMovie['id'].toString(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => MovieDetailsScreen(
+                              movieId: selectedMovie['id'].toString(),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ),
-          
-          //Title for Upcoming list
-          Container(
-            height: 28.01,
-            padding: const EdgeInsets.symmetric(horizontal: 23.99),
-            child: Row(
-              children: <Widget>[
-                Text(
-                  'Upcoming',
-                  textAlign: TextAlign.justify,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    height: 1.40,
-                  ),
+                        );
+                      },
+                    );
+                  },
                 ),
-              ],
-            ),
-          ),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-          ),
-          //Scrollable list
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 15),
-            padding: const EdgeInsets.symmetric(horizontal: 23.99),
-            height: 200,
-            child: ScrollConfiguration(
-              behavior: const MaterialScrollBehavior().copyWith(
-                dragDevices: {...PointerDeviceKind.values},
               ),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: Welcome_new.upcomingMovies.length,
-                itemBuilder: (context, index) {
-                  final selectedMovie = WelcomeUser.upcomingMovies[index];
-                  return GestureDetector(
-                    child: Container(
-                      width: 160,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            Controller.mainImgURL +
-                                Welcome_new
-                                    .upcomingMovies[index]['poster_path'] +
-                                Controller.apiKey,
+            ),
+
+            //Title for Upcoming list
+            Container(
+              height: 28.01,
+              padding: const EdgeInsets.symmetric(horizontal: 23.99),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    'Upcoming',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w700,
+                      height: 1.40,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(
+              indent: 20,
+              endIndent: 20,
+            ),
+            //Scrollable list
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 23.99),
+              height: 200,
+              child: ScrollConfiguration(
+                behavior: const MaterialScrollBehavior().copyWith(
+                  dragDevices: {...PointerDeviceKind.values},
+                ),
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: Welcome_new.upcomingMovies.length,
+                  itemBuilder: (context, index) {
+                    final selectedMovie = WelcomeUser.upcomingMovies[index];
+                    return GestureDetector(
+                      child: Container(
+                        width: 160,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              Controller.mainImgURL +
+                                  Welcome_new.upcomingMovies[index]['poster_path'] +
+                                  Controller.apiKey,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                        builder: (_) => MovieDetailsScreen(
-                            movieId: selectedMovie['id'].toString(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (_) => MovieDetailsScreen(
+                              movieId: selectedMovie['id'].toString(),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      ),
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
@@ -319,7 +330,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border),label: 'Lists',),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: 'Lists'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
