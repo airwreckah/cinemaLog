@@ -16,7 +16,7 @@ class TrackerManager {
 
   TrackerManager._internal();
 
-  String get _uid => FirebaseAuth.instance.currentUser!.uid;
+  String? get _uid => FirebaseAuth.instance.currentUser?.uid;
 
   final List<Media> _watchList = [];
   final List<Media> _currentlyWatching = [];
@@ -40,6 +40,8 @@ class TrackerManager {
   // ================= WATCH HISTORY =================
 
   Future<void> markAsWatched(Media media) async {
+    if (_uid == null) return;
+
     media.watched = true;
     media.watchDate = DateTime.now();
 
@@ -51,7 +53,7 @@ class TrackerManager {
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('watchHistory')
         .doc(media.id)
         .set(media.toMap());
@@ -72,6 +74,8 @@ class TrackerManager {
   List<Media> getCurrentlyWatching() => List.unmodifiable(_currentlyWatching);
 
   Future<void> markAsUnwatched(Media media) async {
+    if (_uid == null) return;
+
     media.watched = false;
     media.watchDate = null;
 
@@ -83,16 +87,18 @@ class TrackerManager {
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('watchHistory')
         .doc(media.id)
         .delete();
   }
 
   Future<void> loadWatchHistory() async {
+    if (_uid == null) return;
+
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('watchHistory')
         .get();
 
@@ -276,6 +282,8 @@ class TrackerManager {
   List<CustomList> getCustomLists() => List.unmodifiable(_customLists);
 
   Future<void> createCustomList(String name) async {
+    if (_uid == null) return;
+
     final trimmed = name.trim();
     if (trimmed.isEmpty) return;
 
@@ -287,7 +295,7 @@ class TrackerManager {
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('customLists')
         .doc(id)
         .set(list.toMap());
@@ -296,9 +304,11 @@ class TrackerManager {
   }
 
   Future<void> loadCustomLists() async {
+    if (_uid == null) return;
+
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('customLists')
         .get();
 
@@ -310,11 +320,13 @@ class TrackerManager {
   }
 
   Future<void> deleteCustomList(String id) async {
+    if (_uid == null) return;
+
     _customLists.removeWhere((l) => l.id == id);
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('customLists')
         .doc(id)
         .delete();
@@ -328,13 +340,15 @@ class TrackerManager {
   }
 
   Future<void> renameCustomList(String id, String newName) async {
+    if (_uid == null) return;
+
     final list = getCustomListById(id);
     if (list != null && newName.trim().isNotEmpty) {
       list.name = newName.trim();
 
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(_uid)
+          .doc(_uid!)
           .collection('customLists')
           .doc(id)
           .update({'name': list.name});
@@ -342,6 +356,8 @@ class TrackerManager {
   }
 
   Future<void> addMediaToCustomList(String listId, Media media) async {
+    if (_uid == null) return; 
+
     final list = getCustomListById(listId);
     if (list == null) return;
 
@@ -349,13 +365,15 @@ class TrackerManager {
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('customLists')
         .doc(listId)
         .update({'items': list.items.map((e) => e.toMap()).toList()});
   }
 
   Future<void> removeMediaFromCustomList(String listId, Media media) async {
+    if (_uid == null) return;
+
     final list = getCustomListById(listId);
     if (list == null) return;
 
@@ -363,13 +381,15 @@ class TrackerManager {
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('customLists')
         .doc(listId)
         .update({'items': list.items.map((e) => e.toMap()).toList()});
   }
 
   Future<void> setMediaStatus(Media media, String status) async {
+    if (_uid == null) return;
+
     media.watchStatus = status;
 
     if (status == 'watched') {
@@ -385,27 +405,31 @@ class TrackerManager {
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('watchStatuses')
         .doc(media.id)
         .set(media.toMap());
   }
 
   Future<void> removeMediaStatus(String mediaId) async {
+    if (_uid == null) return;
+
     _watchStatus.removeWhere((m) => m.id == mediaId);
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('watchStatuses')
         .doc(mediaId)
         .delete();
   }
 
   Future<void> loadWatchStatus() async {
+    if (_uid == null) return;
+
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(_uid)
+        .doc(_uid!)
         .collection('watchStatuses')
         .get();
 

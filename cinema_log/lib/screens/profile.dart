@@ -4,11 +4,11 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 import '../models/app_user.dart';
 import '../services/tracker_manager.dart';
-import '../screens/movie_details_screen.dart';
 import 'package:cinema_log/screens/search.dart';
 import 'package:cinema_log/screens/custom_lists_screen.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
 import 'package:cinema_log/screens/stats_screen.dart';
+import 'auth_wrapper.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -24,14 +24,12 @@ class _ProfileState extends State<Profile> {
   final TrackerManager tracker = TrackerManager();
   int _selectedIndex = 3;
 
-  // ADDED: load Firebase data
   @override
   void initState() {
     super.initState();
     _loadData();
   }
 
-  // ADDED
   Future<void> _loadData() async {
     await tracker.loadWatchHistory();
     setState(() {});
@@ -39,37 +37,24 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
-    final stats = tracker.calculateStatistics(
-      filter: StatisticsFilterType.lifetime,
-    );
-
-    final history = tracker.getWatchHistory();
-
-    int totalMoviesWatched = stats.totalMoviesWatched;
-    int averageWatchedPerMonth = stats.averageWatchedPerMonth.round();
-    String favoriteGenre = stats.mostViewedGenre;
-
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: GradientText(
           'Cinema Log',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 30,
             fontFamily: 'Inter',
             fontWeight: FontWeight.w900,
-            height: 1.33,
-            letterSpacing: -1.20,
+            letterSpacing: -1.2,
           ),
-          colors: [Color(0xFF615FFF), Color(0xFFAD46FF)],
+          colors: const [Color(0xFF615FFF), Color(0xFFAD46FF)],
         ),
       ),
+
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
 
@@ -81,18 +66,21 @@ class _ProfileState extends State<Profile> {
 
             const SizedBox(height: 10),
 
-            // Full Name
+            //  Full Name
             Text(
               Profile.currentUser.fullName ?? "No Name",
               style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
+
             const SizedBox(height: 5),
+
             Text(
-                  "Email: ${Profile.currentUser.email ?? 'Loading...'}",
-                  style: const TextStyle(color: Colors.grey),
-                ),
+              "Email: ${Profile.currentUser.email ?? 'Loading...'}",
+              style: const TextStyle(color: Colors.grey),
+            ),
 
             const SizedBox(height: 30),
+
             // ===== SETTINGS UI =====
             Center(
               child: Container(
@@ -102,50 +90,112 @@ class _ProfileState extends State<Profile> {
                   color: const Color(0xFF101728),
                   borderRadius: BorderRadius.circular(12),
                 ),
+
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector( 
+                    // ================= STATS =================
+                    GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => StatsScreen()),
+                          MaterialPageRoute(builder: (_) => StatsScreen()),
                         );
                       },
-                      child: Padding(
+                      child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text('View Your Statistics', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                        child: Text(
+                          'View Your Statistics',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
-                    Divider(),
-                    Padding(
+
+                    const Divider(),
+
+                    const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text('Update Password', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                      child: Text(
+                        'Update Password',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                    Divider(),
-                    Padding(
+
+                    const Divider(),
+
+                    const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Text('Update Email', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                      child: Text(
+                        'Update Email',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                    Divider(),
-                    Padding(
+
+                    const Divider(),
+
+                    // ================= SIGN OUT =================
+                    GestureDetector(
+                      onTap: () async {
+                        await FirebaseAuth.instance.signOut();
+
+                        WelcomeUser.currentUser = AppUser.anonymous();
+                        Profile.currentUser = AppUser.anonymous();
+
+                        if (!context.mounted) return;
+
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (_) => const AuthWrapper()),
+                          (route) => false,
+                        );
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          children: [
+                            Icon(Icons.logout, color: Color(0xFFFB2C36)),
+                            SizedBox(width: 8),
+                            Text(
+                              'Sign Out',
+                              style: TextStyle(
+                                color: Color(0xFFFB2C36),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const Divider(),
+
+                    const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
                       child: Row(
                         children: [
-                          Icon(Icons.logout, color: Color(0xFFFB2C36)),
+                          Icon(Icons.delete_forever_rounded,
+                              color: Color(0xFFFB2C36)),
                           SizedBox(width: 8),
-                          Text('Sign Out', style: TextStyle(color: Color(0xFFFB2C36), fontSize: 14, fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
-                        children: [
-                          Icon(Icons.delete_forever_rounded, color: Color(0xFFFB2C36)),
-                          SizedBox(width: 8),
-                          Text('Delete Account', style: TextStyle(color: Color(0xFFFB2C36), fontSize: 14, fontWeight: FontWeight.w600)),
+                          Text(
+                            'Delete Account',
+                            style: TextStyle(
+                              color: Color(0xFFFB2C36),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -153,10 +203,12 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
             ),
+
             const SizedBox(height: 30),
           ],
         ),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
@@ -164,23 +216,22 @@ class _ProfileState extends State<Profile> {
           if (index == 0) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => WelcomeUser()),
+              MaterialPageRoute(builder: (_) => WelcomeUser()),
             );
           } else if (index == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Search()),
+              MaterialPageRoute(builder: (_) => Search()),
             );
           } else if (index == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CustomListsScreen()),
+              MaterialPageRoute(builder: (_) => CustomListsScreen()),
             );
           } else if (index == 3) {
-            Profile.currentUser = WelcomeUser.currentUser;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Profile()),
+              MaterialPageRoute(builder: (_) => Profile()),
             );
           }
 
@@ -191,7 +242,7 @@ class _ProfileState extends State<Profile> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border),label: 'Lists',),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: 'Lists'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

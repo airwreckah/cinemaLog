@@ -49,14 +49,9 @@ class _LoginScreenState extends State<Login> {
       _passwordController.text.trim(),
     );
 
-    if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const WelcomeUser()),
-      );
-    } else {
+    if (!success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid email or password.')),
+        const SnackBar(content: Text('Invalid email or password')),
       );
     }
   }
