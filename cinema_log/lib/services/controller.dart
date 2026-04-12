@@ -301,8 +301,8 @@ class Controller {
     return _trackerManager.getCurrentlyWatching();
   }
 
-  Future<void> setMediaStatus(Media media, String status, {DateTime? customWatchDate}) async {
-    await _trackerManager.setMediaStatus(media, status, customWatchDate: customWatchDate);
+  Future<void> setMediaStatus(Media media, String status) async {
+    await _trackerManager.setMediaStatus(media, status);
   }
 
   Future<void> loadWatchStatus() async {

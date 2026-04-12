@@ -48,8 +48,10 @@ class TrackerManager {
 
     _watchList.removeWhere((m) => m.id == media.id);
 
+
     if (!_watchHistory.any((m) => m.id == media.id)) {
       _watchHistory.add(media);
+      setMediaStatus(media, 'watched');
     }
 
     await FirebaseFirestore.instance
@@ -180,6 +182,8 @@ class TrackerManager {
 
     return countsPerMonth;
   }
+
+  Map<String, int> getGenreCounts
 
   Statistics calculateStatistics({
     required StatisticsFilterType filter,
