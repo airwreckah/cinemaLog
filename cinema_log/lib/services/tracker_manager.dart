@@ -183,7 +183,7 @@ class TrackerManager {
     return countsPerMonth;
   }
 
-  Map<String, int> getGenreCounts
+  
 
   Statistics calculateStatistics({
     required StatisticsFilterType filter,

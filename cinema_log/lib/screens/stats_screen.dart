@@ -1,4 +1,5 @@
 import 'package:cinema_log/screens/notes_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -8,6 +9,7 @@ import '../screens/welcome_user.dart';
 import '../screens/search.dart';
 import '../screens/custom_lists_screen.dart';
 import '../screens/profile.dart';
+import '../models/statistics.dart';
 
 
 class StatsScreen extends StatefulWidget {
@@ -22,6 +24,11 @@ class _StatsScreenState extends State<StatsScreen> {
   int _selectedIndex = 3;
   final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   Map<int, double> sortedMoviesPerMonth = {};
+  Statistics currentStats = TrackerManager().calculateStatistics(filter: StatisticsFilterType.year);
+  late Map<String, int> genreCounts = currentStats.genreCounts;
+  List<String> genres = ['Action','Adventure','Animation', 'Comedy','Crime','Documentary',
+    'Drama', 'Family', 'Fantasy', 'History', 'Horror', 'Music', 'Mystery', 'Romance', 
+    'Science Fiction', 'TV Movie', 'Thriller', 'War', 'Western'];
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +114,17 @@ class _StatsScreenState extends State<StatsScreen> {
             height: 300,
             width: double.infinity,
             child: BarChart(
-
-            )
+              BarChartData(
+                titlesData: FlTitlesData(
+                  topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false), // Hides right Y values
+                  ),
+                ),
+              )
+            ),
           )
 
           ],
