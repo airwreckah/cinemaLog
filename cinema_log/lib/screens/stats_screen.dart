@@ -24,6 +24,8 @@ class StatsScreen extends StatefulWidget {
 
 class _StatsScreenState extends State<StatsScreen> {
   int _selectedIndex = 3;
+  String selection = 'Movies This Year';
+  final List <String> stats = <String>['Movies This Year', 'Top Genres This Year'];
   final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   Map<int, double> sortedMoviesPerMonth = {};
   Map<int, double> sortedGenresPerYear = {};
@@ -59,17 +61,32 @@ class _StatsScreenState extends State<StatsScreen> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            Text(
-              'Your Movie Stats',
-              style: TextStyle(
-              fontSize: 24,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [ Text(
+                'Your Movie Stats',
+                style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                ),
+              ),
+              DropdownButton(
+                value: selection,
+                items: stats.map<DropdownMenuItem<String>>((String value){
+                  return DropdownMenuItem<String>(value: value, child: Text(value));
+                }).toList(), 
+                onChanged: (String? value){
+                  setState((){
+                    selection = value!;
+                  });
+                }
+              )
+            ]
           ),
           SizedBox(height: 20),
-          Text('Movies watched this year',
+          Text(selection,
             style: TextStyle(
               fontSize: 20,
               fontFamily: 'Inter',
@@ -77,77 +94,12 @@ class _StatsScreenState extends State<StatsScreen> {
               color: Colors.white,
             ),
           ),
-          SizedBox(
-            height: 300,
-            width: double.infinity,
-            child: BarChart(
-              BarChartData(
-                titlesData: FlTitlesData(
-                  topTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false), // Hides right Y values
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval: 1,
-                      getTitlesWidget: monthTitles
-                    )
-                  )
-                ),
-                barGroups: sortedMoviesPerMonth.entries.map((entry) {
-                  return BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                    BarChartRodData(
-                      toY: entry.value,
-                      color: Colors.blue,
-                    ),
-                  ],
-                );
-              }).toList(),
-            ),
-          ),
+          SizedBox(height: 20),
+          Container(
+            child: _createGraph()
           ),
           SizedBox(height: 20),
-          Text('Most Watched Genres'),
-          SizedBox(height: 20),
-          SizedBox(
-            height: 300,
-            width: double.infinity,
-            child: BarChart(
-              BarChartData(
-                titlesData: FlTitlesData(
-                  topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false), // Hides right Y values
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval: 1,
-                      getTitlesWidget: genreTitles
-                    )
-                  )
-                ),
-                barGroups: sortedGenresPerYear.entries.map((entry){
-                  return BarChartGroupData(
-                    x: entry.key,
-                    barRods: [
-                      BarChartRodData(
-                        toY: entry.value,
-                        color: Colors.blue,
-                      ),
-                    ],
-                  );
-                }).toList(),
-              )
-            ),
-          )
+          
 
           ],
         ),
@@ -205,6 +157,81 @@ class _StatsScreenState extends State<StatsScreen> {
     );
   }
 
+    _createGraph(){
+      if (selection == 'Movies This Year' ){
+        return SizedBox(
+            height: 300,
+            width: double.infinity,
+            child: BarChart(
+              BarChartData(
+                titlesData: FlTitlesData(
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false), // Hides right Y values
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1,
+                      getTitlesWidget: monthTitles
+                    )
+                  )
+                ),
+                barGroups: sortedMoviesPerMonth.entries.map((entry) {
+                  return BarChartGroupData(
+                    x: entry.key,
+                    barRods: [
+                    BarChartRodData(
+                      toY: entry.value,
+                      color: Colors.blue,
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+          );
+      }
+      else if ( selection == 'Top Genres This Year'){
+        return SizedBox(
+            height: 300,
+            width: double.infinity,
+            child: BarChart(
+              BarChartData(
+                titlesData: FlTitlesData(
+                  topTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false), // Hides right Y values
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1,
+                      getTitlesWidget: genreTitles
+                    )
+                  )
+                ),
+                barGroups: sortedGenresPerYear.entries.map((entry){
+                  return BarChartGroupData(
+                    x: entry.key,
+                    barRods: [
+                      BarChartRodData(
+                        toY: entry.value,
+                        color: Colors.blue,
+                      ),
+                    ],
+                  );
+                }).toList(),
+              )
+            ),
+          );
+      }
+    }
+
     Map<int, double> sortGenres(Map<String, double> genres){
       Map<int, double> genreInt = {};
       for (var entry in genres.entries){
@@ -247,6 +274,8 @@ class _StatsScreenState extends State<StatsScreen> {
       };
       return SideTitleWidget(child: Text(genre, style: titleStyle), meta: meta);
     }
+
+
 
     Map<int, double> sortWatched(Map<String, double> watchedmovies){
       Map<int, double> watchedMoviesInt = {};
