@@ -63,6 +63,7 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
               media.title,
               style: const TextStyle(color: Color(0xFF99A1AF)),
             ),
+            trailing: Icon(Icons.edit),
             onTap: () {
               Navigator.push(
                 context,

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cinema_log/screens/notes_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +26,9 @@ class _StatsScreenState extends State<StatsScreen> {
   int _selectedIndex = 3;
   final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   Map<int, double> sortedMoviesPerMonth = {};
+  Map<int, double> sortedGenresPerYear = {};
   Statistics currentStats = TrackerManager().calculateStatistics(filter: StatisticsFilterType.year);
-  late Map<String, int> genreCounts = currentStats.genreCounts;
+  late Map<String, double> genreCounts = currentStats.genreCounts;
   List<String> genres = ['Action','Adventure','Animation', 'Comedy','Crime','Documentary',
     'Drama', 'Family', 'Fantasy', 'History', 'Horror', 'Music', 'Mystery', 'Romance', 
     'Science Fiction', 'TV Movie', 'Thriller', 'War', 'Western'];
@@ -33,7 +36,8 @@ class _StatsScreenState extends State<StatsScreen> {
   @override
   Widget build(BuildContext context) {
     Map<String, double> moviesWatchedPerMonth = TrackerManager().getMoviesWatchedByMonth(TrackerManager().getWatchHistory());
-    sortedMoviesPerMonth = sortMap(moviesWatchedPerMonth);
+    sortedMoviesPerMonth = sortWatched(moviesWatchedPerMonth);
+    sortedGenresPerYear =sortGenres(genreCounts);
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -122,7 +126,25 @@ class _StatsScreenState extends State<StatsScreen> {
                   rightTitles: AxisTitles(
                     sideTitles: SideTitles(showTitles: false), // Hides right Y values
                   ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      interval: 1,
+                      getTitlesWidget: genreTitles
+                    )
+                  )
                 ),
+                barGroups: sortedGenresPerYear.entries.map((entry){
+                  return BarChartGroupData(
+                    x: entry.key,
+                    barRods: [
+                      BarChartRodData(
+                        toY: entry.value,
+                        color: Colors.blue,
+                      ),
+                    ],
+                  );
+                }).toList(),
               )
             ),
           )
@@ -183,9 +205,50 @@ class _StatsScreenState extends State<StatsScreen> {
     );
   }
 
+    Map<int, double> sortGenres(Map<String, double> genres){
+      Map<int, double> genreInt = {};
+      for (var entry in genres.entries){
+        int genreID = parseGenre(entry.key);
+        genreInt[genreID] = entry.value;
+      }
+      return genreInt;
+    }
 
+    int parseGenre(String key){
+      int genreNum = genres.indexOf(key);
+      return genreNum;
+    }
 
-    Map<int, double> sortMap(Map<String, double> watchedmovies){
+    Widget genreTitles(double value, TitleMeta meta){
+      const titleStyle =  TextStyle(fontSize: 10);
+      String genre = switch(value){
+        0 => genres[0],
+        1 => genres[1],
+        2 => genres[2],
+        3 => genres[3],
+        4 => genres[4],
+        5 => genres[5],
+        6 => genres[6],
+        7 => genres[7],
+        8 => genres[8],
+        9 => genres[9],
+        10 => genres[10],
+        11 => genres[11],
+        12 => genres[12],
+        13 => genres[13],
+        14 => genres[14],
+        15 => genres[15],
+        16 => genres[16],
+        17 => genres[17],
+        18 => genres[18],
+        19 => genres[19],
+        _ => '',
+
+      };
+      return SideTitleWidget(child: Text(genre, style: titleStyle), meta: meta);
+    }
+
+    Map<int, double> sortWatched(Map<String, double> watchedmovies){
       Map<int, double> watchedMoviesInt = {};
       for (var entry in watchedmovies.entries) {
         int monthNum = parseMonth(entry.key);

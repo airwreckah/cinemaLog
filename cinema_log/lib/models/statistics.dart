@@ -3,7 +3,7 @@ class Statistics {
   final int totalTvShowsWatched;
   final int totalItemsWatched;
   final Map<String, int> moviesWatchedPerMonth;
-  final Map<String, int> genreCounts;
+  final Map<String, double> genreCounts;
   final String mostViewedGenre;
   final double averageWatchedPerMonth;
 

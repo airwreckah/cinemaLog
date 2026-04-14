@@ -200,7 +200,7 @@ class TrackerManager {
     int tv = 0;
 
     final Map<String, int> monthly = {};
-    final Map<String, int> genres = {};
+    final Map<String, double> genres = {};
 
     for (final media in filteredHistory) {
       final type = media.type.toLowerCase();
@@ -273,7 +273,7 @@ class TrackerManager {
     return '${months[date.month - 1]}, ${date.year}';
   }
 
-  String _getMostFrequentKey(Map<String, int> map) {
+  String _getMostFrequentKey(Map<String, double> map) {
     if (map.isEmpty) return 'N/A';
     return map.entries.reduce((a, b) => a.value > b.value ? a : b).key;
   }
