@@ -1,3 +1,4 @@
+import 'package:cinema_log/widgets/media_tile.dart';
 import 'package:flutter/material.dart';
 
 import '../models/media.dart';
@@ -30,54 +31,87 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
     final watching = _controller.getWatchingItems();
     final wantToWatch = _controller.getWantToWatchItems();
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Watch Status')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildSection('Watched', watched),
-          _buildSection('Watching', watching),
-          _buildSection('Want to Watch', wantToWatch),
-        ],
+    return Theme(
+      data: Theme.of(context).copyWith(
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white),
+          bodySmall: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Watch Status')),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildExpandableSection('Watched', watched),
+            _buildExpandableSection('Watching', watching),
+            _buildExpandableSection('Want to Watch', wantToWatch),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSection(String title, List<Media> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        if (items.isEmpty) const Text('No items'),
-        ...items.map((media) {
-          return ListTile(
-            title: Text(
-              media.title,
-              style: const TextStyle(color: Color(0xFF99A1AF)),
+  Widget _buildExpandableSection(String title, List<Media> items) {
+    return Card(
+      color: const Color(0xFF101728),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          iconColor: Colors.white,
+          collapsedIconColor: Colors.white,
+          title: Text(
+            '$title (${items.length})',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            trailing: Icon(Icons.edit),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => MovieDetailsScreen(
-                    mediaId: media.id.toString(),
-                    mediaType: media.type,
+          ),
+          children: items.isEmpty
+              ? [
+                  const ListTile(
+                    title: Text(
+                      'No items',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        }),
-      ],
+                ]
+              : items.map((media) {
+                  return ListTile(
+                    title: Text(media.title),
+                    subtitle: media.notes != null && media.notes!.isNotEmpty
+                        ? Text(
+                            media.notes!,
+                            style: const TextStyle(color: Colors.white),
+                          )
+                        : null,
+                    trailing: media.rating != null
+                        ? Text(
+                            '${media.rating} ⭐',
+                            style: const TextStyle(color: Colors.white),
+                          )
+                        : null,
+                    iconColor: Colors.white,
+                    textColor: Colors.white,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MovieDetailsScreen(
+                            mediaId: media.id.toString(),
+                            mediaType: media.type,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+        ),
+      ),
     );
   }
 }
