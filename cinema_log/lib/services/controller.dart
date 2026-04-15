@@ -263,9 +263,7 @@ class Controller {
   }
 
   Future<Map<int, String>> getMovieGenres() async {
-    final url = Uri.https(mainURL, '/3/genre/movie/list', {
-      'api_key': apiKey,
-    });
+    final url = Uri.https(mainURL, '/3/genre/movie/list', {'api_key': apiKey});
 
     final response = await http.get(url);
 
@@ -282,9 +280,7 @@ class Controller {
   }
 
   Future<Map<int, String>> getTvGenres() async {
-    final url = Uri.https(mainURL, '/3/genre/tv/list', {
-      'api_key': apiKey,
-    });
+    final url = Uri.https(mainURL, '/3/genre/tv/list', {'api_key': apiKey});
 
     final response = await http.get(url);
 
@@ -355,9 +351,9 @@ class Controller {
     await _trackerManager.addMediaToCustomList(listId, media);
   }
 
-Future<void> removeMediaFromCustomList(String listId, Media media) async {
-  await _trackerManager.removeMediaFromCustomList(listId, media);
-}
+  Future<void> removeMediaFromCustomList(String listId, Media media) async {
+    await _trackerManager.removeMediaFromCustomList(listId, media);
+  }
 
   CustomList? getCustomListById(String id) {
     return _trackerManager.getCustomListById(id);

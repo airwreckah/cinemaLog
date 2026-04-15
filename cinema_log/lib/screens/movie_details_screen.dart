@@ -275,8 +275,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            notesScreen(movieData: _mediaData, media: media),
+                                        builder: (context) => notesScreen(
+                                          movieData: _mediaData,
+                                          media: media,
+                                        ),
                                       ),
                                     );
 

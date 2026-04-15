@@ -12,11 +12,7 @@ class notesScreen extends StatefulWidget {
   final Map<String, dynamic>? movieData;
   final Media media;
 
-  const notesScreen({
-    super.key,
-    required this.movieData,
-    required this.media,
-  });
+  const notesScreen({super.key, required this.movieData, required this.media});
 
   @override
   State<notesScreen> createState() => _notesScreenState();
@@ -69,16 +65,31 @@ class _notesScreenState extends State<notesScreen> {
 
     final String releaseYear =
         releaseDate != 'Unknown' && releaseDate.length >= 4
-            ? releaseDate.substring(0, 4)
-            : 'Unknown';
+        ? releaseDate.substring(0, 4)
+        : 'Unknown';
 
     final String rating = _movieData?['vote_average']?.toString() ?? 'N/A';
 
     final String runtime = _movieData?['runtime'] != null
         ? '${_movieData!['runtime']} min'
         : _movieData?['number_of_seasons'] != null
-            ? '${_movieData!['number_of_seasons']} season${_movieData!['number_of_seasons'] == 1 ? '' : 's'}'
-            : 'Unknown';
+        ? '${_movieData!['number_of_seasons']} season${_movieData!['number_of_seasons'] == 1 ? '' : 's'}'
+        : 'Unknown';
+
+    final List genresList = _movieData!['genres'] ?? [];
+    final String genre = genresList.isNotEmpty
+        ? genresList.first['name'] ?? ''
+        : '';
+
+    final media = Media(
+      id: widget.media.id,
+      title: title,
+      type: widget.media.type,
+      year: int.tryParse(releaseYear) ?? 0,
+      genre: genre,
+      posterPath: posterPath,
+      watchStatus: widget.media.watchStatus,
+    );
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -102,7 +113,7 @@ class _notesScreenState extends State<notesScreen> {
             color: Colors.white,
             onPressed: () async {
               await controller.markAsWatchedWithNotes(
-                widget.media,
+                media,
                 noteText,
                 currentRating,
               );
@@ -262,7 +273,10 @@ class _notesScreenState extends State<notesScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border), label: 'Lists'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark_border),
+            label: 'Lists',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
