@@ -1,6 +1,7 @@
 import 'package:cinema_log/widgets/media_tile.dart';
 import 'package:flutter/material.dart';
 
+import '../screens/notes_screen.dart';
 import '../models/media.dart';
 import '../services/controller.dart';
 import 'movie_details_screen.dart';
@@ -41,7 +42,13 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Watch Status')),
+        appBar: AppBar(title: const Text('Watch Status',
+        style: TextStyle(
+          color: Colors.white,
+          )),
+          iconTheme: const IconThemeData(
+            color: Colors.white
+          )),
         body: ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -79,22 +86,44 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                ]
-              : items.map((media) {
+                ] : items.map((media) {
                   return ListTile(
-                    title: Text(media.title),
-                    subtitle: media.notes != null && media.notes!.isNotEmpty
+                    title: Text(media.title,
+                      style: TextStyle(fontWeight: FontWeight.bold)
+                      ),
+                    subtitle: Column( mainAxisAlignment: MainAxisAlignment.start, 
+                    crossAxisAlignment: CrossAxisAlignment.start, 
+                    children: [
+                      Divider(color: Colors.white54),
+                      ?media.rating != null
+                        ? Text(
+                            '${media.rating} ⭐',
+                            style: const TextStyle(color: Colors.white,
+                            fontWeight: FontWeight.w600),
+                          )
+                        : null,
+                      ?media.notes != null && media.notes!.isNotEmpty
                         ? Text(
                             media.notes!,
                             style: const TextStyle(color: Colors.white),
                           )
                         : null,
-                    trailing: media.rating != null
-                        ? Text(
-                            '${media.rating} ⭐',
-                            style: const TextStyle(color: Colors.white),
-                          )
-                        : null,
+                      ],
+                    ),
+                    trailing: TextButton(
+                      child: const Text('Details',
+                      style: TextStyle(color: Colors.white)),
+                      onPressed: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => notesScreen(
+                              media: media,
+                              
+                            ),
+                          ),
+                        );
+                      }),
                     iconColor: Colors.white,
                     textColor: Colors.white,
                     onTap: () {

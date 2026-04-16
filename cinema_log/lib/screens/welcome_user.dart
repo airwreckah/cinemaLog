@@ -125,8 +125,8 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                       itemCount: history.length,
                       itemBuilder: (context, index) {
                         final media = history[index];
-                        final posterUrl = media.posterPath != null
-                            ? '${Controller.mainImgURL}${media.posterPath}'
+                        final posterUrl = media.poster_path != null
+                            ? '${Controller.mainImgURL}${media.poster_path}'
                             : null;
 
                         return GestureDetector(
@@ -193,23 +193,23 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                   itemCount: Welcome_new.popMedia.length,
                   itemBuilder: (context, index) {
                     final selectedMovie = WelcomeUser.popMedia[index];
-                    final posterPath = selectedMovie['poster_path'];
+                    final poster_path = selectedMovie['poster_path'];
 
                     return GestureDetector(
                       child: Container(
                         width: 160,
                         padding: const EdgeInsets.all(5),
-                        decoration: posterPath != null
+                        decoration: poster_path != null
                             ? BoxDecoration(
                                 image: DecorationImage(
                                   image: NetworkImage(
-                                    '${Controller.mainImgURL}$posterPath',
+                                    '${Controller.mainImgURL}$poster_path',
                                   ),
                                   fit: BoxFit.cover,
                                 ),
                               )
                             : null,
-                        child: posterPath == null
+                        child: poster_path == null
                             ? const Icon(Icons.movie, color: Colors.white)
                             : null,
                       ),
@@ -267,23 +267,23 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                   itemCount: Welcome_new.upcomingMovies.length,
                   itemBuilder: (context, index) {
                     final selectedMovie = WelcomeUser.upcomingMovies[index];
-                    final posterPath = selectedMovie['poster_path'];
+                    final poster_path = selectedMovie['poster_path'];
 
                     return GestureDetector(
                       child: Container(
                         width: 160,
                         padding: const EdgeInsets.all(5),
-                        decoration: posterPath != null
+                        decoration: poster_path != null
                             ? BoxDecoration(
                                 image: DecorationImage(
                                   image: NetworkImage(
-                                    '${Controller.mainImgURL}$posterPath',
+                                    '${Controller.mainImgURL}$poster_path',
                                   ),
                                   fit: BoxFit.cover,
                                 ),
                               )
                             : null,
-                        child: posterPath == null
+                        child: poster_path == null
                             ? const Icon(Icons.movie, color: Colors.white)
                             : null,
                       ),

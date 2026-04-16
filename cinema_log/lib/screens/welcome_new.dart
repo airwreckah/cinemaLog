@@ -171,7 +171,7 @@ class _WelcomeNewScreenState extends State<Welcome_new>{
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       image : DecorationImage(
-                        image: NetworkImage(Controller.mainImgURL + Welcome_new.upcomingMovies[index]['poster_path'])
+                        image: NetworkImage(Controller.mainImgURL + Welcome_new.upcomingMovies[index]['poster_path']) //image path
                       )
                     )
                   );

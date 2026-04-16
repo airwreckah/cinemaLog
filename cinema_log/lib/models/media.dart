@@ -4,7 +4,7 @@ class Media {
   final String type;
   final int year;
   final String genre;
-  final String? posterPath;
+  final String? poster_path;
   bool watched;
   int? rating;
   String? notes;
@@ -18,7 +18,7 @@ class Media {
     required this.type,
     required this.year,
     required this.genre,
-    this.posterPath,
+    required this.poster_path,
     this.watched = false,
     this.watchDate,
     this.rating,
@@ -33,7 +33,7 @@ class Media {
       'type': type,
       'year': year,
       'genre': genre,
-      'posterPath': posterPath,
+      'poster_path': poster_path,
       'watched': watched,
       'watchDate': watchDate?.toIso8601String(),
       'rating': rating,
@@ -49,7 +49,7 @@ class Media {
       type: map['type'],
       year: map['year'],
       genre: map['genre'],
-      posterPath: map['posterPath'],
+      poster_path: map['poster_path'],
       watched: map['watched'] ?? false,
       watchDate: map['watchDate'] != null
           ? DateTime.parse(map['watchDate'])

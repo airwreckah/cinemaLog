@@ -31,15 +31,15 @@ class _MovieScreenState extends State<Movie> {
     final String title = movie['title'] ?? 'Untitled';
     final String overview = movie['overview'] ?? 'No summary available.';
     final String releaseDate = movie['release_date'] ?? 'Unknown';
-    final String posterPath = movie['poster_path'] ?? '';
+    final String poster_path = movie['poster_path'] ?? '';
     final String rating = movie['vote_average']?.toString() ?? 'N/A';
     final String releaseYear = releaseDate != 'Unknown' && releaseDate.length >= 4
         ? releaseDate.substring(0, 4)
         : 'Unknown';
     final String runtime = movie['runtime'] != null ? '${movie['runtime']} min' : 'Unknown';
 
-    final String imageUrl = posterPath.isNotEmpty
-        ? 'https://image.tmdb.org/t/p/w500$posterPath'
+    final String imageUrl = poster_path.isNotEmpty
+        ? 'https://image.tmdb.org/t/p/w500$poster_path'
         : '';
 
     return Scaffold(
@@ -283,6 +283,7 @@ class _MovieScreenState extends State<Movie> {
                                 0
                           : 0,
                       genre: 'Unknown',
+                      poster_path: movie['poster_path'],
                     );
 
                     _controller.addMediaToCustomList(customList.id, media);
@@ -319,7 +320,7 @@ class _MovieScreenState extends State<Movie> {
                 0
           : 0,
       genre: 'Unknown',
-      posterPath: movieData['poster_path'],
+      poster_path: movieData['poster_path'],
     );
 
     final isWatched = _controller.isWatched(media.id);

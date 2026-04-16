@@ -128,6 +128,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       genre: _getGenre(),
       watched: false,
       watchDate: null,
+      poster_path: _getPosterPath(),
     );
   }
 
@@ -155,7 +156,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
     final title = _getTitle();
     final overview = _getOverview();
-    final posterPath = _getPosterPath();
+    final poster_path = _getPosterPath();
     final releaseYear = _getReleaseYear();
     final rating = _getRating();
     final runtimeOrSeasons = _getRuntimeOrSeasons();
@@ -194,10 +195,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            if (posterPath != null)
+            if (poster_path != null)
               Center(
                 child: Image.network(
-                  '${Controller.mainImgURL}/$posterPath',
+                  '${Controller.mainImgURL}/$poster_path',
                   height: 300,
                 ),
               ),
@@ -276,7 +277,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => notesScreen(
-                                          movieData: _mediaData,
                                           media: media,
                                         ),
                                       ),

@@ -24,11 +24,11 @@ class MediaTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         contentPadding: const EdgeInsets.all(10),
-        leading: media.posterPath != null && media.posterPath!.isNotEmpty
+        leading: media.poster_path != null && media.poster_path!.isNotEmpty
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.network(
-                  '${Controller.mainImgURL}/${media.posterPath}',
+                  '${Controller.mainImgURL}/${media.poster_path}',
                   width: 50,
                   height: 75,
                   fit: BoxFit.cover,

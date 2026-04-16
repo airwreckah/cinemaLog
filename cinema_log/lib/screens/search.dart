@@ -292,7 +292,7 @@ class _SearchScreenState extends State<Search> {
                             final title = _getTitle(media);
                             final releaseDate = _getReleaseDate(media);
                             final mediaTypeLabel = _getMediaTypeLabel(media);
-                            final posterPath = media['poster_path'];
+                            final poster_path = media['poster_path'];
 
                             return Card(
                               color: const Color(0xFF0A1228),
@@ -314,11 +314,11 @@ class _SearchScreenState extends State<Search> {
                                     ),
                                   );
                                 },
-                                leading: posterPath != null
+                                leading: poster_path != null
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: Image.network(
-                                          '${Controller.mainImgURL}/$posterPath',
+                                          '${Controller.mainImgURL}/$poster_path',
                                           width: 50,
                                           fit: BoxFit.cover,
                                         ),

@@ -9,10 +9,10 @@ import '../models/media.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class notesScreen extends StatefulWidget {
-  final Map<String, dynamic>? movieData;
+  
   final Media media;
 
-  const notesScreen({super.key, required this.movieData, required this.media});
+  const notesScreen({super.key, required this.media});
 
   @override
   State<notesScreen> createState() => _notesScreenState();
@@ -25,8 +25,9 @@ class _notesScreenState extends State<notesScreen> {
   Map<String, dynamic>? _movieData;
   int currentRating = 0;
   DateTime watchDate = DateTime.now();
-
+  Map<String, dynamic>? movieData;
   final Controller controller = Controller();
+  
 
   Future<void> selectWatchDate(BuildContext context) async {
     final DateTime? selectedDate = await showDatePicker(
@@ -46,7 +47,7 @@ class _notesScreenState extends State<notesScreen> {
   @override
   void initState() {
     super.initState();
-    _movieData = widget.movieData;
+    _movieData = widget.media.toMap();
   }
 
   @override
@@ -56,7 +57,7 @@ class _notesScreenState extends State<notesScreen> {
         : (_movieData?['title'] ?? _movieData?['name'] ?? 'Untitled');
 
     final overview = _movieData?['overview'] ?? 'No summary available.';
-    final posterPath = _movieData?['poster_path'];
+    final poster_path = _movieData?['poster_path'];
 
     final String releaseDate =
         _movieData?['release_date'] ??
@@ -80,16 +81,10 @@ class _notesScreenState extends State<notesScreen> {
     final String genre = genresList.isNotEmpty
         ? genresList.first['name'] ?? ''
         : '';
-
-    final media = Media(
-      id: widget.media.id,
-      title: title,
-      type: widget.media.type,
-      year: int.tryParse(releaseYear) ?? 0,
-      genre: genre,
-      posterPath: posterPath,
-      watchStatus: widget.media.watchStatus,
-    );
+    String currentNotes = widget.media.notes ?? '';
+    int currentRating = widget.media.rating ?? 0;
+    final TextEditingController notesController = TextEditingController(text: currentNotes);
+    
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -113,8 +108,8 @@ class _notesScreenState extends State<notesScreen> {
             color: Colors.white,
             onPressed: () async {
               await controller.markAsWatchedWithNotes(
-                media,
-                noteText,
+                widget.media,
+                notesController.text,
                 currentRating,
               );
 
@@ -145,14 +140,24 @@ class _notesScreenState extends State<notesScreen> {
             const SizedBox(height: 16),
 
             // POSTER
-            if (posterPath != null)
+            if (poster_path != null)
               Center(
                 child: Image.network(
-                  '${Controller.mainImgURL}/$posterPath',
+                  '${Controller.mainImgURL}/$poster_path',
                   height: 200,
                 ),
               ),
-
+            if (poster_path == null)
+              Container(
+                height: 200,
+                color: Colors.white24,
+                child: const Center(
+                  child: Text(
+                    'No Image',
+                    style: TextStyle(color: Colors.white54),
+                  ),
+                ),
+              ),
             const SizedBox(height: 16),
 
             // ⭐ RATING STARS
@@ -215,12 +220,13 @@ class _notesScreenState extends State<notesScreen> {
             const SizedBox(height: 10),
 
             // NOTES INPUT
-            SizedBox(
+            if(currentNotes.isNotEmpty)
+              SizedBox(
               height: 300,
               child: TextField(
+                controller: notesController,
                 maxLines: 30,
                 decoration: InputDecoration(
-                  hintText: 'Write your notes here...',
                   hintStyle: const TextStyle(color: Colors.white54),
                   filled: true,
                   fillColor: Colors.black,
@@ -231,10 +237,32 @@ class _notesScreenState extends State<notesScreen> {
                 ),
                 style: const TextStyle(color: Colors.white),
                 onChanged: (input) {
-                  noteText = input;
+                  noteText = notesController.text;
                 },
               ),
             ),
+            if(currentNotes.isEmpty)
+              SizedBox(
+                height: 300,
+                child: TextField(
+                  controller: notesController,
+                  maxLines: 30,
+                  decoration: InputDecoration(
+                    hintText: 'Write your notes here...',
+                    hintStyle: const TextStyle(color: Colors.white54),
+                    filled: true,
+                    fillColor: Colors.black,
+                    border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white54),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  style: const TextStyle(color: Colors.white),
+                  onChanged: (input) {
+                    noteText = notesController.text;
+                  },
+                ),
+              ),
           ],
         ),
       ),
