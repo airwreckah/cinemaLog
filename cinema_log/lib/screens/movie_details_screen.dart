@@ -272,6 +272,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 TextButton(
                   onPressed: () {
                     showModalBottomSheet(
+                      backgroundColor: Color(0xFF340090),
                       context: context,
                       builder: (_) {
                         return SafeArea(
@@ -282,8 +283,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ListTile(
                                   leading: const Icon(
                                     Icons.check_circle_outline,
+                                    color: Colors.white,
                                   ),
-                                  title: const Text('Mark as Watched'),
+                                  title: const Text('Mark as Watched',
+                                    style: TextStyle(color: Colors.white)),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'watched';
@@ -313,8 +316,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus == 'watched')
                                 ListTile(
-                                  leading: const Icon(Icons.cancel_outlined),
-                                  title: const Text('Mark as Unwatched'),
+                                  leading: const Icon(Icons.cancel_outlined, color: Colors.white),
+                                  title: const Text('Mark as Unwatched',
+                                    style: TextStyle(color: Colors.white)),
                                   onTap: () async {
                                     Navigator.pop(context);
                                     await _controller.setMediaStatus(
@@ -341,8 +345,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ListTile(
                                   leading: const Icon(
                                     Icons.play_circle_outline,
+                                    color: Colors.white,
                                   ),
-                                  title: const Text('Mark as Watching'),
+                                  title: const Text('Mark as Watching',
+                                    style: TextStyle(color: Colors.white)),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'watching';
@@ -365,8 +371,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ListTile(
                                   leading: const Icon(
                                     Icons.play_circle_outline,
+                                    color: Colors.white,
                                   ),
-                                  title: const Text('Watching'),
+                                  title: const Text('Mark as Not Watching',
+                                    style: TextStyle(color: Colors.white)),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'unwatched';
@@ -375,7 +383,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       media,
                                       'unwatched',
                                     );
-                                    Navigator.pop(context);
+                                    Navigator.push(context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            MovieDetailsScreen(mediaId: media.id, mediaType: media.type),
+                                      ),
+                                    );
 
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
@@ -387,8 +400,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus != 'want_to_watch')
                                 ListTile(
-                                  leading: const Icon(Icons.bookmark_border),
-                                  title: const Text('Want to Watch'),
+                                  leading: const Icon(Icons.bookmark_border, color: Colors.white),
+                                  title: const Text('Want to Watch',
+                                    style: TextStyle(color: Colors.white)),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'want_to_watch';
@@ -411,9 +425,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus == 'want_to_watch')
                                 ListTile(
-                                  leading: const Icon(Icons.bookmark_border),
+                                  leading: const Icon(Icons.bookmark_border, color: Colors.white),
                                   title: const Text(
                                     'Remove from want to watch',
+                                    style: TextStyle(color: Colors.white),
                                   ),
                                   onTap: () async {
                                     setState(() {
