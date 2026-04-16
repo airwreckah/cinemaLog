@@ -6,7 +6,7 @@ import '../models/media.dart';
 import '../models/statistics.dart';
 import '../models/custom_list.dart';
 
-enum StatisticsFilterType { month, year, lifetime }
+enum StatisticsFilterType { week, month, year, lifetime }
 
 class TrackerManager {
   static final TrackerManager _instance = TrackerManager._internal();
@@ -44,10 +44,9 @@ class TrackerManager {
     if (_uid == null) return;
 
     media.watched = true;
-    media.watchDate =  media.watchDate ?? DateTime.now();
+    media.watchDate = media.watchDate ?? DateTime.now();
 
     _watchList.removeWhere((m) => m.id == media.id);
-
 
     if (!_watchHistory.any((m) => m.id == media.id)) {
       _watchHistory.add(media);
@@ -183,8 +182,6 @@ class TrackerManager {
     return countsPerMonth;
   }
 
-  
-
   Statistics calculateStatistics({
     required StatisticsFilterType filter,
     int? month,
@@ -244,6 +241,9 @@ class TrackerManager {
       final d = media.watchDate!;
 
       switch (filter) {
+        case StatisticsFilterType.week:
+          final weekAgo = now.subtract(Duration(days: 7));
+          return d.isAfter(weekAgo);
         case StatisticsFilterType.month:
           return d.month == (month ?? now.month) &&
               d.year == (year ?? now.year);
@@ -363,7 +363,7 @@ class TrackerManager {
   }
 
   Future<void> addMediaToCustomList(String listId, Media media) async {
-    if (_uid == null) return; 
+    if (_uid == null) return;
 
     final list = getCustomListById(listId);
     if (list == null) return;
@@ -455,4 +455,28 @@ class TrackerManager {
 
   List<Media> getWantToWatchItems() =>
       _watchStatus.where((m) => m.watchStatus == 'want_to_watch').toList();
+
+  Map<String, double> getMovieGenreCounts(List<Media> history) {
+    final Map<String, double> counts = {};
+
+    for (final media in history) {
+      if (media.type.toLowerCase() == 'movie' && media.genre.isNotEmpty) {
+        counts[media.genre] = (counts[media.genre] ?? 0) + 1;
+      }
+    }
+
+    return counts;
+  }
+
+  Map<String, double> getTvGenreCounts(List<Media> history) {
+    final Map<String, double> counts = {};
+
+    for (final media in history) {
+      if (media.type.toLowerCase().contains('tv') && media.genre.isNotEmpty) {
+        counts[media.genre] = (counts[media.genre] ?? 0) + 1;
+      }
+    }
+
+    return counts;
+  }
 }
