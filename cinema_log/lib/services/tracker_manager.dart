@@ -208,7 +208,7 @@ class TrackerManager {
           final key = _formatMonthKey(media.watchDate!);
           monthly[key] = (monthly[key] ?? 0) + 1;
         }
-      } else if (type == 'tv show') {
+      } else if (type.contains('tv')) {
         tv++;
       }
 
