@@ -44,17 +44,15 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
   }
 
   Widget _buildSection(String title, List<Media> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Text(
+    return ExpansionTile(
+      title: Text(
           title,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
+      children: [        
         const SizedBox(height: 8),
         if (items.isEmpty) const Text('No items'),
         ...items.map((media) {

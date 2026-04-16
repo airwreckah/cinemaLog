@@ -1,3 +1,4 @@
+import 'package:cinema_log/models/app_user.dart';
 import 'package:cinema_log/screens/login.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +130,7 @@ class _WelcomeNewScreenState extends State<Welcome_new>{
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       image : DecorationImage(
-                        image: NetworkImage(Controller.mainImgURL + Welcome_new.popMedia[index]['poster_path'] + Controller.apiKey) //image path
+                        image: NetworkImage(Controller.mainImgURL + Welcome_new.popMedia[index]['poster_path']) //image path
                       )
                     )
                   );
@@ -170,7 +171,7 @@ class _WelcomeNewScreenState extends State<Welcome_new>{
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       image : DecorationImage(
-                        image: NetworkImage(Controller.mainImgURL + Welcome_new.upcomingMovies[index]['poster_path'] + Controller.apiKey)
+                        image: NetworkImage(Controller.mainImgURL + Welcome_new.upcomingMovies[index]['poster_path'])
                       )
                     )
                   );
