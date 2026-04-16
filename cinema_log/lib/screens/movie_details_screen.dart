@@ -1,4 +1,5 @@
 import 'package:cinema_log/screens/notes_screen.dart';
+import 'package:cinema_log/services/tracker_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -132,7 +133,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   }
 
   String _getWatchStatus() {
-    return _controller.getMediaWatchStatus(widget.mediaId) ?? '';
+    return TrackerManager().getMediaStatus(widget.mediaId) ?? '';
   }
 
   Media _buildMediaObject() {
@@ -285,17 +286,16 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     Icons.check_circle_outline,
                                     color: Colors.white,
                                   ),
-                                  title: const Text('Mark as Watched',
-                                    style: TextStyle(color: Colors.white)),
+                                  title: const Text(
+                                    'Mark as Watched',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'watched';
                                     });
                                     Navigator.pop(context);
-                                    await _controller.setMediaStatus(
-                                      media,
-                                      'watched',
-                                    );
+                                    TrackerManager().markAsWatched(media);
                                     if (context.mounted) {
                                       Navigator.push(
                                         context,
@@ -316,9 +316,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus == 'watched')
                                 ListTile(
-                                  leading: const Icon(Icons.cancel_outlined, color: Colors.white),
-                                  title: const Text('Mark as Unwatched',
-                                    style: TextStyle(color: Colors.white)),
+                                  leading: const Icon(
+                                    Icons.cancel_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  title: const Text(
+                                    'Mark as Unwatched',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     Navigator.pop(context);
                                     await _controller.setMediaStatus(
@@ -327,7 +332,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     );
 
                                     if (context.mounted) {
-                                      _controller.markAsUnwatched(media);
+                                        TrackerManager().markAsUnwatched(
+                                        media,
+                                      );
                                       setState(() {
                                         watchStatus = 'unwatched';
                                       });
@@ -347,16 +354,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     Icons.play_circle_outline,
                                     color: Colors.white,
                                   ),
-                                  title: const Text('Mark as Watching',
-                                    style: TextStyle(color: Colors.white)),
+                                  title: const Text(
+                                    'Mark as Watching',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'watching';
                                     });
-                                    await _controller.setMediaStatus(
-                                      media,
-                                      'watching',
-                                    );
+                                    TrackerManager().addToCurrentlyWatching(media);
                                     Navigator.pop(context);
 
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -373,16 +379,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     Icons.play_circle_outline,
                                     color: Colors.white,
                                   ),
-                                  title: const Text('Mark as Not Watching',
-                                    style: TextStyle(color: Colors.white)),
+                                  title: const Text(
+                                    'Mark as Not Watching',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'unwatched';
                                     });
-                                    await _controller.setMediaStatus(
-                                      media,
-                                      'unwatched',
-                                    );
+                                    TrackerManager().markAsUnwatched(media);
                                     Navigator.push(context,
                                       MaterialPageRoute(
                                         builder: (context) =>
@@ -400,19 +405,21 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus != 'want_to_watch')
                                 ListTile(
-                                  leading: const Icon(Icons.bookmark_border, color: Colors.white),
-                                  title: const Text('Want to Watch',
-                                    style: TextStyle(color: Colors.white)),
+                                  leading: const Icon(
+                                    Icons.bookmark_border,
+                                    color: Colors.white,
+                                  ),
+                                  title: const Text(
+                                    'Want to Watch',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'want_to_watch';
                                     });
                                     Navigator.pop(context);
 
-                                    await _controller.setMediaStatus(
-                                      media,
-                                      'want_to_watch',
-                                    );
+                                    TrackerManager().addToWantToWatch(media);
 
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
@@ -425,7 +432,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus == 'want_to_watch')
                                 ListTile(
-                                  leading: const Icon(Icons.bookmark_border, color: Colors.white),
+                                  leading: const Icon(
+                                    Icons.bookmark_border,
+                                    color: Colors.white,
+                                  ),
                                   title: const Text(
                                     'Remove from want to watch',
                                     style: TextStyle(color: Colors.white),

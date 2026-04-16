@@ -73,6 +73,17 @@ class TrackerManager {
     _currentlyWatching.removeWhere((m) => m.id == media.id);
   }
 
+  void addToWantToWatch(Media media) {
+    if (!_watchStatus.any((m) => m.id == media.id)) {
+      media.watchStatus = 'want_to_watch';
+      _watchStatus.add(media);
+    }
+  }
+
+  void removeFromWantToWatch(Media media) {
+    _watchStatus.removeWhere((m) => m.id == media.id);
+  }
+
   List<Media> getCurrentlyWatching() => List.unmodifiable(_currentlyWatching);
 
   Future<void> markAsUnwatched(Media media) async {
