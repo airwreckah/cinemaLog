@@ -132,8 +132,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   }
 
   String _getWatchStatus() {
-    if (_mediaData == null) return 'unwatched';
-    return _controller.getMediaWatchStatus(widget.mediaId) ?? 'unwatched';
+    return _controller.getMediaWatchStatus(widget.mediaId) ?? '';
   }
 
   Media _buildMediaObject() {
@@ -279,7 +278,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (watchStatus == 'unwatched')
+                              if (watchStatus != 'watched')
                                 ListTile(
                                   leading: const Icon(
                                     Icons.check_circle_outline,
@@ -312,7 +311,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     }
                                   },
                                 ),
-
                               if (watchStatus == 'watched')
                                 ListTile(
                                   leading: const Icon(Icons.cancel_outlined),
@@ -341,7 +339,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus != 'watching')
                                 ListTile(
-                                  leading: const Icon(Icons.play_circle_outline),
+                                  leading: const Icon(
+                                    Icons.play_circle_outline,
+                                  ),
                                   title: const Text('Mark as Watching'),
                                   onTap: () async {
                                     setState(() {
@@ -356,6 +356,30 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Marked as watching'),
+                                      ),
+                                    );
+                                    setState(() {});
+                                  },
+                                ),
+                              if (watchStatus == 'watching')
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.play_circle_outline,
+                                  ),
+                                  title: const Text('Watching'),
+                                  onTap: () async {
+                                    setState(() {
+                                      watchStatus = 'unwatched';
+                                    });
+                                    await _controller.setMediaStatus(
+                                      media,
+                                      'unwatched',
+                                    );
+                                    Navigator.pop(context);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Marked as not watching'),
                                       ),
                                     );
                                     setState(() {});
@@ -379,6 +403,34 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Added to want to watch'),
+                                      ),
+                                    );
+
+                                    setState(() {});
+                                  },
+                                ),
+                              if (watchStatus == 'want_to_watch')
+                                ListTile(
+                                  leading: const Icon(Icons.bookmark_border),
+                                  title: const Text(
+                                    'Remove from want to watch',
+                                  ),
+                                  onTap: () async {
+                                    setState(() {
+                                      watchStatus = 'unwatched';
+                                    });
+                                    Navigator.pop(context);
+
+                                    await _controller.setMediaStatus(
+                                      media,
+                                      'unwatched',
+                                    );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Removed from want to watch',
+                                        ),
                                       ),
                                     );
 

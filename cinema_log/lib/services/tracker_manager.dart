@@ -80,7 +80,6 @@ class TrackerManager {
 
     media.watched = false;
     media.watchDate = null;
-    
 
     _watchHistory.removeWhere((m) => m.id == media.id);
 
@@ -143,7 +142,7 @@ class TrackerManager {
     for (var m in _watchHistory) {
       if (m.id == id) return m;
     }
-    for(var m in _watchStatus) {
+    for (var m in _watchStatus) {
       if (m.id == id) return m;
     }
     return null;
@@ -151,8 +150,12 @@ class TrackerManager {
 
   String? getMediaStatus(String id) {
     final media = getMediaById(id);
-    if (media == null) {return 'unwatched';}
-    else {return 'watched';}
+    if (media == null) {
+      return 'null';
+      }
+    else {
+      return media.watchStatus;
+      }
   }
 
   void removeFromWatchListById(String id) {
