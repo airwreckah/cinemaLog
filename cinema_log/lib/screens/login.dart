@@ -9,6 +9,7 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/controller.dart';
 import 'welcome_user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -54,6 +55,83 @@ class _LoginScreenState extends State<Login> {
         const SnackBar(content: Text('Invalid email or password')),
       );
     }
+  }
+
+  // Reset password dialog
+  Future<void> _resetPassword() async {
+    final TextEditingController resetEmailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF101728),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            "Reset Password",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: TextField(
+            controller: resetEmailController,
+            keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              labelText: "Enter your email",
+              labelStyle: TextStyle(color: Colors.grey),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF4F39F6)),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text(
+                "Cancel",
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                final email = resetEmailController.text.trim();
+
+                if (email.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Please enter your email")),
+                  );
+                  return;
+                }
+
+                try {
+                  await FirebaseAuth.instance.sendPasswordResetEmail(
+                    email: email,
+                  );
+
+                  Navigator.pop(dialogContext);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Password reset email sent")),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error: ${e.toString()}")),
+                  );
+                }
+              },
+              child: const Text(
+                "Send",
+                style: TextStyle(color: Color(0xFF4F39F6)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -147,7 +225,7 @@ class _LoginScreenState extends State<Login> {
                       contentPadding: EdgeInsets.all(15), // Example of a moving label
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                      ), // Example of a moving label
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -161,6 +239,22 @@ class _LoginScreenState extends State<Login> {
                     ),
                   ),
                 ),
+
+                // Forgot Password button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 25.0, bottom: 10),
+                    child: TextButton(
+                      onPressed: _resetPassword,
+                      child: const Text(
+                        "Forgot Password?",
+                        style: TextStyle(color: Color(0xFF4F39F6)),
+                      ),
+                    ),
+                  ),
+                ),
+
                 Container(
                   width: 350,
                   height: 60,
@@ -188,11 +282,11 @@ class _LoginScreenState extends State<Login> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding( 
+                    Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: const Color(0xFF99A1AF), fontSize: 14),
+                        "Don't have an account? ",
+                        style: TextStyle(color: const Color(0xFF99A1AF), fontSize: 14),
                       ),
                     ),
                     GestureDetector(
@@ -203,15 +297,15 @@ class _LoginScreenState extends State<Login> {
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0), 
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: const Color(0xFF4F39F6),
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                          'Sign Up',
+                          style: TextStyle(
+                            color: const Color(0xFF4F39F6),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
                       ),
                     ),
                   ],
