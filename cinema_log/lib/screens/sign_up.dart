@@ -55,7 +55,8 @@ class _SignUpScreenState extends State<Sign_Up> {
           colors: [Color(0xFF615FFF), Color(0xFFAD46FF)], //header title
         ),
       ),
-      body: Column(
+      body: SingleChildScrollView(
+        child: Column(
         children: <Widget>[
           Center(
             child: Text(
@@ -328,7 +329,8 @@ class _SignUpScreenState extends State<Sign_Up> {
                     ),
                   ],
                 ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
