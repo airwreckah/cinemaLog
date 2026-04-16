@@ -50,7 +50,7 @@ class Media {
       year: map['year'],
       genre: map['genre'],
       poster_path: map['poster_path'],
-      watched: map['watched'] ?? false,
+      watched: map['watched'] ?? map['unwatched'],
       watchDate: map['watchDate'] != null
           ? DateTime.parse(map['watchDate'])
           : null,

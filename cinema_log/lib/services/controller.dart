@@ -70,6 +70,7 @@ class Controller {
     media.notes = notes;
     media.rating = rating;
     await _trackerManager.markAsWatched(media);
+    await _trackerManager.setMediaStatus(media, 'watched');
   }
 
   List<Media> getWatchList() {
@@ -94,6 +95,10 @@ class Controller {
 
   Media? getMediaById(String id) {
     return _trackerManager.getMediaById(id);
+  }
+
+  String? getMediaWatchStatus(String id) {
+    return _trackerManager.getMediaStatus(id);
   }
 
   void removeFromWatchListById(String id) {

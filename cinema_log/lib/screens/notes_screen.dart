@@ -82,7 +82,7 @@ class _notesScreenState extends State<notesScreen> {
         ? genresList.first['name'] ?? ''
         : '';
     String currentNotes = widget.media.notes ?? '';
-    int currentRating = widget.media.rating ?? 0;
+    currentRating = widget.media.rating ?? 0;
     final TextEditingController notesController = TextEditingController(text: currentNotes);
     
 
@@ -161,27 +161,27 @@ class _notesScreenState extends State<notesScreen> {
             const SizedBox(height: 16),
 
             // ⭐ RATING STARS
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(
-                5,
-                (index) => IconButton(
-                  icon: Icon(
-                    (index < currentRating && selected)
-                        ? Icons.star
-                        : Icons.star_border,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(
+                  5,
+                  (index) => IconButton(
+                    icon: Icon(
+                      (index < currentRating && selected)
+                          ? Icons.star
+                          : Icons.star_border,
+                    ),
+                    iconSize: 25,
+                    color: Colors.amber,
+                    onPressed: () {
+                      setState(() {
+                        selected = true;
+                        currentRating = index + 1;
+                      });
+                    },
                   ),
-                  iconSize: 25,
-                  color: Colors.amber,
-                  onPressed: () {
-                    setState(() {
-                      selected = true;
-                      currentRating = index + 1;
-                    });
-                  },
                 ),
               ),
-            ),
 
             const SizedBox(height: 16),
 
