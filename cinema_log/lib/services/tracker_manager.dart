@@ -1,12 +1,13 @@
-import 'package:cinema_log/screens/notes_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:ffi';
+import 'package:flutter/material.dart';
 import '../models/media.dart';
 import '../models/statistics.dart';
 import '../models/custom_list.dart';
 
 enum StatisticsFilterType { week, month, year, lifetime }
+
+enum StatsMediaType { combined, movies, tv }
 
 class TrackerManager {
   static final TrackerManager _instance = TrackerManager._internal();
@@ -163,10 +164,9 @@ class TrackerManager {
     final media = getMediaById(id);
     if (media == null) {
       return 'null';
-      }
-    else {
+    } else {
       return media.watchStatus;
-      }
+    }
   }
 
   void removeFromWatchListById(String id) {
@@ -209,13 +209,16 @@ class TrackerManager {
 
   Statistics calculateStatistics({
     required StatisticsFilterType filter,
+    StatsMediaType mediaType = StatsMediaType.combined,
     int? month,
     int? year,
+    DateTimeRange? customRange,
   }) {
     final filteredHistory = _getFilteredHistory(
       filter: filter,
       month: month,
       year: year,
+      customRange: customRange,
     );
 
     int movies = 0;
@@ -226,15 +229,25 @@ class TrackerManager {
 
     for (final media in filteredHistory) {
       final type = media.type.toLowerCase();
+      final isMovie = type == 'movie';
+      final isTv = type.contains('tv');
 
-      if (type == 'movie') {
+      if (mediaType == StatsMediaType.movies && !isMovie) continue;
+      if (mediaType == StatsMediaType.tv && !isTv) continue;
+
+      if (isMovie) {
         movies++;
         if (media.watchDate != null) {
           final key = _formatMonthKey(media.watchDate!);
           monthly[key] = (monthly[key] ?? 0) + 1;
         }
-      } else if (type.contains('tv')) {
+      } else if (isTv) {
         tv++;
+      }
+
+      if (media.watchDate != null) {
+        final key = _formatMonthKey(media.watchDate!);
+        monthly[key] = (monthly[key] ?? 0) + 1;
       }
 
       if (media.genre.isNotEmpty) {
@@ -245,7 +258,7 @@ class TrackerManager {
     return Statistics(
       totalMoviesWatched: movies,
       totalTvShowsWatched: tv,
-      totalItemsWatched: filteredHistory.length,
+      totalItemsWatched: movies + tv,
       moviesWatchedPerMonth: monthly,
       genreCounts: genres,
       mostViewedGenre: _getMostFrequentKey(genres),
@@ -257,6 +270,7 @@ class TrackerManager {
     required StatisticsFilterType filter,
     int? month,
     int? year,
+    DateTimeRange? customRange,
   }) {
     final now = DateTime.now();
 
@@ -275,6 +289,22 @@ class TrackerManager {
         case StatisticsFilterType.year:
           return d.year == (year ?? now.year);
         case StatisticsFilterType.lifetime:
+          if (customRange != null) {
+            final start = DateTime(
+              customRange.start.year,
+              customRange.start.month,
+              customRange.start.day,
+            );
+            final end = DateTime(
+              customRange.end.year,
+              customRange.end.month,
+              customRange.end.day,
+              23,
+              59,
+              59,
+            );
+            return d.isBefore(start) && d.isAfter(end);
+          }
           return true;
       }
     }).toList();

@@ -5,6 +5,7 @@ import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
 import 'package:cinema_log/services/controller.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 
 import '../env/env.dart';
 import '../models/custom_list.dart';
@@ -123,13 +124,17 @@ class Controller {
 
   Statistics calculateStatistics({
     required StatisticsFilterType filterType,
+    StatsMediaType mediaType = StatsMediaType.combined,
     int? month,
     int? year,
+    DateTimeRange? customRange,
   }) {
     return _trackerManager.calculateStatistics(
       filter: filterType,
+      mediaType: mediaType,
       month: month,
       year: year,
+      customRange: customRange,
     );
   }
 
@@ -311,42 +316,38 @@ class Controller {
 
     final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    final decoded = json.decode(response.body);
-    final data = Map<String, dynamic>.from(decoded as Map);
-    return data;
-  } else {
-    throw Exception('Failed to fetch movie details.');
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body);
+      final data = Map<String, dynamic>.from(decoded as Map);
+      return data;
+    } else {
+      throw Exception('Failed to fetch movie details.');
+    }
   }
-}
 
-Future<Map<String, dynamic>> fetchProviderById(String movieId) async {
-  final url = Uri.https(
-    mainURL,
-    '$movieEndPnt$movieId$providerEndPnt',
-    {
+  Future<Map<String, dynamic>> fetchProviderById(String movieId) async {
+    final url = Uri.https(mainURL, '$movieEndPnt$movieId$providerEndPnt', {
       'api_key': apiKey,
       'language': 'en-US',
-    },
-  );
+    });
 
-  final response = await http.get(url);
+    final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    final decoded = json.decode(response.body) as Map;
-    final data = Map<String, dynamic>.from(decoded);
-    final results = data['results'] as Map?;
-    if (results != null) {
-      final dataUS = results['US'] as Map?;
-      if (dataUS != null) {
-        return Map<String, dynamic>.from(dataUS);
+    if (response.statusCode == 200) {
+      final decoded = json.decode(response.body) as Map;
+      final data = Map<String, dynamic>.from(decoded);
+      final results = data['results'] as Map?;
+      if (results != null) {
+        final dataUS = results['US'] as Map?;
+        if (dataUS != null) {
+          return Map<String, dynamic>.from(dataUS);
+        }
       }
+      return <String, dynamic>{};
+    } else {
+      throw Exception('Failed to fetch movie details.');
     }
-    return <String, dynamic>{};
-  } else {
-    throw Exception('Failed to fetch movie details.');
   }
-}
 
   Future<Map<String, dynamic>> fetchTvById(String tvId) async {
     final url = Uri.https(mainURL, '$tvEndPnt$tvId', {
