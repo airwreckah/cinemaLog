@@ -111,6 +111,7 @@ class _notesScreenState extends State<notesScreen> {
                 widget.media,
                 notesController.text,
                 currentRating,
+                watchDate,
               );
 
               if (context.mounted) {
