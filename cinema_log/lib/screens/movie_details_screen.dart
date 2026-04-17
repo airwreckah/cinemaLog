@@ -120,16 +120,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     return 'Unknown';
   }
 
-  //Return ALL genres
   String _getGenre() {
     if (_mediaData == null) return '';
 
     final genres = _mediaData!['genres'];
     if (genres is List && genres.isNotEmpty) {
-      return genres
-          .map((g) => g['name'])
-          .where((name) => name != null)
-          .join(', ');
+      return genres.first['name'] ?? '';
     }
 
     return '';
@@ -180,7 +176,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     final releaseYear = _getReleaseYear();
     final rating = _getRating();
     final runtimeOrSeasons = _getRuntimeOrSeasons();
-    final genre = _getGenre();
 
     final media = _buildMediaObject();
 
@@ -216,18 +211,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // SHOW GENRES
-            if (genre.isNotEmpty)
-              Text(
-                genre,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
-              ),
-            const SizedBox(height: 16),
-
             if (poster_path != null)
               Center(
                 child: Image.network(
@@ -249,6 +232,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         fontSize: 16,
                         color: Colors.white70,
                         fontFamily: 'Arimo',
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                   ],
@@ -260,6 +244,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     fontSize: 16,
                     color: Colors.white70,
                     fontFamily: 'Arimo',
+                    fontWeight: FontWeight.normal,
                   ),
                 ),
                 const Icon(Icons.circle, color: Colors.white70, size: 10),
@@ -273,13 +258,262 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         fontSize: 16,
                         color: Colors.white70,
                         fontFamily: 'Arimo',
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                   ],
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      backgroundColor: Color(0xFF340090),
+                      context: context,
+                      builder: (_) {
+                        return SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (watchStatus != 'watched')
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.white,
+                                  ),
+                                  title: const Text('Mark as Watched',
+                                    style: TextStyle(color: Colors.white)),
+                                  onTap: () async {
+                                    setState(() {
+                                      watchStatus = 'watched';
+                                    });
+                                    Navigator.pop(context);
+                                    await _controller.setMediaStatus(
+                                      media,
+                                      'watched',
+                                    );
+                                    if (context.mounted) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              notesScreen(media: media),
+                                        ),
+                                      );
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Marked as watched'),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              if (watchStatus == 'watched')
+                                ListTile(
+                                  leading: const Icon(Icons.cancel_outlined, color: Colors.white),
+                                  title: const Text('Mark as Unwatched',
+                                    style: TextStyle(color: Colors.white)),
+                                  onTap: () async {
+                                    Navigator.pop(context);
+                                    await _controller.setMediaStatus(
+                                      media,
+                                      'unwatched',
+                                    );
 
+                                    if (context.mounted) {
+                                      _controller.markAsUnwatched(media);
+                                      setState(() {
+                                        watchStatus = 'unwatched';
+                                      });
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Marked as unwatched'),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              if (watchStatus != 'watching')
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.play_circle_outline,
+                                    color: Colors.white,
+                                  ),
+                                  title: const Text('Mark as Watching',
+                                    style: TextStyle(color: Colors.white)),
+                                  onTap: () async {
+                                    setState(() {
+                                      watchStatus = 'watching';
+                                    });
+                                    await _controller.setMediaStatus(
+                                      media,
+                                      'watching',
+                                    );
+                                    Navigator.pop(context);
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Marked as watching'),
+                                      ),
+                                    );
+                                    setState(() {});
+                                  },
+                                ),
+                              if (watchStatus == 'watching')
+                                ListTile(
+                                  leading: const Icon(
+                                    Icons.play_circle_outline,
+                                    color: Colors.white,
+                                  ),
+                                  title: const Text('Mark as Not Watching',
+                                    style: TextStyle(color: Colors.white)),
+                                  onTap: () async {
+                                    setState(() {
+                                      watchStatus = 'unwatched';
+                                    });
+                                    await _controller.setMediaStatus(
+                                      media,
+                                      'unwatched',
+                                    );
+                                    Navigator.push(context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            MovieDetailsScreen(mediaId: media.id, mediaType: media.type),
+                                      ),
+                                    );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Marked as not watching'),
+                                      ),
+                                    );
+                                    setState(() {});
+                                  },
+                                ),
+                              if (watchStatus != 'want_to_watch')
+                                ListTile(
+                                  leading: const Icon(Icons.bookmark_border, color: Colors.white),
+                                  title: const Text('Want to Watch',
+                                    style: TextStyle(color: Colors.white)),
+                                  onTap: () async {
+                                    setState(() {
+                                      watchStatus = 'want_to_watch';
+                                    });
+                                    Navigator.pop(context);
+
+                                    await _controller.setMediaStatus(
+                                      media,
+                                      'want_to_watch',
+                                    );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Added to want to watch'),
+                                      ),
+                                    );
+
+                                    setState(() {});
+                                  },
+                                ),
+                              if (watchStatus == 'want_to_watch')
+                                ListTile(
+                                  leading: const Icon(Icons.bookmark_border, color: Colors.white),
+                                  title: const Text(
+                                    'Remove from want to watch',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onTap: () async {
+                                    setState(() {
+                                      watchStatus = 'unwatched';
+                                    });
+                                    Navigator.pop(context);
+
+                                    await _controller.setMediaStatus(
+                                      media,
+                                      'unwatched',
+                                    );
+
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Removed from want to watch',
+                                        ),
+                                      ),
+                                    );
+
+                                    setState(() {});
+                                  },
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFF352c48),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Watch Status'),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: () async {
+                    await _controller.loadCustomLists();
+                    final lists = _controller.getCustomLists();
+
+                    if (lists.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('No custom lists available'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (_) {
+                        return ListView(
+                          children: lists.map((list) {
+                            return ListTile(
+                              title: Text(list.name),
+                              onTap: () async {
+                                await _controller.addMediaToCustomList(
+                                  list.id,
+                                  media,
+                                );
+
+                                Navigator.pop(context);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Added to "${list.name}"'),
+                                  ),
+                                );
+                              },
+                            );
+                          }).toList(),
+                        );
+                      },
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF352c48),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Add to Custom List'),
+                ),
+              ],
+            ),
             const SizedBox(height: 24),
             const Text(
               'Summary',
