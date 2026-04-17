@@ -9,7 +9,6 @@ import '../models/media.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class notesScreen extends StatefulWidget {
-  
   final Media media;
 
   const notesScreen({super.key, required this.media});
@@ -27,12 +26,11 @@ class _notesScreenState extends State<notesScreen> {
   DateTime watchDate = DateTime.now();
   Map<String, dynamic>? movieData;
   final Controller controller = Controller();
-  
 
   Future<void> selectWatchDate(BuildContext context) async {
     final DateTime? selectedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: watchDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -48,6 +46,8 @@ class _notesScreenState extends State<notesScreen> {
   void initState() {
     super.initState();
     _movieData = widget.media.toMap();
+    watchDate = widget.media.watchDate ?? DateTime.now();
+    currentRating = widget.media.rating ?? 0;
   }
 
   @override
@@ -82,9 +82,9 @@ class _notesScreenState extends State<notesScreen> {
         ? genresList.first['name'] ?? ''
         : '';
     String currentNotes = widget.media.notes ?? '';
-    currentRating = widget.media.rating ?? 0;
-    final TextEditingController notesController = TextEditingController(text: currentNotes);
-    
+    final TextEditingController notesController = TextEditingController(
+      text: currentNotes,
+    );
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -111,6 +111,7 @@ class _notesScreenState extends State<notesScreen> {
                 widget.media,
                 notesController.text,
                 currentRating,
+                watchDate,
               );
 
               if (context.mounted) {
@@ -161,27 +162,24 @@ class _notesScreenState extends State<notesScreen> {
             const SizedBox(height: 16),
 
             // ⭐ RATING STARS
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(
-                  5,
-                  (index) => IconButton(
-                    icon: Icon(
-                      (index < currentRating && selected)
-                          ? Icons.star
-                          : Icons.star_border,
-                    ),
-                    iconSize: 25,
-                    color: Colors.amber,
-                    onPressed: () {
-                      setState(() {
-                        selected = true;
-                        currentRating = index + 1;
-                      });
-                    },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(
+                5,
+                (index) => IconButton(
+                  icon: Icon(
+                    (index < currentRating) ? Icons.star : Icons.star_border,
                   ),
+                  iconSize: 25,
+                  color: Colors.amber,
+                  onPressed: () {
+                    setState(() {
+                      currentRating = index + 1;
+                    });
+                  },
                 ),
               ),
+            ),
 
             const SizedBox(height: 16),
 
@@ -220,28 +218,28 @@ class _notesScreenState extends State<notesScreen> {
             const SizedBox(height: 10),
 
             // NOTES INPUT
-            if(currentNotes.isNotEmpty)
+            if (currentNotes.isNotEmpty)
               SizedBox(
-              height: 300,
-              child: TextField(
-                controller: notesController,
-                maxLines: 30,
-                decoration: InputDecoration(
-                  hintStyle: const TextStyle(color: Colors.white54),
-                  filled: true,
-                  fillColor: Colors.black,
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white54),
-                    borderRadius: BorderRadius.circular(8),
+                height: 300,
+                child: TextField(
+                  controller: notesController,
+                  maxLines: 30,
+                  decoration: InputDecoration(
+                    hintStyle: const TextStyle(color: Colors.white54),
+                    filled: true,
+                    fillColor: Colors.black,
+                    border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.white54),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
+                  style: const TextStyle(color: Colors.white),
+                  onChanged: (input) {
+                    noteText = notesController.text;
+                  },
                 ),
-                style: const TextStyle(color: Colors.white),
-                onChanged: (input) {
-                  noteText = notesController.text;
-                },
               ),
-            ),
-            if(currentNotes.isEmpty)
+            if (currentNotes.isEmpty)
               SizedBox(
                 height: 300,
                 child: TextField(
