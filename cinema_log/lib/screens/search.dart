@@ -69,13 +69,20 @@ class _SearchScreenState extends State<Search> {
 
       final filtered = results.where((item) {
         final mediaType = item['media_type'];
-        return mediaType == 'movie' || mediaType.contains('tv');
+        return mediaType == 'movie' || mediaType == 'tv';
       }).toList();
 
-      setState(() {
-        _allResults = filtered;
-        _applyGenreFilter();
+      // ✅ SORT BY POPULARITY (highest first)
+      filtered.sort((a, b) {
+        final double popA = (a['popularity'] ?? 0).toDouble();
+        final double popB = (b['popularity'] ?? 0).toDouble();
+        return popB.compareTo(popA);
       });
+
+      setState(() {
+      _allResults = filtered;
+      _applyGenreFilter();
+    });
     } catch (e) {
       debugPrint('Search failed: $e');
       setState(() {
