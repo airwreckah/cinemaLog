@@ -71,7 +71,6 @@ class Controller {
   ) async {
     media.notes = notes;
     media.rating = rating;
-    media.watchDate = watchDate;
     await _trackerManager.markAsWatched(media);
     await _trackerManager.setMediaStatus(media, 'watched');
   }
