@@ -1,4 +1,5 @@
 import 'package:cinema_log/screens/notes_screen.dart';
+import 'package:cinema_log/services/tracker_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
@@ -136,7 +137,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   }
 
   String _getWatchStatus() {
-    return _controller.getMediaWatchStatus(widget.mediaId) ?? '';
+    return TrackerManager().getMediaStatus(widget.mediaId) ?? '';
   }
 
   Media _buildMediaObject() {
@@ -309,10 +310,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       watchStatus = 'watched';
                                     });
                                     Navigator.pop(context);
-                                    await _controller.setMediaStatus(
-                                      media,
-                                      'watched',
-                                    );
+                                    TrackerManager().markAsWatched(media);
                                     if (context.mounted) {
                                       Navigator.push(
                                         context,
@@ -349,7 +347,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     );
 
                                     if (context.mounted) {
-                                      _controller.markAsUnwatched(media);
+                                        TrackerManager().markAsUnwatched(
+                                        media,
+                                      );
                                       setState(() {
                                         watchStatus = 'unwatched';
                                       });
@@ -377,10 +377,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     setState(() {
                                       watchStatus = 'watching';
                                     });
-                                    await _controller.setMediaStatus(
-                                      media,
-                                      'watching',
-                                    );
+                                    TrackerManager().addToCurrentlyWatching(media);
                                     Navigator.pop(context);
 
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -442,10 +439,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     });
                                     Navigator.pop(context);
 
-                                    await _controller.setMediaStatus(
-                                      media,
-                                      'want_to_watch',
-                                    );
+                                    TrackerManager().addToWantToWatch(media);
 
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(

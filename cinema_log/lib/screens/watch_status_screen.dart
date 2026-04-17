@@ -28,9 +28,9 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final watched = _controller.getWatchedItems();
-    final watching = _controller.getWatchingItems();
-    final wantToWatch = _controller.getWantToWatchItems();
+    final watched = _controller.getWatchedItems()..sort((a, b) => a.title.compareTo(b.title));
+    final watching = _controller.getWatchingItems()..sort((a, b) => a.title.compareTo(b.title));
+    final wantToWatch = _controller.getWantToWatchItems()..sort((a, b) => a.title.compareTo(b.title));
 
     return Theme(
       data: Theme.of(context).copyWith(
