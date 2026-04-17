@@ -72,7 +72,6 @@ class _SearchScreenState extends State<Search> {
         return mediaType == 'movie' || mediaType == 'tv';
       }).toList();
 
-      // ✅ SORT BY POPULARITY (highest first)
       filtered.sort((a, b) {
         final double popA = (a['popularity'] ?? 0).toDouble();
         final double popB = (b['popularity'] ?? 0).toDouble();
@@ -107,11 +106,9 @@ class _SearchScreenState extends State<Search> {
   }
 
   void _applyGenreFilter() {
-    if (_selectedGenre == null || _selectedGenre == 'All') {
-      _filteredResults = List.from(_allResults);
-      return;
-    }
-
+  if (_selectedGenre == null || _selectedGenre == 'All') {
+    _filteredResults = List.from(_allResults);
+  } else {
     _filteredResults = _allResults.where((media) {
       final mediaType = media['media_type'];
       final List genreIds = media['genre_ids'] ?? [];
@@ -127,6 +124,13 @@ class _SearchScreenState extends State<Search> {
       return genreNames.contains(_selectedGenre);
     }).toList();
   }
+
+  _filteredResults.sort((a, b) {
+    final double popA = (a['popularity'] ?? 0).toDouble();
+    final double popB = (b['popularity'] ?? 0).toDouble();
+    return popB.compareTo(popA);
+  });
+}
 
   List<String> _getGenreNames() {
     final allGenres = <String>{};
