@@ -105,7 +105,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   String _getRuntimeOrSeasons() {
     if (_mediaData == null) return 'Unknown';
 
-    if (widget.mediaType == 'tv') {
+    if (widget.mediaType.contains('tv')) {
       final seasons = _mediaData!['number_of_seasons'];
       if (seasons != null) {
         return '$seasons season${seasons == 1 ? '' : 's'}';
@@ -285,8 +285,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     Icons.check_circle_outline,
                                     color: Colors.white,
                                   ),
-                                  title: const Text('Mark as Watched',
-                                    style: TextStyle(color: Colors.white)),
+                                  title: const Text(
+                                    'Mark as Watched',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'watched';
@@ -316,9 +318,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus == 'watched')
                                 ListTile(
-                                  leading: const Icon(Icons.cancel_outlined, color: Colors.white),
-                                  title: const Text('Mark as Unwatched',
-                                    style: TextStyle(color: Colors.white)),
+                                  leading: const Icon(
+                                    Icons.cancel_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  title: const Text(
+                                    'Mark as Unwatched',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     Navigator.pop(context);
                                     await _controller.setMediaStatus(
@@ -347,8 +354,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     Icons.play_circle_outline,
                                     color: Colors.white,
                                   ),
-                                  title: const Text('Mark as Watching',
-                                    style: TextStyle(color: Colors.white)),
+                                  title: const Text(
+                                    'Mark as Watching',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'watching';
@@ -373,8 +382,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     Icons.play_circle_outline,
                                     color: Colors.white,
                                   ),
-                                  title: const Text('Mark as Not Watching',
-                                    style: TextStyle(color: Colors.white)),
+                                  title: const Text(
+                                    'Mark as Not Watching',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'unwatched';
@@ -383,10 +394,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       media,
                                       'unwatched',
                                     );
-                                    Navigator.push(context,
+                                    Navigator.push(
+                                      context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            MovieDetailsScreen(mediaId: media.id, mediaType: media.type),
+                                            MovieDetailsScreen(
+                                              mediaId: media.id,
+                                              mediaType: media.type,
+                                            ),
                                       ),
                                     );
 
@@ -400,9 +415,14 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus != 'want_to_watch')
                                 ListTile(
-                                  leading: const Icon(Icons.bookmark_border, color: Colors.white),
-                                  title: const Text('Want to Watch',
-                                    style: TextStyle(color: Colors.white)),
+                                  leading: const Icon(
+                                    Icons.bookmark_border,
+                                    color: Colors.white,
+                                  ),
+                                  title: const Text(
+                                    'Want to Watch',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                   onTap: () async {
                                     setState(() {
                                       watchStatus = 'want_to_watch';
@@ -425,7 +445,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                 ),
                               if (watchStatus == 'want_to_watch')
                                 ListTile(
-                                  leading: const Icon(Icons.bookmark_border, color: Colors.white),
+                                  leading: const Icon(
+                                    Icons.bookmark_border,
+                                    color: Colors.white,
+                                  ),
                                   title: const Text(
                                     'Remove from want to watch',
                                     style: TextStyle(color: Colors.white),
