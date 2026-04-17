@@ -237,10 +237,6 @@ class TrackerManager {
 
       if (isMovie) {
         movies++;
-        if (media.watchDate != null) {
-          final key = _formatMonthKey(media.watchDate!);
-          monthly[key] = (monthly[key] ?? 0) + 1;
-        }
       } else if (isTv) {
         tv++;
       }
@@ -293,17 +289,17 @@ class TrackerManager {
             final start = DateTime(
               customRange.start.year,
               customRange.start.month,
-              customRange.start.day,
+              1,
             );
             final end = DateTime(
               customRange.end.year,
-              customRange.end.month,
-              customRange.end.day,
+              customRange.end.month + 1,
+              0,
               23,
               59,
               59,
             );
-            return d.isBefore(start) && d.isAfter(end);
+            return !d.isBefore(start) && !d.isAfter(end);
           }
           return true;
       }

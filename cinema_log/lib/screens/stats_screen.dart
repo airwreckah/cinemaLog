@@ -62,6 +62,30 @@ class _StatsScreenState extends State<StatsScreen> {
     'Dec',
   ];
 
+  List<String> getAvailableMonths() {
+    final now = DateTime.now();
+    return months.sublist(0, now.month);
+  }
+
+  List<String> getAvailableYears() {
+    final currentYear = DateTime.now();
+    return List.generate(
+      currentYear.year - 1999,
+      (index) => (2000 + index).toString(),
+    );
+  }
+
+  String _buildCustomRangeLabel() {
+    if (selectedDateRange == null) {
+      return 'Choose Range';
+    }
+
+    final start = selectedDateRange!.start;
+    final end = selectedDateRange!.end;
+
+    return '${months[start.month - 1]} ${start.year} - ${months[end.month - 1]} ${end.year}';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -119,66 +143,407 @@ class _StatsScreenState extends State<StatsScreen> {
       timeSelection = value;
     });
 
-    if (value == 'Custom Range') {
-      final picked = await showDateRangePicker(
-        context: context,
-        firstDate: DateTime(2000),
-        lastDate: DateTime.now(),
-        initialDateRange: selectedDateRange,
-      );
+    Future<void> _onTimeSelectionChanged(String value) async {
+      setState(() {
+        timeSelection = value;
+      });
 
-      if (picked != null) {
-        selectedDateRange = picked;
-      } else {
-        setState(() {
-          timeSelection = 'Overall';
-        });
-      }
+      await _loadStats();
     }
 
     await _loadStats();
   }
 
-  Future<void> _pickMonth() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(
-        selectedYear ?? now.year,
-        selectedMonth ?? now.month,
-      ),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-      helpText: 'Select Month',
-      fieldHintText: 'MM/YYYY',
-    );
+  Future<void> _pickMonthYear() async {
+    int tempMonth = selectedMonth ?? DateTime.now().month;
+    int tempYear = selectedYear ?? DateTime.now().year;
 
-    if (picked != null) {
-      setState(() {
-        selectedMonth = picked.month;
-        selectedYear = picked.year;
-      });
-      await _loadStats();
-    }
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF101728),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final currentYear = DateTime.now().year;
+            final years = List.generate(10, (index) => currentYear - index);
+
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Select Month',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<int>(
+                          value: tempMonth,
+                          dropdownColor: const Color(0xFF101728),
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            labelText: 'Month',
+                            labelStyle: TextStyle(color: Colors.white70),
+                          ),
+                          items: List.generate(12, (index) {
+                            return DropdownMenuItem(
+                              value: index + 1,
+                              child: Text(
+                                months[index],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          }),
+                          onChanged: (value) {
+                            if (value == null) return;
+                            setModalState(() {
+                              tempMonth = value;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: DropdownButtonFormField<int>(
+                          value: tempYear,
+                          dropdownColor: const Color(0xFF101728),
+                          style: const TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
+                            labelText: 'Year',
+                            labelStyle: TextStyle(color: Colors.white70),
+                          ),
+                          items: years.map((year) {
+                            return DropdownMenuItem(
+                              value: year,
+                              child: Text(
+                                year.toString(),
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value == null) return;
+                            setModalState(() {
+                              tempYear = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        selectedMonth = tempMonth;
+                        selectedYear = tempYear;
+                      });
+                      Navigator.pop(context);
+                      await _loadStats();
+                    },
+                    child: const Text('Apply'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
-  Future<void> _pickYear() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime(selectedYear ?? now.year),
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now(),
-      helpText: 'Select Year',
-      fieldHintText: 'YYYY',
-    );
+  Future<void> _pickYearOnly() async {
+    int tempYear = selectedYear ?? DateTime.now().year;
 
-    if (picked != null) {
-      setState(() {
-        selectedYear = picked.year;
-      });
-      await _loadStats();
-    }
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF101728),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final currentYear = DateTime.now().year;
+            final years = List.generate(10, (index) => currentYear - index);
+
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Select Year',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<int>(
+                    value: tempYear,
+                    dropdownColor: const Color(0xFF101728),
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      labelText: 'Year',
+                      labelStyle: TextStyle(color: Colors.white70),
+                    ),
+                    items: years.map((year) {
+                      return DropdownMenuItem(
+                        value: year,
+                        child: Text(
+                          year.toString(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value == null) return;
+                      setModalState(() {
+                        tempYear = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        selectedYear = tempYear;
+                      });
+                      Navigator.pop(context);
+                      await _loadStats();
+                    },
+                    child: const Text('Apply'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _pickCustomRange() async {
+    final now = DateTime.now();
+
+    int startMonth = selectedDateRange?.start.month ?? now.month;
+    int startYear = selectedDateRange?.start.year ?? now.year;
+    int endMonth = selectedDateRange?.end.month ?? now.month;
+    int endYear = selectedDateRange?.end.year ?? now.year;
+
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF101728),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final currentYear = DateTime.now().year;
+            final years = List.generate(10, (index) => currentYear - index);
+
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Select Range',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Start',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
+                            value: startMonth,
+                            dropdownColor: const Color(0xFF101728),
+                            style: const TextStyle(color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: 'Month',
+                              labelStyle: TextStyle(color: Colors.white70),
+                            ),
+                            items: List.generate(12, (index) {
+                              return DropdownMenuItem(
+                                value: index + 1,
+                                child: Text(
+                                  months[index],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }),
+                            onChanged: (value) {
+                              if (value == null) return;
+                              setModalState(() {
+                                startMonth = value;
+                              });
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
+                            value: startYear,
+                            dropdownColor: const Color(0xFF101728),
+                            style: const TextStyle(color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: 'Year',
+                              labelStyle: TextStyle(color: Colors.white70),
+                            ),
+                            items: years.map((year) {
+                              return DropdownMenuItem(
+                                value: year,
+                                child: Text(
+                                  year.toString(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              if (value == null) return;
+                              setModalState(() {
+                                startYear = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'End',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
+                            value: endMonth,
+                            dropdownColor: const Color(0xFF101728),
+                            style: const TextStyle(color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: 'Month',
+                              labelStyle: TextStyle(color: Colors.white70),
+                            ),
+                            items: List.generate(12, (index) {
+                              return DropdownMenuItem(
+                                value: index + 1,
+                                child: Text(
+                                  months[index],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }),
+                            onChanged: (value) {
+                              if (value == null) return;
+                              setModalState(() {
+                                endMonth = value;
+                              });
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonFormField<int>(
+                            value: endYear,
+                            dropdownColor: const Color(0xFF101728),
+                            style: const TextStyle(color: Colors.white),
+                            decoration: const InputDecoration(
+                              labelText: 'Year',
+                              labelStyle: TextStyle(color: Colors.white70),
+                            ),
+                            items: years.map((year) {
+                              return DropdownMenuItem(
+                                value: year,
+                                child: Text(
+                                  year.toString(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              if (value == null) return;
+                              setModalState(() {
+                                endYear = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    ElevatedButton(
+                      onPressed: () async {
+                        final startDate = DateTime(startYear, startMonth, 1);
+                        final endDate = DateTime(endYear, endMonth + 1, 0);
+
+                        if (endDate.isBefore(startDate)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'End date must be after start date.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        setState(() {
+                          selectedDateRange = DateTimeRange(
+                            start: startDate,
+                            end: endDate,
+                          );
+                        });
+
+                        Navigator.pop(context);
+                        await _loadStats();
+                      },
+                      child: const Text('Apply'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -258,7 +623,7 @@ class _StatsScreenState extends State<StatsScreen> {
                 label: selectedMonth == null || selectedYear == null
                     ? 'Choose Month'
                     : '${months[selectedMonth! - 1]} ${selectedYear!}',
-                onTap: _pickMonth,
+                onTap: _pickMonthYear,
               ),
 
             if (timeSelection == 'Year')
@@ -266,18 +631,13 @@ class _StatsScreenState extends State<StatsScreen> {
                 label: selectedYear == null
                     ? 'Choose Year'
                     : selectedYear.toString(),
-                onTap: _pickYear,
+                onTap: _pickYearOnly,
               ),
 
-            if (timeSelection == 'Custom Range' && selectedDateRange != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  '${selectedDateRange!.start.month}/${selectedDateRange!.start.day}/${selectedDateRange!.start.year} - '
-                  '${selectedDateRange!.end.month}/${selectedDateRange!.end.day}/${selectedDateRange!.end.year}',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white70),
-                ),
+            if (timeSelection == 'Custom Range')
+              _buildPickerButton(
+                label: _buildCustomRangeLabel(),
+                onTap: _pickCustomRange,
               ),
 
             _buildSummaryCards(),
