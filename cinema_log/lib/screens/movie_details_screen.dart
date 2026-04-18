@@ -58,10 +58,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       //fetch media 
       if (widget.mediaType == 'tv') {
         data = await _controller.fetchTvById(widget.mediaId);
-        _providerData = await _controller.fetchProviderById(widget.mediaId);
+        _providerData = await _controller.fetchProviderById(widget.mediaId, 'tv');
       } else {
         data = await _controller.fetchMovieById(widget.mediaId);
-        _providerData = await _controller.fetchProviderById(widget.mediaId);
+        _providerData = await _controller.fetchProviderById(widget.mediaId, 'movie');
       }
       //parse provider data
       _providerData?.forEach((key, value) {
@@ -530,6 +530,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       return;
                     }
                     showModalBottomSheet(
+                      backgroundColor: Color(0xFF340090),
                       context: context,
                       builder: (_) {
                         return ListView(

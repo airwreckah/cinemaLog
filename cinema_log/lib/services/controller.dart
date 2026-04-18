@@ -325,28 +325,53 @@ class Controller {
     }
   }
 
-  Future<Map<String, dynamic>> fetchProviderById(String movieId) async {
-    final url = Uri.https(mainURL, '$movieEndPnt$movieId$providerEndPnt', {
-      'api_key': apiKey,
-      'language': 'en-US',
-    });
-
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final decoded = json.decode(response.body) as Map;
-      final data = Map<String, dynamic>.from(decoded);
-      final results = data['results'] as Map?;
-      if (results != null) {
-        final dataUS = results['US'] as Map?;
-        if (dataUS != null) {
-          return Map<String, dynamic>.from(dataUS);
+  Future<Map<String, dynamic>> fetchProviderById(String id, String type) async {
+    
+    if (type == 'tv') {
+      final tvURL = Uri.https(mainURL, '$tvEndPnt$id$providerEndPnt', {
+        'api_key': apiKey,
+        'language': 'en-US',
+      });
+      final response = await http.get(tvURL);
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body) as Map;
+        final data = Map<String, dynamic>.from(decoded);
+        final results = data['results'] as Map?;
+        if (results != null) {
+          final dataUS = results['US'] as Map?;
+          if (dataUS != null) {
+            return Map<String, dynamic>.from(dataUS);
+          }
         }
-      }
       return <String, dynamic>{};
-    } else {
-      throw Exception('Failed to fetch movie details.');
+      } else {
+        throw Exception('Failed to fetch TV provider details.');
+      }
+    } else if (type == 'movie') {
+      final movieurl = Uri.https(mainURL, '$movieEndPnt$id$providerEndPnt', {
+        'api_key': apiKey,
+        'language': 'en-US',
+      });
+      final response = await http.get(movieurl);
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body) as Map;
+        final data = Map<String, dynamic>.from(decoded);
+        final results = data['results'] as Map?;
+        if (results != null) {
+          final dataUS = results['US'] as Map?;
+          if (dataUS != null) {
+            return Map<String, dynamic>.from(dataUS);
+          }
+        }
+        return <String, dynamic>{};
+      } else {
+        throw Exception('Failed to fetch movie provider details.');
+      }
     }
+      else {
+        throw Exception('Invalid media type for provider details.');
+      }
   }
 
   Future<Map<String, dynamic>> fetchTvById(String tvId) async {
