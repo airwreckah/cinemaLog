@@ -375,7 +375,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   ),
                                   onTap: () async {
                                     Navigator.pop(context);
-                                    await _controller.setMediaStatus(
+                                    await TrackerManager().setMediaStatus(
                                       media,
                                       'unwatched',
                                     );
@@ -411,7 +411,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     setState(() {
                                       watchStatus = 'watching';
                                     });
-                                    TrackerManager().addToCurrentlyWatching(media);
+                                    TrackerManager().setMediaStatus(media, 'watching');
                                     Navigator.pop(context);
 
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -435,7 +435,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     setState(() {
                                       watchStatus = 'unwatched';
                                     });
-                                    await _controller.setMediaStatus(
+                                    await TrackerManager().setMediaStatus(
                                       media,
                                       'unwatched',
                                     );
@@ -473,7 +473,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     });
                                     Navigator.pop(context);
 
-                                    TrackerManager().addToWantToWatch(media);
+                                    TrackerManager().setMediaStatus(media, 'want_to_watch');
 
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(

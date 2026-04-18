@@ -20,11 +20,11 @@ class TrackerManager {
 
   String? get _uid => FirebaseAuth.instance.currentUser?.uid;
 
-  final List<Media> _watchList = [];
-  final List<Media> _currentlyWatching = [];
-  final List<Media> _watchHistory = [];
-  final List<CustomList> _customLists = [];
-  final List<Media> _watchStatus = [];
+  List<Media> _watchList = [];
+  List<Media> _currentlyWatching = [];
+  List<Media> _watchHistory = [];
+  List<CustomList> _customLists = [];
+  List<Media> _watchStatus = [];
 
   // ================= WATCHLIST =================
 

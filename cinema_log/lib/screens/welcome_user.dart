@@ -105,14 +105,11 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                   ],
                 ),
               ),
-            const Divider(
-              indent: 20,
-              endIndent: 20,
-            ),
+            const Divider(indent: 20, endIndent: 20),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
-              height: 200,
+              height: 250,
               child: history.isEmpty
                   ? const Center(
                       child: Text(
@@ -120,43 +117,51 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                         style: TextStyle(color: Colors.grey),
                       ),
                     )
-                  : ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: history.length,
-                      itemBuilder: (context, index) {
-                        final media = history[index];
-                        final posterUrl = media.poster_path != null
-                            ? '${Controller.mainImgURL}${media.poster_path}'
-                            : null;
+                  : ScrollConfiguration(
+                      behavior: const MaterialScrollBehavior().copyWith(
+                        dragDevices: {...PointerDeviceKind.values},
+                      ),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: history.length,
+                        itemBuilder: (context, index) {
+                          final media = history[index];
+                          final poster_path = media.poster_path;
 
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MovieDetailsScreen(
-                                  mediaId: media.id.toString(),
-                                  mediaType: media.type,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: 160,
-                            padding: const EdgeInsets.all(5),
-                            child: posterUrl != null
-                                ? Image.network(posterUrl)
-                                : const Icon(
-                                    Icons.movie,
-                                    color: Colors.white,
+                          return GestureDetector(
+                            child: Container(
+                              width: 160,
+                              padding: const EdgeInsets.all(5),
+                              decoration: poster_path != null
+                                  ? BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                          '${Controller.mainImgURL}$poster_path',
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    )
+                                  : null,
+                              child: poster_path == null
+                                  ? const Icon(Icons.movie, color: Colors.white)
+                                  : null,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (_) => MovieDetailsScreen(
+                                    mediaId: media.id.toString(),
+                                    mediaType: media.type,
                                   ),
-                          ),
-                        );
-                      },
-                      
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
                     ),
             ),
-
             Container(
               height: 28.01,
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
@@ -176,14 +181,11 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 ],
               ),
             ),
-            const Divider(
-              indent: 20,
-              endIndent: 20,
-            ),
+            const Divider(indent: 20, endIndent: 20),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
-              height: 200,
+              height: 250,
               child: ScrollConfiguration(
                 behavior: const MaterialScrollBehavior().copyWith(
                   dragDevices: {...PointerDeviceKind.values},
@@ -219,8 +221,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                           MaterialPageRoute<void>(
                             builder: (_) => MovieDetailsScreen(
                               mediaId: selectedMovie['id'].toString(),
-                              mediaType:
-                                  selectedMovie['media_type'] ?? 'movie',
+                              mediaType: selectedMovie['media_type'] ?? 'movie',
                             ),
                           ),
                         );
@@ -250,14 +251,11 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 ],
               ),
             ),
-            const Divider(
-              indent: 20,
-              endIndent: 20,
-            ),
+            const Divider(indent: 20, endIndent: 20),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
-              height: 200,
+              height: 250,
               child: ScrollConfiguration(
                 behavior: const MaterialScrollBehavior().copyWith(
                   dragDevices: {...PointerDeviceKind.values},
@@ -293,8 +291,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                           MaterialPageRoute<void>(
                             builder: (_) => MovieDetailsScreen(
                               mediaId: selectedMovie['id'].toString(),
-                              mediaType:
-                                  selectedMovie['media_type'] ?? 'movie',
+                              mediaType: selectedMovie['media_type'] ?? 'movie',
                             ),
                           ),
                         );
@@ -324,9 +321,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
           } else if (index == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => CustomListsScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => CustomListsScreen()),
             );
           } else if (index == 3) {
             Profile.currentUser = WelcomeUser.currentUser;
