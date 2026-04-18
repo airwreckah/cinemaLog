@@ -1,4 +1,4 @@
-import 'package:cinema_log/widgets/media_tile.dart';
+
 import 'package:flutter/material.dart';
 
 import '../screens/notes_screen.dart';

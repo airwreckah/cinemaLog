@@ -1,11 +1,11 @@
-import 'package:cinema_log/services/controller.dart';
+
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
+import 'package:cinema_log/services/controller.dart';
 import '../screens/welcome_user.dart';
 import '../screens/search.dart';
 import '../screens/profile.dart';
-import '../services/controller.dart';
 import '../models/custom_list.dart';
 import 'custom_list_detail.dart';
 import 'watch_status_screen.dart';

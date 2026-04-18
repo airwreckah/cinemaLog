@@ -2,7 +2,7 @@ import 'package:cinema_log/models/app_user.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cinema_log/main.dart';
+
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;

@@ -1,14 +1,7 @@
-import 'dart:math';
 import 'package:cinema_log/screens/sign_up.dart';
-import 'package:cinema_log/screens/welcome_new.dart';
-import 'package:cinema_log/screens/welcome_user.dart';
-import 'package:cinema_log/services/authService.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../services/controller.dart';
-import 'welcome_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {

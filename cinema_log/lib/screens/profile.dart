@@ -5,7 +5,6 @@ import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 import '../models/app_user.dart';
 import '../services/tracker_manager.dart';
-import '../screens/movie_details_screen.dart';
 import 'package:cinema_log/screens/search.dart';
 import 'package:cinema_log/screens/custom_lists_screen.dart';
 import 'package:cinema_log/screens/welcome_user.dart';

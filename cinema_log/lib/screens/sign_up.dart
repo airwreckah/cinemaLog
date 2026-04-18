@@ -1,11 +1,8 @@
 import 'package:cinema_log/screens/login.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
 import 'package:cinema_log/services/authService.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cinema_log/screens/welcome_new.dart';
 
 class Sign_Up extends StatefulWidget {
   const Sign_Up({super.key});

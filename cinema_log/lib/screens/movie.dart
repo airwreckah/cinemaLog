@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:cinema_log/services/controller.dart';
-import 'package:cinema_log/main.dart';
-import '../services/controller.dart';
 import '../models/media.dart';
 import 'welcome_user.dart';
 import 'profile.dart';

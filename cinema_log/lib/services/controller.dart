@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
-import 'package:cinema_log/services/controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 

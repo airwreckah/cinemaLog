@@ -1,14 +1,10 @@
 import 'package:cinema_log/services/tracker_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
-import 'package:cinema_log/screens/sign_up.dart';
-import 'package:cinema_log/screens/login.dart';
 import 'package:cinema_log/models/app_user.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cinema_log/firebase_options.dart';
 import 'package:cinema_log/services/controller.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/auth_wrapper.dart';
 import 'screens/profile.dart';
 

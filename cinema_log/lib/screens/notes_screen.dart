@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/app_user.dart';
 import '../screens/welcome_user.dart';
 import '../screens/custom_lists_screen.dart';
 import '../screens/search.dart';
