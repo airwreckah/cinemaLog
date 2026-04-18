@@ -17,14 +17,15 @@ class notesScreen extends StatefulWidget {
 }
 
 class _notesScreenState extends State<notesScreen> {
+  final Controller controller = Controller();
+
   int selectedIndex = 0;
   bool selected = false;
   String noteText = '';
   Map<String, dynamic>? _movieData;
   int currentRating = 0;
   DateTime watchDate = DateTime.now();
-  Map<String, dynamic>? movieData;
-  final Controller controller = Controller();
+  
 
   Future<void> selectWatchDate(BuildContext context) async {
     final DateTime? selectedDate = await showDatePicker(
@@ -42,6 +43,7 @@ class _notesScreenState extends State<notesScreen> {
   }
 
   @override
+  //fetch information 
   void initState() {
     super.initState();
     _movieData = widget.media.toMap();
@@ -51,35 +53,12 @@ class _notesScreenState extends State<notesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //display info
     final title = widget.media.title.isNotEmpty
         ? widget.media.title
         : (_movieData?['title'] ?? _movieData?['name'] ?? 'Untitled');
-
-    final overview = _movieData?['overview'] ?? 'No summary available.';
     final poster_path = _movieData?['poster_path'];
-
-    final String releaseDate =
-        _movieData?['release_date'] ??
-        _movieData?['first_air_date'] ??
-        'Unknown';
-
-    final String releaseYear =
-        releaseDate != 'Unknown' && releaseDate.length >= 4
-        ? releaseDate.substring(0, 4)
-        : 'Unknown';
-
-    final String rating = _movieData?['vote_average']?.toString() ?? 'N/A';
-
-    final String runtime = _movieData?['runtime'] != null
-        ? '${_movieData!['runtime']} min'
-        : _movieData?['number_of_seasons'] != null
-        ? '${_movieData!['number_of_seasons']} season${_movieData!['number_of_seasons'] == 1 ? '' : 's'}'
-        : 'Unknown';
-
-    final List genresList = _movieData!['genres'] ?? [];
-    final String genre = genresList.isNotEmpty
-        ? genresList.first['name'] ?? ''
-        : '';
+    //user notes
     String currentNotes = widget.media.notes ?? '';
     final TextEditingController notesController = TextEditingController(
       text: currentNotes,

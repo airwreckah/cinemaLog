@@ -83,6 +83,7 @@ class _SignUpScreenState extends State<Sign_Up> {
               ),
             ),
           ),
+          //form to get user info
           Form(
             key: _formKey,
             child: Column(
