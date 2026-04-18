@@ -92,6 +92,13 @@ class _StatsScreenState extends State<StatsScreen> {
     _loadStats();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadStats();
+    }
+  }
+
   Future<void> _loadStats() async {
     await _controller.loadWatchHistory();
 

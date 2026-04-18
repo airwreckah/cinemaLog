@@ -41,18 +41,23 @@ class TrackerManager {
 
   // ================= WATCH HISTORY =================
 
-  Future<void> markAsWatched(Media media) async {
+  Future<void> markAsWatched(Media media, {DateTime? watchedDate}) async {
     if (_uid == null) return;
 
     media.watched = true;
-    media.watchDate = media.watchDate ?? DateTime.now();
+    media.watchDate = watchedDate ?? media.watchDate ?? DateTime.now();
 
     _watchList.removeWhere((m) => m.id == media.id);
 
-    if (!_watchHistory.any((m) => m.id == media.id)) {
+    final existingIndex = _watchHistory.indexWhere((m) => m.id == media.id);
+
+    if (existingIndex == -1) {
       _watchHistory.add(media);
-      setMediaStatus(media, 'watched');
+    } else {
+      _watchHistory[existingIndex] = media;
     }
+
+    await setMediaStatus(media, 'watched');
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -247,7 +252,11 @@ class TrackerManager {
       }
 
       if (media.genre.isNotEmpty) {
-        genres[media.genre] = (genres[media.genre] ?? 0) + 1;
+        final primaryGenre = media.genre.split(',').first.trim();
+
+        if (primaryGenre.isNotEmpty) {
+          genres[primaryGenre] = (genres[primaryGenre] ?? 0) + 1;
+        }
       }
     }
 

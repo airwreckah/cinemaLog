@@ -54,8 +54,8 @@ class Controller {
     _trackerManager.removeFromWatchList(media);
   }
 
-  Future<void> markAsWatched(Media media) async {
-    await _trackerManager.markAsWatched(media);
+  Future<void> markAsWatched(Media media, {DateTime? watchedDate}) async {
+    await _trackerManager.markAsWatched(media, watchedDate: watchedDate);
   }
 
   void markAsUnwatched(Media media) {
@@ -66,11 +66,11 @@ class Controller {
     Media media,
     String notes,
     int rating,
-    DateTime watchDate,
+    DateTime watchedDate,
   ) async {
     media.notes = notes;
     media.rating = rating;
-    await _trackerManager.markAsWatched(media);
+    await _trackerManager.markAsWatched(media, watchedDate: watchedDate);
     await _trackerManager.setMediaStatus(media, 'watched');
   }
 
