@@ -130,8 +130,8 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                             ),
                             itemBuilder: (context) => [
                               const PopupMenuItem(
-                                value: 'addToWatched',
-                                child: Text('Add to Watched'),
+                                value: 'edit',
+                                child: Text('Edit Notes and Rating'),
                               ),
                               const PopupMenuItem(
                                 value: 'remove',
@@ -139,14 +139,14 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                               ),
                             ],
                             onSelected: (value) {
-                              if (value == 'addToWatched') {
-                                _controller
-                                    .setMediaStatus(media, 'watched')
-                                    .then((_) {
-                                      setState(() {});
-                                    }
-                                  );
-                                }
+                              if (value == 'edit') {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => notesScreen(media: media),
+                                  ),
+                                );
+                              }
                               if (value == 'remove') {
                                 _controller
                                     .setMediaStatus(media, 'unwatched')

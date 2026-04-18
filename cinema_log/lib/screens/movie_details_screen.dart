@@ -536,7 +536,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                         return ListView(
                           children: lists.map((list) {
                             return ListTile(
-                              title: Text(list.name),
+                              title: Text(list.name, 
+                                style: TextStyle(color: Colors.white),),
                               onTap: () async {
                                 await _controller.addMediaToCustomList(
                                   list.id,
@@ -559,7 +560,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     backgroundColor: const Color(0xFF352c48),
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Add to Custom List'),
+                  child: const Text(
+                    'Add to Custom List',
+                     style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ],
             ),
