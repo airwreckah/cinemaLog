@@ -179,6 +179,7 @@ class _LoginScreenState extends State<Login> {
               child: Column(
                 children: <Widget>[
                   SizedBox(height: 25),
+                  //email field
                   SizedBox(
                     height: 75,
                     width: 350,
@@ -201,6 +202,7 @@ class _LoginScreenState extends State<Login> {
                       ),
                     ),
                   ),
+                  //password field
                   SizedBox(
                     height: 75,
                     width: 350,
@@ -233,22 +235,7 @@ class _LoginScreenState extends State<Login> {
                       ),
                     ),
                   ),
-
-                  // Forgot Password button
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 25.0, bottom: 10),
-                      child: TextButton(
-                        onPressed: _resetPassword,
-                        child: const Text(
-                          "Forgot Password?",
-                          style: TextStyle(color: Color(0xFF4F39F6)),
-                        ),
-                      ),
-                    ),
-                  ),
-
+                  //sign in button
                   Container(
                     width: 350,
                     height: 60,
@@ -273,6 +260,21 @@ class _LoginScreenState extends State<Login> {
                       ),
                     ),
                   ),
+                  //forgot password link
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 25.0, bottom: 10),
+                      child: TextButton(
+                        onPressed: _resetPassword,
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(color: Color(0xFF4F39F6)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  //redirect to sign up page
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

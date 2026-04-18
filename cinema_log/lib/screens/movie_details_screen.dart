@@ -24,13 +24,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   final Controller _controller = Controller();
   String watchStatus = 'unwatched';
   Map<String, dynamic>? _mediaData;
+  bool _isLoading = true;
+  String _errorMessage = '';
+  //provider information
   Map<String, dynamic>? _providerData;
   List<Map<String, dynamic>> freeProviders = [];
   List<Map<String, dynamic>> rentProviders = [];
   List<Map<String, dynamic>> buyProviders = [];
   List<Map<String, dynamic>> flatrateProviders = [];
-  bool _isLoading = true;
-  String _errorMessage = '';
+  
 
   @override
   void initState() {
@@ -53,7 +55,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
   Future<void> _loadMediaDetails() async {
     try {
       Map<String, dynamic> data;
-
+      //fetch media 
       if (widget.mediaType == 'tv') {
         data = await _controller.fetchTvById(widget.mediaId);
         _providerData = await _controller.fetchProviderById(widget.mediaId);
@@ -61,7 +63,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
         data = await _controller.fetchMovieById(widget.mediaId);
         _providerData = await _controller.fetchProviderById(widget.mediaId);
       }
-
+      //parse provider data
       _providerData?.forEach((key, value) {
         if (value is List) {
           for (var item in value) {
@@ -88,7 +90,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
           }
         }
       });
-
       setState(() {
         _mediaData = data;
         _isLoading = false;
@@ -100,29 +101,29 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       });
     }
   }
-
+  //parse title
   String _getTitle() {
     if (_mediaData == null) return 'Untitled';
     return _mediaData!['title'] ?? _mediaData!['name'] ?? 'Untitled';
   }
-
+  //parse overview
   String _getOverview() {
     if (_mediaData == null) return 'No summary available.';
     return _mediaData!['overview'] ?? 'No summary available.';
   }
-
+  //parse poster path
   String? _getPosterPath() {
     if (_mediaData == null) return null;
     return _mediaData!['poster_path'];
   }
-
+  //parse release date
   String _getReleaseDate() {
     if (_mediaData == null) return 'Unknown';
     return _mediaData!['release_date'] ??
         _mediaData!['first_air_date'] ??
         'Unknown';
   }
-
+  //parse release year
   String _getReleaseYear() {
     final releaseDate = _getReleaseDate();
     if (releaseDate != 'Unknown' && releaseDate.length >= 4) {
@@ -130,16 +131,15 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
     }
     return 'Unknown';
   }
-
+  //parse rating
   String _getRating() {
     if (_mediaData == null) return 'N/A';
     final value = _mediaData!['vote_average'];
     return value != null ? value.toString() : 'N/A';
   }
-
+  //parse runtime or seasons
   String _getRuntimeOrSeasons() {
     if (_mediaData == null) return 'Unknown';
-
     if (widget.mediaType.contains('tv')) {
       final seasons = _mediaData!['number_of_seasons'];
       if (seasons != null) {
@@ -147,7 +147,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       }
       return 'Unknown';
     }
-
     final runtime = _mediaData!['runtime'];
     if (runtime != null) {
       return '$runtime min';
@@ -169,11 +168,11 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
 
     return '';
   }
-
+  //fetch watch status 
   String _getWatchStatus() {
     return TrackerManager().getMediaStatus(widget.mediaId) ?? '';
   }
-
+  
   Media _buildMediaObject() {
     return Media(
       id: widget.mediaId,
@@ -209,6 +208,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
       );
     }
 
+    //get media details 
     final title = _getTitle();
     final overview = _getOverview();
     final poster_path = _getPosterPath();
@@ -250,16 +250,13 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 10),
-
             // Genres Display
             if (genre.isNotEmpty)
               Text(
                 genre,
                 style: const TextStyle(color: Colors.white70, fontSize: 16),
               ),
-
             const SizedBox(height: 16),
             if (poster_path != null)
               Center(
@@ -269,12 +266,12 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                 ),
               ),
             const SizedBox(height: 16),
-            Row(
+            Row( //details row
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                Row( 
                   children: [
-                    const Icon(Icons.star, color: Colors.amber),
+                    const Icon(Icons.star, color: Colors.amber), //rating
                     const SizedBox(width: 4),
                     Text(
                       rating,
@@ -287,8 +284,8 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     ),
                   ],
                 ),
-                const Icon(Icons.circle, color: Colors.white70, size: 10),
-                Text(
+                const Icon(Icons.circle, color: Colors.white70, size: 10), //divider
+                Text(     //release year
                   releaseYear,
                   style: const TextStyle(
                     fontSize: 16,
@@ -297,10 +294,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     fontWeight: FontWeight.normal,
                   ),
                 ),
-                const Icon(Icons.circle, color: Colors.white70, size: 10),
+                const Icon(Icons.circle, color: Colors.white70, size: 10), //divider
                 Row(
                   children: [
-                    const Icon(Icons.access_time, color: Colors.white70),
+                    const Icon(Icons.access_time, color: Colors.white70), //runtime or seasons
                     const SizedBox(width: 4),
                     Text(
                       runtimeOrSeasons,
@@ -321,7 +318,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
               children: [
                 TextButton(
                   onPressed: () {
-                    showModalBottomSheet(
+                    showModalBottomSheet( //set watch status menu
                       backgroundColor: Color(0xFF340090),
                       context: context,
                       builder: (_) {
@@ -329,7 +326,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (watchStatus != 'watched')
+                              if (watchStatus != 'watched') //show mark as watched option if it hasn't been watched
                                 ListTile(
                                   leading: const Icon(
                                     Icons.check_circle_outline,
@@ -363,7 +360,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     }
                                   },
                                 ),
-                              if (watchStatus == 'watched')
+                              if (watchStatus == 'watched') //show mark as unwatched option if it has been watched
                                 ListTile(
                                   leading: const Icon(
                                     Icons.cancel_outlined,
@@ -375,11 +372,10 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   ),
                                   onTap: () async {
                                     Navigator.pop(context);
-                                    await TrackerManager().setMediaStatus(
+                                    await TrackerManager().setMediaStatus( 
                                       media,
                                       'unwatched',
                                     );
-
                                     if (context.mounted) {
                                         TrackerManager().markAsUnwatched(
                                         media,
@@ -397,7 +393,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     }
                                   },
                                 ),
-                              if (watchStatus != 'watching')
+                              if (watchStatus != 'watching') //show mark as watching option if it isn't being watched
                                 ListTile(
                                   leading: const Icon(
                                     Icons.play_circle_outline,
@@ -421,7 +417,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     );
                                   },
                                 ),
-                              if (watchStatus == 'watching')
+                              if (watchStatus == 'watching') //show mark as not watching option if it is being watched
                                 ListTile(
                                   leading: const Icon(
                                     Icons.play_circle_outline,
@@ -449,7 +445,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                             ),
                                       ),
                                     );
-
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Marked as not watching'),
@@ -457,7 +452,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     );
                                   },
                                 ),
-                              if (watchStatus != 'want_to_watch')
+                              if (watchStatus != 'want_to_watch') //show want to watch option if it isn't already marked as want to watch
                                 ListTile(
                                   leading: const Icon(
                                     Icons.bookmark_border,
@@ -472,9 +467,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       watchStatus = 'want_to_watch';
                                     });
                                     Navigator.pop(context);
-
                                     TrackerManager().setMediaStatus(media, 'want_to_watch');
-
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Added to want to watch'),
@@ -482,7 +475,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                     );
                                   },
                                 ),
-                              if (watchStatus == 'want_to_watch')
+                              if (watchStatus == 'want_to_watch') //show remove from want to watch option if it is marked as want to watch
                                 ListTile(
                                   leading: const Icon(
                                     Icons.bookmark_border,
@@ -502,7 +495,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                       media,
                                       'unwatched',
                                     );
-
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text(
@@ -529,7 +521,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                   onPressed: () async {
                     await _controller.loadCustomLists();
                     final lists = _controller.getCustomLists();
-
                     if (lists.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -538,7 +529,6 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                       );
                       return;
                     }
-
                     showModalBottomSheet(
                       context: context,
                       builder: (_) {
@@ -551,9 +541,7 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                                   list.id,
                                   media,
                                 );
-
                                 Navigator.pop(context);
-
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('Added to "${list.name}"'),

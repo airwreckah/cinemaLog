@@ -1,3 +1,4 @@
+import 'package:cinema_log/screens/search.dart';
 import 'package:flutter/material.dart';
 
 import '../models/custom_list.dart';
@@ -27,16 +28,42 @@ class _CustomListDetailScreenState extends State<CustomListDetailScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(widget.customList.name)),
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: Text(widget.customList.name,
+        style: const TextStyle(color: Colors.white),
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.white, 
+          ),
+        ),
       body: updatedList == null
           ? const Center(child: Text('This list no longer exists.'))
           : updatedList.items.isEmpty
-              ? const Center(child: Text('No media in this list yet.'))
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('No media in this list yet.'),
+                      IconButton(
+                        icon: Icon(Icons.search, 
+                          color: Colors.white70),
+                      onPressed: () {
+                        Navigator.push(   //take user to search screen to add to list
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => Search(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                )
+              )
               : ListView.builder(
                   itemCount: updatedList.items.length,
                   itemBuilder: (context, index) {
                     final media = updatedList.items[index];
-
                     return MediaTile(
                       media: media,
                       onTap: () => Navigator.push(

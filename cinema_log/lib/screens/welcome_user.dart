@@ -85,6 +85,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            //show watch history if there is any
             if (!WelcomeUser.currentUser.watchHistoryNotEmpty())
               Container(
                 height: 28.01,
@@ -121,13 +122,14 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                       behavior: const MaterialScrollBehavior().copyWith(
                         dragDevices: {...PointerDeviceKind.values},
                       ),
-                      child: ListView.builder(
+                      //needs to be listview.separated have space between the posers
+                      child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: history.length,
+                        separatorBuilder: (context, index) => const SizedBox(width: 10),
                         itemBuilder: (context, index) {
                           final media = history[index];
                           final poster_path = media.poster_path;
-
                           return GestureDetector(
                             child: Container(
                               width: 160,
@@ -182,6 +184,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
               ),
             ),
             const Divider(indent: 20, endIndent: 20),
+            //popular movies list
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
@@ -190,9 +193,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 behavior: const MaterialScrollBehavior().copyWith(
                   dragDevices: {...PointerDeviceKind.values},
                 ),
-                child: ListView.builder(
+                child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: Welcome_new.popMedia.length,
+                  separatorBuilder: (context, index) => const SizedBox(width: 10),
                   itemBuilder: (context, index) {
                     final selectedMovie = WelcomeUser.popMedia[index];
                     final poster_path = selectedMovie['poster_path'];
@@ -252,6 +256,7 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
               ),
             ),
             const Divider(indent: 20, endIndent: 20),
+            //Upcoming releases list
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15),
               padding: const EdgeInsets.symmetric(horizontal: 23.99),
@@ -260,9 +265,10 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 behavior: const MaterialScrollBehavior().copyWith(
                   dragDevices: {...PointerDeviceKind.values},
                 ),
-                child: ListView.builder(
+                child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: Welcome_new.upcomingMovies.length,
+                  separatorBuilder: (context, index) => const SizedBox(width: 10),
                   itemBuilder: (context, index) {
                     final selectedMovie = WelcomeUser.upcomingMovies[index];
                     final poster_path = selectedMovie['poster_path'];
