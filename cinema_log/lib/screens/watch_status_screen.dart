@@ -5,6 +5,7 @@ import '../screens/notes_screen.dart';
 import '../models/media.dart';
 import '../services/controller.dart';
 import 'movie_details_screen.dart';
+import '../services/tracker_manager.dart';
 
 class WatchStatusScreen extends StatefulWidget {
   const WatchStatusScreen({super.key});
@@ -15,6 +16,10 @@ class WatchStatusScreen extends StatefulWidget {
 
 class _WatchStatusScreenState extends State<WatchStatusScreen> {
   final Controller _controller = Controller();
+  final TrackerManager trackerManager = TrackerManager();
+  List<Media> watched = [];
+  List<Media> watching = [];
+  List<Media> wantToWatch = [];
 
   @override
   void initState() {
@@ -26,15 +31,18 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
     });
   }
 
+  void loadLists() {
+    watched = _controller.getWatchedItems()
+      ..sort((a, b) => a.title.compareTo(b.title));
+    watching = _controller.getWatchingItems()
+      ..sort((a, b) => a.title.compareTo(b.title));
+    wantToWatch = _controller.getWantToWatchItems()
+      ..sort((a, b) => a.title.compareTo(b.title));
+  }
+
   @override
   Widget build(BuildContext context) {
-    //sorting the lists alphabetically 
-    final watched = _controller.getWatchedItems()
-      ..sort((a, b) => a.title.compareTo(b.title));
-    final watching = _controller.getWatchingItems()
-      ..sort((a, b) => a.title.compareTo(b.title));
-    final wantToWatch = _controller.getWantToWatchItems()
-      ..sort((a, b) => a.title.compareTo(b.title));
+    loadLists();
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -83,8 +91,8 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
             ),
           ),
           children: items.isEmpty
-              ? [
-                  const ListTile(
+              ? const [
+                  ListTile(
                     title: Text(
                       'No items',
                       style: TextStyle(color: Colors.white),
@@ -141,25 +149,32 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                                 child: Text('Remove'),
                               ),
                             ],
-                            onSelected: (value) {
+                            onSelected: (value) async {
                               if (value == 'edit') {
-                                Navigator.push(
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => notesScreen(media: media),
                                   ),
                                 );
+                                setState(() {
+                                  loadLists();
+                                });
                               }
                               if (value == 'remove') {
-                                _controller
-                                    .setMediaStatus(media, 'unwatched')
-                                    .then((_) {
-                                      setState(() {});
+                                   trackerManager.setMediaStatus( 
+                                      media,
+                                      'unwatched',
+                                    );
+                                    if (context.mounted) {
+                                        trackerManager.markAsUnwatched(
+                                        media,
+                                      );
+                                      setState((){});
                                     }
-                                  );
+                                  }
                                 }
-                              },
-                            )
+                              )
                         : PopupMenuButton(
                             icon: const Icon(
                               Icons.more_vert,
