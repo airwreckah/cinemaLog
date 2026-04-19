@@ -93,7 +93,6 @@ class _CustomListDetailScreenState extends State<CustomListDetailScreen> {
                               ),
                             ),
                           );
-
                           setState(() {});
                         },
                       ),
