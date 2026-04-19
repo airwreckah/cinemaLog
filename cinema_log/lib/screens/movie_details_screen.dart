@@ -321,6 +321,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     showModalBottomSheet( //set watch status menu
                       backgroundColor: Color(0xFF340090),
                       context: context,
+                      constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.25, // limit height of popup 
+                      ),
                       builder: (_) {
                         return SafeArea(
                           child: Column(
@@ -532,6 +535,9 @@ class _MovieDetailsScreenState extends State<MovieDetailsScreen> {
                     showModalBottomSheet(
                       backgroundColor: Color(0xFF340090),
                       context: context,
+                      constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.33, // limit height of popup 
+                      ),
                       builder: (_) {
                         return ListView(
                           children: lists.map((list) {
