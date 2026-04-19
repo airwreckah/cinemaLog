@@ -16,6 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_fonts: ^8.0.2
+  readmore: ^3.0.0
   simple_gradient_text: 1.4.0
   
 

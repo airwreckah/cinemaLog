@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:readmore/readmore.dart';
 
 import '../screens/notes_screen.dart';
 import '../models/media.dart';
@@ -114,9 +115,11 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                               )
                             : null,
                         ?media.notes != null && media.notes!.isNotEmpty
-                            ? Text(
+                            ? ReadMoreText( //makes notes expandable 
                                 media.notes!,
-                                style: const TextStyle(color: Colors.white),
+                                trimLines: 1,
+                                colorClickableText: const Color.fromARGB(255, 241, 206, 255),
+                                trimMode: TrimMode.Line,
                               )
                             : null,
                           ],
