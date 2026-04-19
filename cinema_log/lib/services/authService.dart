@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:cinema_log/models/app_user.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
 import 'package:firebase_auth/firebase_auth.dart';

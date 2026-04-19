@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:cinema_log/screens/profile.dart';
 import 'package:cinema_log/screens/search.dart';
 import 'package:cinema_log/models/app_user.dart';
@@ -149,8 +151,8 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                                   ? const Icon(Icons.movie, color: Colors.white)
                                   : null,
                             ),
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              await Navigator.push(
                                 context,
                                 MaterialPageRoute<void>(
                                   builder: (_) => MovieDetailsScreen(
@@ -159,6 +161,11 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                                   ),
                                 ),
                               );
+                              if(context.mounted){
+                                setState(() {
+                                  _loadAllData();
+                                });
+                              }
                             },
                           );
                         },
@@ -221,8 +228,8 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                             ? const Icon(Icons.movie, color: Colors.white)
                             : null,
                       ),
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute<void>(
                             builder: (_) => MovieDetailsScreen(
@@ -231,6 +238,11 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                             ),
                           ),
                         );
+                        if (context.mounted) {
+                          setState(() {
+                            _loadAllData();
+                          });
+                        }
                       },
                     );
                   },
@@ -294,8 +306,8 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                             ? const Icon(Icons.movie, color: Colors.white)
                             : null,
                       ),
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute<void>(
                             builder: (_) => MovieDetailsScreen(
@@ -304,6 +316,11 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                             ),
                           ),
                         );
+                        if (context.mounted) {
+                          setState(() {
+                            _loadAllData();
+                          });
+                        }
                       },
                     );
                   },

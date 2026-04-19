@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:readmore/readmore.dart';
 
 import 'package:cinema_log/screens/notes_screen.dart';
 import 'package:cinema_log/models/media.dart';
 import 'package:cinema_log/services/controller.dart';
 import 'package:cinema_log/screens/movie_details_screen.dart';
+import 'package:cinema_log/services/tracker_manager.dart';
 
 class WatchStatusScreen extends StatefulWidget {
   const WatchStatusScreen({super.key});
@@ -14,6 +16,10 @@ class WatchStatusScreen extends StatefulWidget {
 
 class _WatchStatusScreenState extends State<WatchStatusScreen> {
   final Controller _controller = Controller();
+  final TrackerManager trackerManager = TrackerManager();
+  List<Media> watched = [];
+  List<Media> watching = [];
+  List<Media> wantToWatch = [];
 
   @override
   void initState() {
@@ -25,15 +31,18 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
     });
   }
 
+  void loadLists() {
+    watched = _controller.getWatchedItems()
+      ..sort((a, b) => a.title.compareTo(b.title));
+    watching = _controller.getWatchingItems()
+      ..sort((a, b) => a.title.compareTo(b.title));
+    wantToWatch = _controller.getWantToWatchItems()
+      ..sort((a, b) => a.title.compareTo(b.title));
+  }
+
   @override
   Widget build(BuildContext context) {
-    //sorting the lists alphabetically
-    final watched = _controller.getWatchedItems()
-      ..sort((a, b) => a.title.compareTo(b.title));
-    final watching = _controller.getWatchingItems()
-      ..sort((a, b) => a.title.compareTo(b.title));
-    final wantToWatch = _controller.getWantToWatchItems()
-      ..sort((a, b) => a.title.compareTo(b.title));
+    loadLists();
 
     return Theme(
       data: Theme.of(context).copyWith(
@@ -82,8 +91,8 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
             ),
           ),
           children: items.isEmpty
-              ? [
-                  const ListTile(
+              ? const [
+                  ListTile(
                     title: Text(
                       'No items',
                       style: TextStyle(color: Colors.white),
@@ -114,9 +123,17 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                               )
                             : null,
                         ?media.notes != null && media.notes!.isNotEmpty
-                            ? Text(
+                            ? ReadMoreText(
+                                //makes notes expandable
                                 media.notes!,
-                                style: const TextStyle(color: Colors.white),
+                                trimLines: 1,
+                                colorClickableText: const Color.fromARGB(
+                                  255,
+                                  241,
+                                  206,
+                                  255,
+                                ),
+                                trimMode: TrimMode.Line,
                               )
                             : null,
                       ],
@@ -138,21 +155,27 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                                 child: Text('Remove'),
                               ),
                             ],
-                            onSelected: (value) {
+                            onSelected: (value) async {
                               if (value == 'edit') {
-                                Navigator.push(
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => NotesScreen(media: media),
                                   ),
                                 );
+                                setState(() {
+                                  loadLists();
+                                });
                               }
                               if (value == 'remove') {
-                                _controller
-                                    .setMediaStatus(media, 'unwatched')
-                                    .then((_) {
-                                      setState(() {});
-                                    });
+                                trackerManager.setMediaStatus(
+                                  media,
+                                  'unwatched',
+                                );
+                                if (context.mounted) {
+                                  trackerManager.markAsUnwatched(media);
+                                  setState(() {});
+                                }
                               }
                             },
                           )
