@@ -1,7 +1,7 @@
 import 'package:cinema_log/screens/profile.dart';
 import 'package:cinema_log/screens/search.dart';
-import '../models/app_user.dart';
-import '../services/tracker_manager.dart';
+import 'package:cinema_log/models/app_user.dart';
+import 'package:cinema_log/services/tracker_manager.dart';
 import 'package:cinema_log/screens/welcome_new.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -126,7 +126,8 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: history.length,
-                        separatorBuilder: (context, index) => const SizedBox(width: 10),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 10),
                         itemBuilder: (context, index) {
                           final media = history[index];
                           final poster_path = media.poster_path;
@@ -196,7 +197,8 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: Welcome_new.popMedia.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 10),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 10),
                   itemBuilder: (context, index) {
                     final selectedMovie = WelcomeUser.popMedia[index];
                     final poster_path = selectedMovie['poster_path'];
@@ -268,7 +270,8 @@ class WelcomeUserScreenState extends State<WelcomeUser> {
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: Welcome_new.upcomingMovies.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 10),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 10),
                   itemBuilder: (context, index) {
                     final selectedMovie = WelcomeUser.upcomingMovies[index];
                     final poster_path = selectedMovie['poster_path'];

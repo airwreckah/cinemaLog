@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../models/media.dart';
-import '../models/statistics.dart';
-import '../models/custom_list.dart';
+import 'package:cinema_log/models/media.dart';
+import 'package:cinema_log/models/statistics.dart';
+import 'package:cinema_log/models/custom_list.dart';
 
 enum StatisticsFilterType { week, month, year, lifetime }
 
@@ -199,11 +199,9 @@ class TrackerManager {
 
   Map<String, double> getMoviesWatchedByMonth(List<Media> history) {
     final Map<String, double> countsPerMonth = {};
-    DateTime? watchedDay;
 
     for (final media in history) {
       if (media.type.toLowerCase() == 'movie' && media.watchDate != null) {
-        watchedDay = media.watchDate;
         final key = _formatMonthKey(media.watchDate!);
         countsPerMonth[key] = (countsPerMonth[key] ?? 0) + 1;
       }
@@ -400,10 +398,12 @@ class TrackerManager {
   }
 
   CustomList? getCustomListById(String id) {
-    return _customLists.firstWhere(
-      (l) => l.id == id,
-      orElse: () => null as CustomList,
-    );
+    for (final list in _customLists) {
+      if (list.id == id) {
+        return list;
+      }
+    }
+    return null;
   }
 
   Future<void> renameCustomList(String id, String newName) async {

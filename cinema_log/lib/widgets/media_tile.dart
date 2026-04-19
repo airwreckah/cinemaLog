@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/media.dart';
-import '../services/controller.dart';
+import 'package:cinema_log/models/media.dart';
+import 'package:cinema_log/services/controller.dart';
 
 class MediaTile extends StatelessWidget {
   final Media media;

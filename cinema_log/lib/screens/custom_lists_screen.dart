@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 import 'package:cinema_log/services/controller.dart';
-import '../screens/welcome_user.dart';
-import '../screens/search.dart';
-import '../screens/profile.dart';
-import '../models/custom_list.dart';
-import 'custom_list_detail.dart';
-import 'watch_status_screen.dart';
+import 'package:cinema_log/screens/welcome_user.dart';
+import 'package:cinema_log/screens/search.dart';
+import 'package:cinema_log/screens/profile.dart';
+import 'package:cinema_log/models/custom_list.dart';
+import 'package:cinema_log/screens/custom_list_detail.dart';
+import 'package:cinema_log/screens/watch_status_screen.dart';
 
 class CustomListsScreen extends StatefulWidget {
   const CustomListsScreen({super.key});
@@ -202,7 +201,6 @@ class _CustomListsScreenState extends State<CustomListsScreen> {
               MaterialPageRoute(builder: (context) => const Profile()),
             );
           }
-          ;
         },
 
         items: const <BottomNavigationBarItem>[

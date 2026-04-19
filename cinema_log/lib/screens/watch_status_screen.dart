@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../screens/notes_screen.dart';
-import '../models/media.dart';
-import '../services/controller.dart';
-import 'movie_details_screen.dart';
+import 'package:cinema_log/screens/notes_screen.dart';
+import 'package:cinema_log/models/media.dart';
+import 'package:cinema_log/services/controller.dart';
+import 'package:cinema_log/screens/movie_details_screen.dart';
 
 class WatchStatusScreen extends StatefulWidget {
   const WatchStatusScreen({super.key});
@@ -27,7 +27,7 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //sorting the lists alphabetically 
+    //sorting the lists alphabetically
     final watched = _controller.getWatchedItems()
       ..sort((a, b) => a.title.compareTo(b.title));
     final watching = _controller.getWatchingItems()
@@ -119,8 +119,8 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                                 style: const TextStyle(color: Colors.white),
                               )
                             : null,
-                          ],
-                        ),
+                      ],
+                    ),
                     //drop down menus for quick access
                     trailing: title == 'Watched'
                         ? PopupMenuButton(
@@ -143,7 +143,7 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => notesScreen(media: media),
+                                    builder: (_) => NotesScreen(media: media),
                                   ),
                                 );
                               }
@@ -152,11 +152,10 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                                     .setMediaStatus(media, 'unwatched')
                                     .then((_) {
                                       setState(() {});
-                                    }
-                                  );
-                                }
-                              },
-                            )
+                                    });
+                              }
+                            },
+                          )
                         : PopupMenuButton(
                             icon: const Icon(
                               Icons.more_vert,
@@ -178,37 +177,34 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                                     .setMediaStatus(media, 'watched')
                                     .then((_) {
                                       setState(() {});
-                                    }
-                                  );
-                                }
+                                    });
+                              }
                               if (value == 'remove') {
                                 _controller
                                     .setMediaStatus(media, 'unwatched')
                                     .then((_) {
                                       setState(() {});
-                                    }
-                                  );
-                                }
-                              },
-                            ),
-                          iconColor: Colors.white,
-                          textColor: Colors.white,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => MovieDetailsScreen(
-                                  mediaId: media.id.toString(),
-                                  mediaType: media.type,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }
-                    ).toList(),
-                  ),
-                ),
-              );
-            }
-          }
+                                    });
+                              }
+                            },
+                          ),
+                    iconColor: Colors.white,
+                    textColor: Colors.white,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MovieDetailsScreen(
+                            mediaId: media.id.toString(),
+                            mediaType: media.type,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+        ),
+      ),
+    );
+  }
+}

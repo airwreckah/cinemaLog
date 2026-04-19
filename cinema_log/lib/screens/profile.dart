@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
-import '../models/app_user.dart';
-import '../services/tracker_manager.dart';
+import 'package:cinema_log/models/app_user.dart';
+import 'package:cinema_log/services/tracker_manager.dart';
 import 'package:cinema_log/screens/search.dart';
 import 'package:cinema_log/screens/custom_lists_screen.dart';
 import 'package:cinema_log/screens/welcome_user.dart';
@@ -46,7 +46,10 @@ class _ProfileState extends State<Profile> {
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: const Color(0xFF101728),
-          title: const Text("Update Password", style: TextStyle(color: Colors.white)),
+          title: const Text(
+            "Update Password",
+            style: TextStyle(color: Colors.white),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -92,7 +95,9 @@ class _ProfileState extends State<Profile> {
                   Navigator.pop(dialogContext);
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text(" Password updated successfully")),
+                    const SnackBar(
+                      content: Text(" Password updated successfully"),
+                    ),
                   );
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -117,7 +122,10 @@ class _ProfileState extends State<Profile> {
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: const Color(0xFF101728),
-          title: const Text("Update Email", style: TextStyle(color: Colors.white)),
+          title: const Text(
+            "Update Email",
+            style: TextStyle(color: Colors.white),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -159,13 +167,17 @@ class _ProfileState extends State<Profile> {
 
                   await user.reauthenticateWithCredential(cred);
 
-                  await user.verifyBeforeUpdateEmail(newEmailController.text.trim());
+                  await user.verifyBeforeUpdateEmail(
+                    newEmailController.text.trim(),
+                  );
 
                   Navigator.pop(dialogContext);
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(" Verification email sent. Check your inbox."),
+                      content: Text(
+                        " Verification email sent. Check your inbox.",
+                      ),
                     ),
                   );
                 } catch (e) {
@@ -208,7 +220,10 @@ class _ProfileState extends State<Profile> {
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: const Color(0xFF101728),
-          title: const Text("Delete Account", style: TextStyle(color: Colors.white)),
+          title: const Text(
+            "Delete Account",
+            style: TextStyle(color: Colors.white),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -234,7 +249,10 @@ class _ProfileState extends State<Profile> {
               onPressed: () => Navigator.pop(dialogContext),
             ),
             TextButton(
-              child: const Text("Continue", style: TextStyle(color: Colors.orange)),
+              child: const Text(
+                "Continue",
+                style: TextStyle(color: Colors.orange),
+              ),
               onPressed: () async {
                 Navigator.pop(dialogContext);
                 await _confirmFinalDelete(context, passwordController.text);
@@ -246,13 +264,19 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  Future<void> _confirmFinalDelete(BuildContext context, String password) async {
+  Future<void> _confirmFinalDelete(
+    BuildContext context,
+    String password,
+  ) async {
     await showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: const Color(0xFF101728),
-          title: const Text("Final Confirmation", style: TextStyle(color: Colors.white)),
+          title: const Text(
+            "Final Confirmation",
+            style: TextStyle(color: Colors.white),
+          ),
           content: const Text(
             "Are you absolutely sure? This cannot be undone.",
             style: TextStyle(color: Colors.red),
@@ -263,7 +287,10 @@ class _ProfileState extends State<Profile> {
               onPressed: () => Navigator.pop(dialogContext),
             ),
             TextButton(
-              child: const Text("DELETE", style: TextStyle(color: Color(0xFFFB2C36))),
+              child: const Text(
+                "DELETE",
+                style: TextStyle(color: Color(0xFFFB2C36)),
+              ),
               onPressed: () async {
                 try {
                   final user = FirebaseAuth.instance.currentUser!;
@@ -323,11 +350,15 @@ class _ProfileState extends State<Profile> {
             const SizedBox(height: 20),
             const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
             const SizedBox(height: 10),
-            Text(Profile.currentUser.fullName ?? "No Name",
-                style: const TextStyle(color: Colors.white, fontSize: 20)),
+            Text(
+              Profile.currentUser.fullName ?? "No Name",
+              style: const TextStyle(color: Colors.white, fontSize: 20),
+            ),
             const SizedBox(height: 5),
-            Text("Email: ${Profile.currentUser.email ?? ''}",
-                style: const TextStyle(color: Colors.grey)),
+            Text(
+              "Email: ${Profile.currentUser.email ?? ''}",
+              style: const TextStyle(color: Colors.grey),
+            ),
             const SizedBox(height: 30),
 
             Center(
@@ -348,8 +379,10 @@ class _ProfileState extends State<Profile> {
                       ),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text('View Your Statistics',
-                            style: TextStyle(color: Colors.white)),
+                        child: Text(
+                          'View Your Statistics',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     const Divider(),
@@ -358,8 +391,10 @@ class _ProfileState extends State<Profile> {
                       onTap: () => _showUpdatePasswordDialog(context),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text('Update Password',
-                            style: TextStyle(color: Colors.white)),
+                        child: Text(
+                          'Update Password',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     const Divider(),
@@ -368,8 +403,10 @@ class _ProfileState extends State<Profile> {
                       onTap: () => _showUpdateEmailDialog(context),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text('Update Email',
-                            style: TextStyle(color: Colors.white)),
+                        child: Text(
+                          'Update Email',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     const Divider(),
@@ -385,7 +422,9 @@ class _ProfileState extends State<Profile> {
                         if (!context.mounted) return;
 
                         Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => const AuthWrapper()),
+                          MaterialPageRoute(
+                            builder: (_) => const AuthWrapper(),
+                          ),
                           (route) => false,
                         );
                       },
@@ -395,26 +434,31 @@ class _ProfileState extends State<Profile> {
                           children: [
                             Icon(Icons.logout, color: Color(0xFFFB2C36)),
                             SizedBox(width: 8),
-                            Text('Sign Out',
-                                style: TextStyle(color: Color(0xFFFB2C36))),
+                            Text(
+                              'Sign Out',
+                              style: TextStyle(color: Color(0xFFFB2C36)),
+                            ),
                           ],
                         ),
                       ),
                     ),
                     const Divider(),
 
-                    
                     GestureDetector(
                       onTap: () => _showDeleteAccountDialog(context),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 8),
                         child: Row(
                           children: [
-                            Icon(Icons.delete_forever_rounded,
-                                color: Color(0xFFFB2C36)),
+                            Icon(
+                              Icons.delete_forever_rounded,
+                              color: Color(0xFFFB2C36),
+                            ),
                             SizedBox(width: 8),
-                            Text('Delete Account',
-                                style: TextStyle(color: Color(0xFFFB2C36))),
+                            Text(
+                              'Delete Account',
+                              style: TextStyle(color: Color(0xFFFB2C36)),
+                            ),
                           ],
                         ),
                       ),
@@ -432,18 +476,26 @@ class _ProfileState extends State<Profile> {
         currentIndex: _selectedIndex,
         onTap: (index) {
           if (index == 0) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => WelcomeUser()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WelcomeUser()),
+            );
           } else if (index == 1) {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Search()));
+              context,
+              MaterialPageRoute(builder: (context) => Search()),
+            );
           } else if (index == 2) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CustomListsScreen()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CustomListsScreen()),
+            );
           } else if (index == 3) {
             Profile.currentUser = WelcomeUser.currentUser;
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Profile()));
+              context,
+              MaterialPageRoute(builder: (context) => Profile()),
+            );
           }
 
           setState(() {
@@ -454,7 +506,9 @@ class _ProfileState extends State<Profile> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.bookmark_border), label: 'Lists'),
+            icon: Icon(Icons.bookmark_border),
+            label: 'Lists',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

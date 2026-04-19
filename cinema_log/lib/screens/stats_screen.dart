@@ -92,13 +92,6 @@ class _StatsScreenState extends State<StatsScreen> {
     _loadStats();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _loadStats();
-    }
-  }
-
   Future<void> _loadStats() async {
     await _controller.loadWatchHistory();
 
@@ -149,15 +142,6 @@ class _StatsScreenState extends State<StatsScreen> {
     setState(() {
       timeSelection = value;
     });
-
-    Future<void> _onTimeSelectionChanged(String value) async {
-      setState(() {
-        timeSelection = value;
-      });
-
-      await _loadStats();
-    }
-
     await _loadStats();
   }
 
@@ -861,8 +845,28 @@ class _StatsScreenState extends State<StatsScreen> {
             rightTitles: const AxisTitles(
               sideTitles: SideTitles(showTitles: false),
             ),
-            leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: true, reservedSize: 28),
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 28,
+                interval: 1,
+                getTitlesWidget: (value, meta) {
+                  if (value % 1 != 0) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return SideTitleWidget(
+                    meta: meta,
+                    child: Text(
+                      value.toInt().toString(),
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 10,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
@@ -911,8 +915,25 @@ class _StatsScreenState extends State<StatsScreen> {
           rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: true, reservedSize: 28),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              interval: 1,
+              getTitlesWidget: (value, meta) {
+                if (value % 1 != 0) {
+                  return const SizedBox.shrink();
+                }
+
+                return SideTitleWidget(
+                  meta: meta,
+                  child: Text(
+                    value.toInt().toString(),
+                    style: const TextStyle(color: Colors.white70, fontSize: 10),
+                  ),
+                );
+              },
+            ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(

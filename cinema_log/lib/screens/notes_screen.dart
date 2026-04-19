@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import '../screens/welcome_user.dart';
-import '../screens/custom_lists_screen.dart';
-import '../screens/search.dart';
-import '../screens/profile.dart';
-import '../services/controller.dart';
-import '../models/media.dart';
+import 'package:cinema_log/screens/welcome_user.dart';
+import 'package:cinema_log/screens/custom_lists_screen.dart';
+import 'package:cinema_log/screens/search.dart';
+import 'package:cinema_log/screens/profile.dart';
+import 'package:cinema_log/services/controller.dart';
+import 'package:cinema_log/models/media.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
-class notesScreen extends StatefulWidget {
+class NotesScreen extends StatefulWidget {
   final Media media;
 
-  const notesScreen({super.key, required this.media});
+  const NotesScreen({super.key, required this.media});
 
   @override
-  State<notesScreen> createState() => _notesScreenState();
+  State<NotesScreen> createState() => _notesScreenState();
 }
 
-class _notesScreenState extends State<notesScreen> {
+class _notesScreenState extends State<NotesScreen> {
   final Controller controller = Controller();
 
   int selectedIndex = 0;
@@ -25,7 +25,6 @@ class _notesScreenState extends State<notesScreen> {
   Map<String, dynamic>? _movieData;
   int currentRating = 0;
   DateTime watchDate = DateTime.now();
-  
 
   Future<void> selectWatchDate(BuildContext context) async {
     final DateTime? selectedDate = await showDatePicker(
@@ -43,7 +42,7 @@ class _notesScreenState extends State<notesScreen> {
   }
 
   @override
-  //fetch information 
+  //fetch information
   void initState() {
     super.initState();
     _movieData = widget.media.toMap();

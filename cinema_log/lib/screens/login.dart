@@ -1,7 +1,7 @@
 import 'package:cinema_log/screens/sign_up.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
-import '../services/controller.dart';
+import 'package:cinema_log/services/controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {
@@ -84,10 +84,7 @@ class _LoginScreenState extends State<Login> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text(
-                "Cancel",
-                style: TextStyle(color: Colors.grey),
-              ),
+              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () async {
@@ -195,7 +192,9 @@ class _LoginScreenState extends State<Login> {
                       style: TextStyle(fontSize: 16, height: 2.0),
                       decoration: InputDecoration(
                         labelText: 'Email Address',
-                        contentPadding: EdgeInsets.all(15), // Example of a moving label
+                        contentPadding: EdgeInsets.all(
+                          15,
+                        ), // Example of a moving label
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -218,13 +217,17 @@ class _LoginScreenState extends State<Login> {
                       style: TextStyle(fontSize: 16, height: 2.0),
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        contentPadding: EdgeInsets.all(15), // Example of a moving label
+                        contentPadding: EdgeInsets.all(
+                          15,
+                        ), // Example of a moving label
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                            _obscurePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {
@@ -246,7 +249,7 @@ class _LoginScreenState extends State<Login> {
                       ),
                     ),
                     child: TextButton(
-                      style:TextButton.styleFrom(
+                      style: TextButton.styleFrom(
                         backgroundColor: const Color(0xFF4F39F6),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -282,14 +285,19 @@ class _LoginScreenState extends State<Login> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           "Don't have an account? ",
-                          style: TextStyle(color: const Color(0xFF99A1AF), fontSize: 14),
+                          style: TextStyle(
+                            color: const Color(0xFF99A1AF),
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const Sign_Up()),
+                            MaterialPageRoute(
+                              builder: (context) => const Sign_Up(),
+                            ),
                           );
                         },
                         child: Padding(

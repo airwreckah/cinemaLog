@@ -6,12 +6,12 @@ import 'package:cinema_log/screens/welcome_user.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
-import '../env/env.dart';
-import '../models/custom_list.dart';
-import '../models/media.dart';
-import '../models/statistics.dart';
-import 'authService.dart';
-import 'tracker_manager.dart';
+import 'package:cinema_log/env/env.dart';
+import 'package:cinema_log/models/custom_list.dart';
+import 'package:cinema_log/models/media.dart';
+import 'package:cinema_log/models/statistics.dart';
+import 'package:cinema_log/services/authService.dart';
+import 'package:cinema_log/services/tracker_manager.dart';
 
 class Controller {
   final AuthService _authService = AuthService();
@@ -326,7 +326,6 @@ class Controller {
   }
 
   Future<Map<String, dynamic>> fetchProviderById(String id, String type) async {
-    
     if (type == 'tv') {
       final tvURL = Uri.https(mainURL, '$tvEndPnt$id$providerEndPnt', {
         'api_key': apiKey,
@@ -343,7 +342,7 @@ class Controller {
             return Map<String, dynamic>.from(dataUS);
           }
         }
-      return <String, dynamic>{};
+        return <String, dynamic>{};
       } else {
         throw Exception('Failed to fetch TV provider details.');
       }
@@ -368,10 +367,9 @@ class Controller {
       } else {
         throw Exception('Failed to fetch movie provider details.');
       }
+    } else {
+      throw Exception('Invalid media type for provider details.');
     }
-      else {
-        throw Exception('Invalid media type for provider details.');
-      }
   }
 
   Future<Map<String, dynamic>> fetchTvById(String tvId) async {

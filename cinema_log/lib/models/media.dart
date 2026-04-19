@@ -60,7 +60,7 @@ class Media {
     );
   }
 
-  void setWatchDate(DateTime watchDate){
+  void setWatchDate(DateTime watchDate) {
     this.watchDate = watchDate;
   }
 
