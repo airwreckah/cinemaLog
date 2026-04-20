@@ -213,8 +213,8 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                           ),
                     iconColor: Colors.white,
                     textColor: Colors.white,
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => MovieDetailsScreen(
@@ -223,6 +223,9 @@ class _WatchStatusScreenState extends State<WatchStatusScreen> {
                           ),
                         ),
                       );
+                      setState(() {
+                          loadLists();
+                        });
                     },
                   );
                 }).toList(),

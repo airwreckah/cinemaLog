@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
-import 'package:cinema_log/services/controller.dart';
-import 'package:cinema_log/screens/welcome_user.dart';
-import 'package:cinema_log/screens/custom_lists_screen.dart';
-import 'package:cinema_log/screens/profile.dart';
-import 'package:cinema_log/screens/movie_details_screen.dart';
+import '../services/controller.dart';
+import '../screens/welcome_user.dart';
+import '../screens/custom_lists_screen.dart';
+import '../screens/profile.dart';
+import '../screens/movie_details_screen.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -79,9 +79,9 @@ class _SearchScreenState extends State<Search> {
       });
 
       setState(() {
-        _allResults = filtered;
-        _applyGenreFilter();
-      });
+      _allResults = filtered;
+      _applyGenreFilter();
+    });
     } catch (e) {
       debugPrint('Search failed: $e');
       setState(() {
@@ -106,31 +106,31 @@ class _SearchScreenState extends State<Search> {
   }
 
   void _applyGenreFilter() {
-    if (_selectedGenre == null || _selectedGenre == 'All') {
-      _filteredResults = List.from(_allResults);
-    } else {
-      _filteredResults = _allResults.where((media) {
-        final mediaType = media['media_type'];
-        final List genreIds = media['genre_ids'] ?? [];
+  if (_selectedGenre == null || _selectedGenre == 'All') {
+    _filteredResults = List.from(_allResults);
+  } else {
+    _filteredResults = _allResults.where((media) {
+      final mediaType = media['media_type'];
+      final List genreIds = media['genre_ids'] ?? [];
 
-        final genreMap = mediaType == 'tv' ? _tvGenreMap : _movieGenreMap;
+      final genreMap = mediaType == 'tv' ? _tvGenreMap : _movieGenreMap;
 
-        final genreNames = genreIds
-            .map((id) => genreMap[id])
-            .where((name) => name != null)
-            .cast<String>()
-            .toList();
+      final genreNames = genreIds
+          .map((id) => genreMap[id])
+          .where((name) => name != null)
+          .cast<String>()
+          .toList();
 
-        return genreNames.contains(_selectedGenre);
-      }).toList();
-    }
-
-    _filteredResults.sort((a, b) {
-      final double popA = (a['popularity'] ?? 0).toDouble();
-      final double popB = (b['popularity'] ?? 0).toDouble();
-      return popB.compareTo(popA);
-    });
+      return genreNames.contains(_selectedGenre);
+    }).toList();
   }
+
+  _filteredResults.sort((a, b) {
+    final double popA = (a['popularity'] ?? 0).toDouble();
+    final double popB = (b['popularity'] ?? 0).toDouble();
+    return popB.compareTo(popA);
+  });
+}
 
   List<String> _getGenreNames() {
     final allGenres = <String>{};
@@ -368,7 +368,7 @@ class _SearchScreenState extends State<Search> {
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark_border),
-            label: 'Watchlist',
+            label: 'Lists',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
